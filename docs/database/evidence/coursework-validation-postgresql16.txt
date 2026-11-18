@@ -1,0 +1,347 @@
+Etapa 1: criação do modelo relacional
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE INDEX
+Etapa 2: criação de rotinas e gatilhos
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE PROCEDURE
+CREATE PROCEDURE
+CREATE PROCEDURE
+CREATE PROCEDURE
+CREATE PROCEDURE
+Etapa 3: carga de dados fictícios
+INSERT 0 30
+INSERT 0 4
+INSERT 0 13
+INSERT 0 13
+INSERT 0 4
+INSERT 0 2
+INSERT 0 3
+INSERT 0 20
+INSERT 0 30
+INSERT 0 25
+INSERT 0 20
+INSERT 0 20
+DO
+DO
+Etapa 4: consultas de negócio
+     code      |          created_at
+---------------+-------------------------------
+ ITES-00000002 | 2026-11-18 16:34:56.401557+00
+ ITES-00000009 | 2026-11-18 16:34:56.401557+00
+ ITES-00000014 | 2026-11-18 16:34:56.401557+00
+ ITES-00000023 | 2026-11-18 16:34:56.401557+00
+ ITES-00000029 | 2026-11-18 16:34:56.401557+00
+(5 rows)
+
+     code      |       service
+---------------+----------------------
+ ITES-00000004 | comercialização
+ ITES-00000005 | apoio administrativo
+ ITES-00000010 | formação
+ ITES-00000011 | comunicação
+ ITES-00000016 | apoio administrativo
+ ITES-00000017 | parceria
+ ITES-00000021 | comunicação
+ ITES-00000024 | parceria
+ ITES-00000027 | comercialização
+ ITES-00000030 | formação
+(10 rows)
+
+                name                 | economic_sector
+-------------------------------------+-----------------
+ Cooperativa Sementes de Itaipu      | artesanato
+ Cooperativa de Reciclagem Horizonte | artesanato
+ Rede de Alimentação Comunitária     | artesanato
+ Rede de Produção Local              | artesanato
+(4 rows)
+
+     code      |         status
+---------------+-------------------------
+ ITES-00000001 | Em atendimento
+ ITES-00000002 | Pendente
+ ITES-00000003 | Concluída
+ ITES-00000004 | Aceita para atendimento
+ ITES-00000005 | Recusada
+ ITES-00000006 | Em atendimento
+ ITES-00000007 | Cancelada
+ ITES-00000008 | Concluída
+ ITES-00000009 | Pendente
+ ITES-00000010 | Recusada
+ ITES-00000011 | Aceita para atendimento
+ ITES-00000012 | Cancelada
+ ITES-00000013 | Em atendimento
+ ITES-00000014 | Pendente
+ ITES-00000015 | Concluída
+ ITES-00000016 | Aceita para atendimento
+ ITES-00000017 | Recusada
+ ITES-00000018 | Em atendimento
+ ITES-00000019 | Cancelada
+ ITES-00000020 | Concluída
+ ITES-00000021 | Recusada
+ ITES-00000022 | Cancelada
+ ITES-00000023 | Pendente
+ ITES-00000024 | Aceita para atendimento
+ ITES-00000025 | Em atendimento
+ ITES-00000026 | Concluída
+ ITES-00000027 | Recusada
+ ITES-00000028 | Cancelada
+ ITES-00000029 | Pendente
+ ITES-00000030 | Aceita para atendimento
+(30 rows)
+
+         slug         |             title
+----------------------+--------------------------------
+ agenda               | Agenda de eventos
+ biblioteca           | Biblioteca
+ comercializacao      | Comercialização em rede
+ como-atuamos         | Como atuamos
+ comunicacao          | Comunicação comunitária
+ contato              | Contato
+ empreendimentos      | Empreendimentos solidários
+ feira-solidaria      | Feira de economia solidária
+ ferramentas          | Aplicativos e ferramentas
+ formacao             | Formação em economia solidária
+ inicio               | Início
+ memoria-territorial  | Memória e território
+ noticias             | Notícias
+ parcerias            | Parcerias institucionais
+ perguntas-frequentes | Perguntas frequentes
+ projetos             | Projetos apoiados
+ publicacoes          | Publicações
+ quem-somos           | Quem somos
+ submeter-demanda     | Solicitar apoio
+ tecnologia-social    | Tecnologia social
+(20 rows)
+
+                name                 |         status          | total
+-------------------------------------+-------------------------+-------
+ Associação Artes da Região          | Aceita para atendimento |     1
+ Associação Ecos da Serra            | Pendente                |     1
+ Associação Feira Popular            | Pendente                |     1
+ Associação Maré Viva                | Em atendimento          |     1
+ Associação Maré Viva                | Recusada                |     1
+ Coletivo Cultura em Rede            | Aceita para atendimento |     1
+ Coletivo Cultura em Rede            | Cancelada               |     1
+ Coletivo Memória e Território       | Cancelada               |     1
+ Coletivo Mulheres da Pesca          | Recusada                |     1
+ Coletivo Raízes do Morro            | Pendente                |     1
+ Cooperativa Sementes de Itaipu      | Pendente                |     1
+ Cooperativa Sementes de Itaipu      | Recusada                |     1
+ Cooperativa de Reciclagem Horizonte | Cancelada               |     1
+ Cooperativa de Reciclagem Horizonte | Concluída               |     1
+ Cooperativa de Serviços do Leste    | Recusada                |     1
+ Grupo Cerâmica da Costa             | Concluída               |     1
+ Grupo Mãos da Baía                  | Aceita para atendimento |     1
+ Grupo Mãos da Baía                  | Concluída               |     1
+ Grupo Sabores de Niterói            | Em atendimento          |     1
+ Grupo Tecendo Histórias             | Cancelada               |     1
+ Rede de Agricultura Urbana          | Em atendimento          |     1
+ Rede de Agricultura Urbana          | Recusada                |     1
+ Rede de Alimentação Comunitária     | Em atendimento          |     1
+ Rede de Costura Solidária           | Cancelada               |     1
+ Rede de Costura Solidária           | Concluída               |     1
+ Rede de Produção Local              | Aceita para atendimento |     1
+(26 rows)
+
+           name            | decisions
+---------------------------+-----------
+ Pessoa de Demonstração 26 |        10
+(1 row)
+
+ economic_sector |       service        | total
+-----------------+----------------------+-------
+ artesanato      | formação             |     6
+ cultura         | comercialização      |     5
+ alimentação     | apoio administrativo |     5
+ serviços        | parceria             |     5
+ agricultura     | comunicação          |     5
+(5 rows)
+
+            name
+----------------------------
+ Rede de Produção Local
+ Grupo Mãos da Baía
+ Associação Artes da Região
+ Coletivo Cultura em Rede
+(4 rows)
+
+           name
+--------------------------
+ Pessoa de Demonstração 1
+ Pessoa de Demonstração 2
+ Pessoa de Demonstração 3
+ Pessoa de Demonstração 4
+ Pessoa de Demonstração 5
+(5 rows)
+
+           name
+---------------------------
+ Pessoa de Demonstração 5
+ Pessoa de Demonstração 20
+(2 rows)
+
+Etapa 5: validação de dados e automações
+DO
+    table_name    | rows
+------------------+------
+ demand_events    |   28
+ demands          |   30
+ grant_audit      |   47
+ organizations    |   20
+ page_events      |   22
+ page_versions    |   21
+ pages            |   20
+ permissions      |   13
+ role_permissions |   22
+ roles            |    4
+ user_roles       |   45
+ users            |   30
+(12 rows)
+
+          verification           | roles | permissions
+---------------------------------+-------+-------------
+ roles_and_permissions_exception |     4 |          13
+(1 row)
+
+         verification         | validated_constraints
+------------------------------+-----------------------
+ constraints_and_foreign_keys |                    49
+(1 row)
+
+Etapa 6: configuração de papéis e privilégios
+DO
+REVOKE
+GRANT
+GRANT
+REVOKE
+REVOKE
+REVOKE
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+CREATE VIEW
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+GRANT
+Etapa 7: testes de autorização e integridade
+SET
+ leitura_autorizada
+--------------------
+                 30
+(1 row)
+
+ indicador_autorizado
+----------------------
+                    4
+(1 row)
+
+DO
+RESET
+SET
+         status          | urgency |       service        | demand_total
+-------------------------+---------+----------------------+--------------
+ Aceita para atendimento | HIGH    | apoio administrativo |            1
+ Aceita para atendimento | HIGH    | comercialização      |            1
+ Aceita para atendimento | HIGH    | comunicação          |            1
+ Aceita para atendimento | HIGH    | formação             |            1
+ Aceita para atendimento | HIGH    | parceria             |            1
+ Aceita para atendimento | MEDIUM  | formação             |            1
+ Cancelada               | LOW     | apoio administrativo |            1
+ Cancelada               | LOW     | comercialização      |            1
+ Cancelada               | LOW     | comunicação          |            1
+ Cancelada               | LOW     | formação             |            1
+ Cancelada               | LOW     | parceria             |            1
+ Concluída               | MEDIUM  | apoio administrativo |            1
+ Concluída               | MEDIUM  | comercialização      |            1
+ Concluída               | MEDIUM  | comunicação          |            2
+ Concluída               | MEDIUM  | formação             |            1
+ Concluída               | MEDIUM  | parceria             |            1
+ Em atendimento          | LOW     | apoio administrativo |            1
+ Em atendimento          | LOW     | comercialização      |            1
+ Em atendimento          | LOW     | comunicação          |            1
+ Em atendimento          | LOW     | formação             |            1
+ Em atendimento          | LOW     | parceria             |            1
+ Pendente                | MEDIUM  | apoio administrativo |            1
+ Pendente                | MEDIUM  | comercialização      |            1
+ Pendente                | MEDIUM  | formação             |            1
+ Pendente                | MEDIUM  | parceria             |            1
+ Recusada                | HIGH    | apoio administrativo |            1
+ Recusada                | HIGH    | comercialização      |            1
+ Recusada                | HIGH    | comunicação          |            1
+ Recusada                | HIGH    | formação             |            1
+ Recusada                | HIGH    | parceria             |            1
+(30 rows)
+
+ published_pages_for_reporting
+-------------------------------
+                            19
+(1 row)
+
+DO
+RESET
+SET
+CREATE TABLE
+DROP TABLE
+RESET
+        result
+-----------------------
+ security_tests_passed
+(1 row)
+
+    table_name    | rows
+------------------+------
+ demand_events    |   29
+ demands          |   31
+ grant_audit      |   47
+ organizations    |   20
+ page_events      |   22
+ page_versions    |   21
+ pages            |   20
+ permissions      |   13
+ role_permissions |   22
+ roles            |    4
+ user_roles       |   45
+ users            |   30
+(12 rows)

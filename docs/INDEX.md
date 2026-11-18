@@ -1,6 +1,6 @@
 # Índice da documentação — ITES
 
-**Situação:** a proposta da base de dados foi validada pelo responsável do projeto nesta conversa. A implementação do MVP e sua validação local estão em andamento; os artefatos acadêmicos ainda não foram reconciliados com o schema integrado. O PDF original de requisitos e o modelo institucional não foram localizados; a especificação reproduzida no pedido do projeto é a fonte de requisitos utilizada.
+**Situação:** a proposta da base de dados foi validada pelo responsável do projeto. O modelo acadêmico, as consultas, rotinas, privilégios e contas foram executados em PostgreSQL 16 com evidências; os quatro papéis e as treze permissões são uma exceção semântica documentada ao mínimo de 20. Esses artefatos ainda não foram reconciliados com o schema integrado. O PDF original de requisitos e o modelo institucional não foram localizados; a especificação reproduzida no pedido é a fonte utilizada.
 
 - [Auditoria do repositório](architecture/audit.md)
 - [Especificação de requisitos](requirements/specification.md)
@@ -8,7 +8,9 @@
 - [Integração com o editor de páginas](builder/integration.md)
 - [Proposta da base de dados](database/technical.md)
 - [Modelo lógico (imagem)](database/logical-model.svg)
-- [Scripts SQL](../database/coursework/)
+- [Scripts SQL e execução reprodutível](../database/coursework/)
+- [Evidência PostgreSQL 16](database/evidence/coursework-validation-postgresql16.md)
+- [Evidência de contas e privilégios](database/evidence/database-users-validation-postgresql16.txt)
 - [Roteiro de entrega e validação](plans/delivery.md)
 - [Situação atual](CHECKPOINT.md)
 

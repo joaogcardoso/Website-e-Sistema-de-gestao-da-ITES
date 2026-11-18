@@ -39,6 +39,7 @@ Os testes integrados executam as rotas com autenticação real e PostgreSQL: sol
 - Frontend: `npm run typecheck`, `npm run lint -- --max-warnings=0`, `npm test` (50 aprovados) e `npm run build` passaram após as telas ITES.
 - Backend: `./mvnw --batch-mode verify`, em contêiner JDK 25, aprovou 40 testes (zero falhas/erros). Flyway aplicou V1–V23 pelo fluxo real da aplicação em PostgreSQL 16 limpo.
 - Docker Compose: configuração e build das imagens passaram. A execução local deixou PostgreSQL, API e web saudáveis; foram verificados HTML em pt-BR, sete páginas públicas e HTTP 401 em endpoint protegido. Banco/API sem portas públicas. A aplicação registrou 23 migrações e 11 permissões iniciais.
+- Banco acadêmico: `database/coursework/run_all.sql` executado em PostgreSQL 16 limpo; as 11 consultas, cinco procedures, três functions, três triggers, constraints e papéis foram validados. As tabelas com dados operacionais têm ao menos 20 registros; `roles=4` e `permissions=13` são exceções semânticas documentadas. Quatro contas LOGIN também foram autenticadas em contêiner descartável.
 - O workflow foi analisado sintaticamente; os passos Compose/smoke e a retenção de um registro após recriação foram executados localmente. A pipeline ainda precisa de execução no GitHub. A branch protection não pode ser ativada por este checkout e depende de configuração administrativa no GitHub.
 
 ## Limitações e riscos conhecidos
@@ -46,7 +47,7 @@ Os testes integrados executam as rotas com autenticação real e PostgreSQL: sol
 1. A integração base trouxe 774 arquivos e mais de 100 mil linhas do VH Studio. Revisar o diff e remover somente funcionalidades realmente dispensáveis depois de mapear suas dependências, mantendo a aplicação única e sem diretórios por idade.
 2. Cadastro exige e-mail de confirmação. Com `MAILER_ENABLED=false`, o provedor descarta mensagens e novas contas não concluem cadastro. O guia local precisa de credencial válida do Resend ou de um mecanismo local seguro de entrega de links.
 3. A configuração do banco na aplicação usa uma conta proprietária para Flyway e runtime; privilégios mínimos ainda não foram implementados na stack Compose. Separar credenciais de migração e runtime e verificar acesso por tabela/rotina.
-4. Os scripts acadêmicos em `database/coursework/` ainda são um modelo separado e não correspondem ao esquema real V1–V23. O diagrama também não cobre as 35 tabelas físicas atuais. Reconciliar consultas, rotinas, carga de 20 registros, modelo e documentação com a base efetiva; não manter duas fontes autoritativas de migração.
+4. Os scripts acadêmicos em `database/coursework/` e o diagrama foram executados em PostgreSQL 16 dedicado com evidência real. Continuam como modelo separado e não correspondem às 35 tabelas físicas do produto. Quatro papéis e 13 permissões não chegam a 20 por serem catálogos finitos e semânticos; obter aceite acadêmico dessa exceção.
 5. A trilha de auditoria de transições é escrita pelo serviço na mesma transação. O usuário runtime de banco pode fazer DML direto; separar privilégios e impedir alteração de situação sem histórico.
 6. A UI de editor integra operações e renderização de blocos do `web-builder`; persistência/reabertura/publicação foi validada em teste integrado. A persistência de volume foi validada com registro sentinela após recriação; ainda não foi feita automação de navegador real.
 7. Notícias, eventos, publicações, biblioteca e conteúdo institucional ainda são cartões estáticos; apenas páginas institucionais versionadas podem ser editadas pelo editor.
@@ -55,7 +56,7 @@ Os testes integrados executam as rotas com autenticação real e PostgreSQL: sol
 ## Próximos passos para retomar
 
 1. Configurar no GitHub `CI / ci-success` como verificação obrigatória de PR e confirmar execução real da pipeline.
-2. Reconciliar o banco acadêmico, rotinas, carga de dados, privilégios, modelo e evidências com o schema operacional efetivo.
+2. Reconciliar consultas, rotinas, carga de dados, privilégios e diagrama acadêmico com o schema operacional efetivo, sem criar uma segunda fonte de migração.
 3. Executar testes de navegador, acessibilidade e persistência do volume após recriação.
 4. Separar usuário/credenciais de runtime e migração do PostgreSQL.
 5. Configurar segredos e ambiente protegido do Dokploy; validar implantação real em VPS e plano de rollback.

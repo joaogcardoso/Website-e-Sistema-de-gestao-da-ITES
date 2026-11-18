@@ -23,8 +23,8 @@ A arquitetura executável está em `web/`, `server/` e `database/`. A base de au
 
 ## Pendências
 
-- Os scripts acadêmicos em `database/coursework/` e o diagrama não estão reconciliados com todo o esquema físico integrado do `web-builder` e da ITES; evidências acadêmicas completas continuam pendentes.
-- As permissões do banco de dados em runtime usam a conta proprietária; separar credenciais de migração/runtime antes de produção.
+- Os scripts acadêmicos em `database/coursework/` e o diagrama foram executados em PostgreSQL 16, com evidências de consultas, rotinas, permissões e contas LOGIN. O modelo permanece separado das 35 tabelas operacionais; 4 papéis e 13 permissões são exceção semântica documentada e aguardam aceite do orientador.
+- As permissões do banco de dados em runtime da aplicação ainda usam a conta proprietária; separar credenciais de migração/runtime antes de produção.
 - Cadastro por e-mail exige chave e domínio Resend válidos; sem envio de e-mail, novas contas não completam a confirmação.
 - Não foram validados testes de navegador ponta a ponta, acessibilidade manual nem publicação em Dokploy/VPS.
 - A proteção da branch não pode ser definida por arquivo. Administrador do GitHub precisa tornar `CI / ci-success` obrigatória em `main`, exigir PR e branch atualizada.

@@ -174,6 +174,53 @@ O arquivo `database/coursework/08_provision_users.sql` cria contas LOGIN associa
 
 Aplicação, permissões de negócio e papéis do PostgreSQL são camadas diferentes. As permissões da aplicação determinam quem pode decidir demandas; as roles do banco limitam o que uma conexão técnica consegue fazer. Os scripts negam acesso PUBLIC, usam privilégios por coluna/tabela, restringem funções/procedimentos e disponibilizam relatórios somente por agregação. As verificações executam `SET ROLE` para testar acesso autorizado e negações de escrita, leitura sensível, DDL e integridade referencial.
 
+### Justificativa dos mecanismos adotados
+
+Os mecanismos de segurança foram definidos para limitar cada conexão às
+operações necessárias à sua função, separar as atividades da aplicação das
+tarefas administrativas e preservar a integridade e a rastreabilidade dos
+dados. Os privilégios são concedidos a papéis de grupo (`NOLOGIN`); as contas
+de conexão recebem o papel correspondente. Essa separação facilita a
+administração e reduz a necessidade de conceder privilégios individualmente
+a cada conta.
+
+| Mecanismo | Justificativa e importância |
+|---|---|
+| `ites_runtime` | Representa a conexão operacional da aplicação. Recebe permissões específicas para as operações necessárias e executa mudanças de situação por meio de procedures. Não pode alterar diretamente o status das demandas, apagar o histórico de decisões nem criar objetos no schema. Isso reduz o risco de alterações fora das regras de negócio e ajuda a manter a rastreabilidade. |
+| `ites_reporting` | Destina-se a consultas de relatórios. A leitura é concedida sobre uma visão agregada, em vez de sobre as tabelas detalhadas. O objetivo é disponibilizar indicadores sem expor registros operacionais ou credenciais a quem só precisa consultar resultados consolidados. |
+| `ites_migration` | É reservado à execução controlada de migrações e alterações de estrutura. Separá-lo do papel de execução da aplicação diminui o impacto de uma falha ou comprometimento da conexão operacional e evita que operações de rotina alterem o schema. |
+| `ites_database_admin` | Destina-se à administração dos objetos do banco. Seus privilégios são amplos; por isso, esse papel não deve ser concedido à conta usada pela aplicação nem a usuários que precisem apenas consultar ou operar dados. |
+| Revogação de privilégios de `PUBLIC` | Evita que todas as contas do banco recebam acesso aos objetos por meio de permissões públicas. Os acessos são concedidos explicitamente aos papéis que precisam deles. |
+| Privilégios sobre tabelas, colunas e sequences | Restringem quais operações cada papel pode realizar. Por exemplo, o runtime pode atualizar apenas determinados campos em algumas tabelas e não pode mudar diretamente o status de uma demanda. Isso aplica o princípio do menor privilégio. |
+| Visão `demand_reporting` | Expõe apenas os campos agrupados necessários para relatórios. Combinada com a ausência de acesso do papel de relatórios às tabelas detalhadas, reduz a exposição de dados que não são necessários à atividade de análise. |
+| Procedures autorizadas | Permitem que o runtime execute operações específicas, como transicionar uma demanda ou publicar uma página, sem receber permissão irrestrita para alterar os respectivos campos diretamente. As procedures centralizam a operação e permitem aplicar as validações definidas para o fluxo. |
+| Chaves e restrições do schema | PKs, FKs, `CHECK`, `UNIQUE` e `NOT NULL` impedem dados inconsistentes, referências inexistentes e valores fora das condições definidas. Essas regras são aplicadas pelo banco, inclusive quando a operação não parte da interface da aplicação. |
+| Testes de autorização e integridade | Os scripts de teste verificam operações permitidas e tentativas que devem ser recusadas. Isso fornece evidência de que os privilégios e restrições configurados estão funcionando conforme esperado. |
+
+As contas de conexão são provisionadas por
+`database/coursework/08_provision_users.sql`. O script solicita as senhas
+interativamente por meio de `\password`; elas não devem ser incluídas nos
+scripts versionados. A evidência de provisionamento e de tentativas
+autorizadas e negadas está em
+`docs/database/evidence/database-users-validation-postgresql16.txt`.
+Os testes dos papéis e das restrições estão em
+`database/coursework/07_security_tests.sql`.
+
+#### Observação sobre acesso aos dados de usuários
+
+No estado atual, `ites_runtime` recebe `SELECT` sobre a tabela `users`.
+Como essa tabela contém `password_hash`, esse privilégio também permite que
+o papel leia essa coluna. Portanto, não se deve afirmar que o runtime está
+impedido de consultar hashes de senha. O papel `ites_reporting`, por outro
+lado, não recebe acesso à tabela `users`, e o teste de segurança verifica
+essa restrição.
+
+Se a política desejada for impedir também o runtime de ler `password_hash`,
+revise os privilégios em `database/coursework/05_security.sql` e conceda
+acesso apenas às colunas de `users` necessárias às operações da aplicação.
+Depois, atualize os testes de segurança e gere uma nova evidência antes de
+documentar essa proteção como implementada.
+
 ## Evidências, limites e próximos passos
 
 A validação limpa em `postgres:16-alpine` executou criação, carga, as 11 consultas, funções, procedimentos, gatilhos, grants, testes positivos/negativos e contagens. As evidências estão na [transcrição de execução](evidence/coursework-validation-postgresql16.txt) e na [validação das contas LOGIN](evidence/database-users-validation-postgresql16.txt). As contagens finais após smoke de segurança foram: users 30; roles 4; permissions 13; user_roles 45; role_permissions 22; organizations 20; demands 31; demand_events 29; pages 20; page_versions 21; page_events 22; grant_audit 47. O conjunto possui 49 constraints validadas.

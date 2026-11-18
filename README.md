@@ -31,4 +31,5 @@ React + TypeScript (frontend), Spring Boot (API), PostgreSQL (banco de dados) e 
 
 ## Equipe
 
-_[nomes dos integrantes]_
+_[Kauã Fiuza Clemente](https://github.com/kauafiuza)_
+_[Victor Hugo Lima Monteiro](https://github.com/vhlima1008)_

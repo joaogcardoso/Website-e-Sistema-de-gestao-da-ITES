@@ -2,6 +2,7 @@
 
 ## Situação inicial
 
+O `web-builder` implementa o VH Studio com React, TypeScript e Vite no frontend; Spring Boot, Java, `JdbcTemplate` e Flyway no backend; PostgreSQL e Docker Compose. O editor usa `web/src/pages/editor/lib/{document,use-builder,properties}.ts`, catálogo de blocos em `web/src/utils/blocks/`, `Canvas`, `PropertyEditor` e `PreviewPage`. Os serviços de projeto, publicação, modelos, organizações e concessões persistem revisões e publicações. As migrações Flyway V1–V22 abrangem usuários, sessões, projetos, organizações, concessões, modelos, publicações e auditoria. Há testes e CI.
 O repositório começou apenas com uma estrutura básica: um README e cinco arquivos de marcação, sem aplicação, sem banco de dados, sem testes e sem arquivos de configuração. Os comentários desses arquivos indicavam a finalidade das pastas `docs` (documentação), `database` (banco de dados) e `modelos` (modelos de dados). Essas finalidades foram mantidas na documentação, nos scripts SQL e na imagem do modelo. Os arquivos `src` e `tests` estavam vazios. Os arquivos de marcação foram removidos para que as pastas pudessem usar esses nomes.
 
 ## Projeto de referência: `web-builder` (VH Studio)

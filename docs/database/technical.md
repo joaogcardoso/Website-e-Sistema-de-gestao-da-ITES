@@ -56,6 +56,7 @@ Os papéis do banco de dados são diferentes das permissões dos usuários dentr
 
 ## Evidências
 
+Uma validação exploratória em PostgreSQL 17 foi executada; consulte [evidências](evidence/validation-postgresql17.md). Ainda é necessário registrar saídas reais em PostgreSQL 16 para produção e executar os cenários restantes. Registrar saídas reais do `psql` para criação, contagem, 11 consultas, três procedimentos, funções, gatilhos, privilégios e restrições. Comparar `information_schema` com a imagem. Os hashes demonstrativos não permitem autenticação.
 Nenhum script foi executado até agora. Devem ser registradas as saídas reais do `psql` para: criação das tabelas, contagens, as 11 consultas, as 3 procedures, 3 functions e 3 triggers, os privilégios e as restrições. Também é preciso comparar o `information_schema` com o diagrama. As senhas de demonstração não permitem login.
 
 ## Ajustes planejados

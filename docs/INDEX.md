@@ -17,3 +17,4 @@ A organização preserva os nomes `docs` e `database` previstos no repositório.
 - [Contribuição](../CONTRIBUTING.md)
 - [Modelo de pull request](../.github/pull_request_template.md)
 A organização do repositório mantém as pastas `docs` (documentação) e `database` (scripts do banco de dados). Os arquivos de texto que existiam inicialmente nesses caminhos apenas indicavam a finalidade de cada pasta; ver a auditoria.
+- [Integração da base executável](architecture/implementation.md)

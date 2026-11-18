@@ -1,0 +1,43 @@
+{
+  "id": "vh-about",
+  "name": "Portfólio — Perfil editorial",
+  "category": "vh-about",
+  "categoryName": "Portfólio",
+  "variant": "compact-profile",
+  "description": "Seção escura e compacta com retrato circular, apresentação e conteúdo editorial.",
+  "defaults": {
+    "eyebrow": "Sobre",
+    "title": "Victor Hugo",
+    "description": "Apaixonado por criar produtos inovadores de ponta a ponta, minha especialidade é entregar soluções robustas e performáticas.\n\nAtualmente curso Bacharelado em Engenharia da Computação pelo Instituto Federal do Rio de Janeiro (IFRJ), desde abril de 2025, com atuação no desenvolvimento de soluções digitais utilizando as tecnologias Java (Spring Boot), Node.js, Python e React (TypeScript). Tenho interesse particular em aplicações personalizadas e em arquiteturas escaláveis e performáticas.\n\nMeu envolvimento com pesquisa e desenvolvimento teve início ainda durante a formação técnica, por meio da bolsa Jovem Talento concedida pela FAPERJ (julho de 2023 a dezembro de 2024), período em que desenvolvi o MVP da plataforma #MostraTech em WordPress com Elementor, responsável por centralizar as bolsas de pesquisa do IFRJ – campus Niterói, reunindo aproximadamente dez projetos submetidos. Em 2024, fui reconhecido com o prêmio de Solução em Destaque (Top 15) na Olimpíada de Inovação do Agronegócio (OiAgro) pela solução TilApp e, na sequência, tornei-me Bolsista de Iniciação Científica Júnior pelo CNPq (maio a agosto de 2024), atuando no desenvolvimento de um aplicativo móvel de educação financeira com React Native, Node.js e Supabase.\n\nProfissionalmente, atuo desde março de 2026 como Estagiário de Desenvolvimento na Leste Telecom, onde desenvolvo e mantenho aplicações corporativas em Java Spring Boot e React TypeScript, utilizadas diariamente por cerca de 150 colaboradores. Anteriormente, atuei como Desenvolvedor Júnior na Ventrium Aceleradora de Crescimento (setembro de 2025 a fevereiro de 2026), onde implementei interfaces em React e TypeScript aplicando boas práticas de código reutilizável.",
+    "button": "Leia mais",
+    "href": "#sobre",
+    "imageUrl": "",
+    "imageAlt": "Foto de perfil de Victor Hugo",
+    "layoutWidth": "full",
+    "layoutGutter": 0,
+    "blockAnimation": "fade-up",
+    "items": [
+      { "id": "skill-java", "title": "Java", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-spring", "title": "Spring Boot", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-node", "title": "Node.js", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-python", "title": "Python", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-react", "title": "React", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-typescript", "title": "TypeScript", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-tailwind", "title": "Tailwind CSS", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-mysql", "title": "MySQL", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-docker", "title": "Docker", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "skill-figma", "title": "Figma", "description": "", "href": "", "value": "skill", "features": [] },
+      { "id": "profile-github", "title": "Ver perfil no GitHub", "description": "", "href": "https://github.com/vhlima1008", "value": "github", "features": [] },
+      { "id": "profile-linkedin", "title": "Ver perfil no LinkedIn", "description": "", "href": "https://www.linkedin.com/in/vhlima1008", "value": "linkedin", "features": [] },
+      { "id": "profile-cv", "title": "Baixar currículo", "description": "", "href": "https://vhlima.com.br/Victor%20Hugo%20Lima%20Monteiro%20-%20Curriculo%20Vitae%20(CV).pdf", "value": "cv", "features": [] }
+    ]
+  },
+  "editableProperties": ["eyebrow", "title", "description", "button", "imageUrl", "imageAlt", "items"],
+  "export": {
+    "componentName": "VhAboutBlock",
+    "sourceFile": "sections/vh-about/vh-about.tsx",
+    "dependencies": ["react"],
+    "tailwindVersion": 4
+  },
+  "order": 202
+}

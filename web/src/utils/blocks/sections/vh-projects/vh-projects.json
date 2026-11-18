@@ -1,0 +1,40 @@
+{
+  "id": "vh-projects",
+  "name": "Portfólio — Projetos em mosaico",
+  "category": "vh-projects",
+  "categoryName": "Portfólio",
+  "variant": "masonry-text-cards",
+  "description": "Lista editorial de projetos em duas colunas, com cartões textuais e tecnologias.",
+  "defaults": {
+    "eyebrow": "Trabalhos",
+    "title": "Projetos recentes",
+    "description": "Uma seleção de produtos, APIs e experimentos publicados no GitHub, com repositórios fixados em destaque.",
+    "button": "Ver todos no GitHub",
+    "href": "https://github.com/vhlima1008",
+    "itemsApiUrl": "",
+    "itemsApiPath": "",
+    "itemsApiTitleKey": "name",
+    "itemsApiDescriptionKey": "description",
+    "itemsApiHrefKey": "html_url",
+    "itemsApiValueKey": "language",
+    "itemsApiFeaturesKey": "topics",
+    "layoutWidth": "full",
+    "layoutGutter": 0,
+    "blockAnimation": "fade-up",
+    "items": [
+      { "id": "project-leetcode", "title": "Leetcode", "description": "My LeetCode solutions explained", "href": "https://github.com/vhlima1008/leetcode", "value": "Python", "features": ["Fixado", "java", "postgresql", "react"] },
+      { "id": "project-data-formatters", "title": "Data Formatters", "description": "Utility library for formatting data using Intl API base.", "href": "https://github.com/vhlima1008/data-formatters", "value": "TypeScript", "features": ["Fixado", "library", "npm-package", "typescript"] },
+      { "id": "project-git-user", "title": "Git User", "description": "Manage multiple Git's Accounts on Linux.", "href": "https://github.com/vhlima1008/git-user", "value": "Shell", "features": ["linux", "shell", "shell-script"] },
+      { "id": "project-ev3-line-follower", "title": "Ev3 Line Follower", "description": "Um rápido seguidor de linha utilizando o Open Roberta Lab", "href": "https://github.com/vhlima1008/ev3-line-follower", "value": "", "features": ["ev3", "ev3dev", "openroberta-lab"] },
+      { "id": "project-algorithms", "title": "Algorithms", "description": "Didatic algorithms collection made in Python", "href": "https://github.com/vhlima1008/algorithms", "value": "Python", "features": ["dsa-algorithm", "python"] }
+    ]
+  },
+  "editableProperties": ["eyebrow", "title", "description", "button", "href", "items", "itemsApiUrl", "itemsApiPath", "itemsApiTitleKey", "itemsApiDescriptionKey", "itemsApiHrefKey", "itemsApiValueKey", "itemsApiFeaturesKey"],
+  "export": {
+    "componentName": "VhProjectsBlock",
+    "sourceFile": "sections/vh-projects/vh-projects.tsx",
+    "dependencies": ["react", "lucide-react"],
+    "tailwindVersion": 4
+  },
+  "order": 204
+}

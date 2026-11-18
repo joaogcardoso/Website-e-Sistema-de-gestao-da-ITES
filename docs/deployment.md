@@ -1,0 +1,7 @@
+# Implantação proposta com Docker Compose e Dokploy
+
+O `web-builder` usa imagens multietapas: Node/Nginx para frontend e JDK/JRE para backend. A plataforma ITES seguirá essa separação, com PostgreSQL 16 em volume persistente. O Nginx encaminhará `/api/` ao serviço `server` pela rede interna; o backend usará `database:5432`. O banco não terá porta pública em produção. A API terá verificação `/actuator/health`, e o frontend, `/health`. Inicialização aguardará banco saudável; Flyway aplicará migrações controladas. Dados demonstrativos não serão carregados automaticamente.
+
+Variáveis previstas estão em `.env.example`. Segredos devem ser definidos no ambiente do Dokploy; `AUTH_COOKIE_SECURE=true` exige HTTPS e domínio configurado. Configure o serviço Compose no Dokploy apontando para o repositório e o arquivo `compose.yaml` após sua implementação e validação. Associe domínio e proxy reverso ao serviço `web`, configure TLS e restrinja acesso à API e ao banco conforme a infraestrutura. Verifique logs e health checks após cada atualização. Faça backup do volume PostgreSQL antes de migrações; para restauração, interrompa gravações, restaure backup testado e reinicie serviços. Reversão de imagem não implica reversão segura de esquema: migrações precisam de estratégia compatível.
+
+**Estado atual:** os diretórios de aplicação e o arquivo Compose ainda não foram implementados. Nenhum build Docker nem implantação Dokploy foi validado. Este documento especifica o procedimento e suas pré-condições, sem afirmar prontidão de produção.

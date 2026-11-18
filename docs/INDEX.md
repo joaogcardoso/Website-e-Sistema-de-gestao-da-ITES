@@ -13,3 +13,6 @@ Estado: proposta pendente de aprovação institucional do banco de dados. O PDF 
 - [Relatório do marco documental](CHECKPOINT.md)
 
 A organização preserva os nomes `docs` e `database` previstos no repositório. Os arquivos simples que antes ocupavam esses caminhos continham apenas comentários sobre a finalidade das pastas; consulte a auditoria. Não há diretórios classificados pela idade da implementação.
+- [Implantação](deployment.md)
+- [Contribuição](../CONTRIBUTING.md)
+- [Modelo de pull request](../.github/pull_request_template.md)

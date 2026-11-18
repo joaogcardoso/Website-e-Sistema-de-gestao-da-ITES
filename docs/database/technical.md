@@ -122,6 +122,45 @@ Os procedimentos de escrita usam `SECURITY DEFINER` com `search_path` fixo. Em P
 | `event_immutable` | `demand_events`, antes de UPDATE/DELETE | Impede adulterar o histórico de decisão. |
 | `page_publish_audit` | `pages`, após alterar versão publicada | Exige ator transacional e registra publicação ou retirada. |
 
+### Importância e justificativa das rotinas
+
+As rotinas foram implementadas para centralizar regras de negócio no banco,
+preservar a integridade dos dados e registrar operações importantes. Com isso,
+as regras não dependem exclusivamente da interface da aplicação, e operações
+relacionadas podem ser executadas de forma consistente.
+
+#### Functions
+
+| Função | Importância e justificativa |
+|---|---|
+| `demand_count(p_status)` | Fornece a quantidade de demandas em uma situação específica para indicadores e relatórios. Centralizar essa contagem evita que diferentes partes do sistema implementem o mesmo cálculo de formas divergentes. |
+| `requester_demand_count(p_user_id)` | Permite consultar quantas demandas foram registradas por uma pessoa, inclusive retornando zero quando não há registros. É útil para acompanhar a participação dos solicitantes sem repetir a consulta em cada consumidor. |
+| `published_page_count()` | Informa quantas páginas possuem uma versão publicada. O indicador facilita o acompanhamento do conteúdo disponível ao público e é reutilizável em relatórios. |
+
+#### Procedures
+
+| Procedimento | Importância e justificativa |
+|---|---|
+| `transition_demand(...)` | Centraliza a mudança de situação de uma demanda, exige justificativa e registra o evento correspondente. A atualização e o registro de histórico ocorrem na mesma operação, reduzindo o risco de uma decisão ficar sem auditoria ou de o histórico divergir da situação atual. |
+| `publish_page(...)` | Publica uma versão pertencente à página informada. A validação evita associar uma versão de outra página e a operação aciona o registro de auditoria da publicação. |
+| `unpublish_page(...)` | Retira uma página de publicação sem apagar suas versões. Isso permite remover conteúdo do acesso público e preservar o histórico da ação. |
+| `assign_role(...)` | Concede um papel a um usuário e registra a concessão quando ela efetivamente acontece. A operação evita entradas de auditoria duplicadas quando o vínculo já existe. |
+| `revoke_role(...)` | Remove um papel de um usuário e registra a revogação somente quando o vínculo existia. Assim, a trilha de auditoria representa alterações efetivamente realizadas. |
+
+#### Triggers
+
+| Gatilho | Importância e justificativa |
+|---|---|
+| `transition_guard` | Valida as transições de situação permitidas para uma demanda e atualiza `updated_at`. Como a regra é aplicada pelo banco, também protege a integridade quando uma atualização não passa pelo fluxo normal da aplicação. |
+| `event_immutable` | Impede a alteração ou exclusão dos eventos de decisão já registrados. A imutabilidade protege a confiabilidade do histórico e dificulta a adulteração posterior da trilha de auditoria. |
+| `page_publish_audit` | Registra a publicação ou retirada de uma página quando sua versão publicada muda e exige a identificação do ator. O evento é gravado junto da alteração, permitindo rastrear quem realizou a ação e qual versão foi envolvida. |
+
+Os procedimentos de escrita usam `SECURITY DEFINER` com `search_path` fixo,
+e os privilégios são concedidos por rotina conforme o papel do banco. Essa
+separação permite que operações autorizadas sejam executadas sem conceder
+acesso irrestrito às tabelas subjacentes. Os testes de funcionamento e de
+negação de acesso estão descritos nos scripts de validação e segurança.
+
 ## Administração, permissões e integridade — ADP3
 
 O script `database/coursework/05_security.sql` cria papéis de grupo sem login:

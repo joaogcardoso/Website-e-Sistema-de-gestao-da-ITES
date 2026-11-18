@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react"
 import { Card } from "@/components/motion/card"
 import { ShaderBackground } from "@/components/motion/shader-background"
 import { webPaths } from "@/router/helpers/route-paths"
-import symbol from "@/assets/brand/vh-symbol-editable.svg"
+import symbol from "@/assets/brand/ites-mark.svg"
 
 interface AuthShellProps {
   children: ReactNode
@@ -18,10 +18,10 @@ interface AuthShellProps {
 }
 
 const backgroundColors = [
-  "#4d65f9",
-  "#243f8f",
-  "#8a4cba",
-  "#273b68",
+  "#24724f",
+  "#174d38",
+  "#c78d26",
+  "#206747",
 ]
 
 const formStyles = [
@@ -66,10 +66,10 @@ function AuthBrand() {
   return (
     <Link
       to={webPaths.login}
-      aria-label="Builder VHStudio — entrar"
+      aria-label="ITES — entrar"
       className="mx-auto flex w-fit items-center gap-3 rounded-lg text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
     >
-      <span className="grid h-12 w-12 place-items-center rounded-full bg-[#4d65f9] bg-[image:var(--vh-brand-gradient)]">
+      <span className="grid h-12 w-12 place-items-center rounded-full bg-[#24724f]">
         <img
           src={symbol}
           alt=""
@@ -82,7 +82,7 @@ function AuthBrand() {
         className="text-[1.125rem] font-semibold tracking-tight"
         translate="no"
       >
-        Builder VHStudio
+        ITES
       </span>
     </Link>
   )

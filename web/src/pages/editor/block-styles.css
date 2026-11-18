@@ -88,18 +88,18 @@
 .builder-block :is(h1, h2, h3, h4) { font-family: var(--builder-heading-font, "Inter Variable"), system-ui, sans-serif; zoom: var(--builder-heading-scale, 1); }
 .builder-block [data-slot="card"] { border-radius: var(--builder-radius, 12px); box-shadow: var(--builder-shadow, none); }
 .builder-block :is([data-slot="button"], [data-slot="input"], [data-slot="textarea"], [data-slot="tabs-list"], [data-slot="tabs-trigger"]) { border-radius: var(--builder-radius, 8px); }
-.vh-media-reveal {
-  animation: vh-media-reveal 520ms ease-out both;
+.profile-media-reveal {
+  animation: profile-media-reveal 520ms ease-out both;
   will-change: opacity;
 }
 
-@keyframes vh-media-reveal {
+@keyframes profile-media-reveal {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vh-media-reveal {
+  .profile-media-reveal {
     animation: none;
     opacity: 1;
     will-change: auto;

@@ -1,5 +1,5 @@
-# builder.vhstudio
+# ITES · IFRJ Campus Niterói
 
-builder.vhstudio is a VH Studio visual page builder. Users can browse and arrange reusable sections, manage pages, preview responsive layouts, and export React/TypeScript project files. The current application routes lead to editing and preview rather than public documentation.
+Portal da Incubadora Tecnológica de Economia Solidária, com informações institucionais, iniciativas apoiadas, notícias, publicações e canais de contato.
 
-Brand reference: https://vhlima.com.br/
+O sistema também permite o envio e o acompanhamento de demandas. As áreas administrativas e os dados privados exigem autenticação e autorização.

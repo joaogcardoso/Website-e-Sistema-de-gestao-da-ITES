@@ -1,26 +1,27 @@
-# Auditoria do repositório
+# Auditoria da arquitetura ITES
 
-## Situação inicial
+## Estado do sistema
 
-O `web-builder` implementa o VH Studio com React, TypeScript e Vite no frontend; Spring Boot, Java, `JdbcTemplate` e Flyway no backend; PostgreSQL e Docker Compose. O editor usa `web/src/pages/editor/lib/{document,use-builder,properties}.ts`, catálogo de blocos em `web/src/utils/blocks/`, `Canvas`, `PropertyEditor` e `PreviewPage`. Os serviços de projeto, publicação, modelos, organizações e concessões persistem revisões e publicações. As migrações Flyway V1–V22 abrangem usuários, sessões, projetos, organizações, concessões, modelos, publicações e auditoria. Há testes e CI.
-O repositório começou apenas com uma estrutura básica: um README e cinco arquivos de marcação, sem aplicação, sem banco de dados, sem testes e sem arquivos de configuração. Os comentários desses arquivos indicavam a finalidade das pastas `docs` (documentação), `database` (banco de dados) e `modelos` (modelos de dados). Essas finalidades foram mantidas na documentação, nos scripts SQL e na imagem do modelo. Os arquivos `src` e `tests` estavam vazios. Os arquivos de marcação foram removidos para que as pastas pudessem usar esses nomes.
+A aplicação está organizada em `web/`, `server/` e `database/`, com documentação técnica em `docs/`. O frontend usa React, TypeScript e Vite. O backend usa Java, Spring Boot, Spring Security, JDBC e Flyway. O banco operacional é PostgreSQL e o ambiente local usa Docker Compose.
 
-## Projeto de referência: `web-builder` (VH Studio)
+O frontend concentra o portal público, as áreas de solicitantes e de administração e um editor visual de páginas institucionais. O backend fornece autenticação, autorização por concessões, regras de demandas, persistência de conteúdo, revisão e publicação. As migrações Flyway são a fonte operacional do esquema.
 
-O `web-builder` é um editor visual de sites já desenvolvido por um integrante da equipe, com:
+## Capacidades implementadas
 
-- **Frontend:** React, TypeScript e Vite;
-- **Backend:** Spring Boot, Java, JdbcTemplate e Flyway;
-- **Banco de dados:** PostgreSQL, com Docker Compose.
+- Cadastro, confirmação de e-mail, autenticação por sessão e gestão de conta.
+- Organizações, membros, papéis e permissões com validação no backend.
+- Envio, classificação, decisão, histórico e acompanhamento de demandas.
+- Páginas institucionais com rascunho, prévia, publicação e retirada do ar.
+- Catálogo controlado de blocos e propriedades validadas antes da persistência.
+- Compose com serviços web, API e banco, volume persistente e verificações de saúde.
 
-O editor usa os módulos `web/src/pages/editor/lib/{document,registry,use-builder,properties}.ts`, um catálogo de blocos, a área de edição (Canvas), o editor de propriedades (PropertyEditor) e a pré-visualização (PreviewPage). No backend, os serviços de projetos, publicações, modelos, organizações e permissões guardam revisões e publicações. As migrações Flyway V1 a V22 cobrem usuários, sessões, projetos, organizações, permissões por escopo, modelos, publicações e auditoria. O projeto tem testes e integração contínua.
+## Limites e riscos conhecidos
 
-## O que será reaproveitado
+- A navegação de notícias, eventos, biblioteca e publicações ainda contém conteúdo estático; o editor gerencia páginas institucionais versionadas.
+- A validação automatizada do frontend não substitui testes de navegador, acessibilidade manual ou revisão visual em dispositivos reais.
+- A implantação em uma VPS e a configuração de domínio, TLS, e-mail e backups dependem do ambiente operacional.
+- Os artefatos acadêmicos de banco de dados ainda precisam ser reconciliados com o esquema operacional completo antes de serem apresentados como modelo físico equivalente.
 
-- **Reaproveitar:** operações de documento, blocos selecionados, Canvas, editor de propriedades, pré-visualização e os conceitos de revisão e publicação.
-- **Adaptar:** as permissões por projeto e organização para os perfis da ITES, mantendo Spring Security, Flyway e PostgreSQL.
-- **Não usar:** funcionalidades de exportação e fluxos de produto do builder que não se aplicam à ITES.
+## Diretrizes de evolução
 
-## Riscos
-
-No início da auditoria, a aplicação específica da ITES ainda precisava ser desenvolvida. A proposta da base de dados foi posteriormente aprovada; a integração funcional foi registrada em [arquitetura executável](implementation.md). Permanecem riscos de acoplamento com a base ampla do builder e de reconciliação dos artefatos acadêmicos com o schema operacional.
+Manter uma única identidade e persistência, reforçar a segregação entre credenciais de migração e runtime, ampliar a cobertura ponta a ponta e atualizar esta auditoria quando os limites descritos forem resolvidos.

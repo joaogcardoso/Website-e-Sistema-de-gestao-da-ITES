@@ -121,13 +121,13 @@ import { PortfolioProjectsBlock as Block117 } from "./sections/portfolio-project
 import { BlogIndexBlock as Block118 } from "./sections/blog-index/blog-index"
 import { NavbarDockBlock as Block119 } from "./navbars/navbar-dock/navbar-dock"
 import { BackToTopBlock as Block120 } from "./sections/back-to-top/back-to-top"
-import { VhHeroBlock as Block121 } from "./sections/vh-hero/vh-hero"
-import { VhAboutBlock as Block122 } from "./sections/vh-about/vh-about"
-import { VhExperienceBlock as Block123 } from "./sections/vh-experience/vh-experience"
-import { VhProjectsBlock as Block124 } from "./sections/vh-projects/vh-projects"
-import { VhContactBlock as Block125 } from "./sections/vh-contact/vh-contact"
-import { NavbarVhDockBlock as Block126 } from "./navbars/navbar-vh-dock/navbar-vh-dock"
-import { VhBlogIndexBlock as Block127 } from "./sections/vh-blog-index/vh-blog-index"
+import { ProfileHeroBlock as Block121 } from "./sections/profile-hero/profile-hero"
+import { ProfileAboutBlock as Block122 } from "./sections/profile-about/profile-about"
+import { ProfileExperienceBlock as Block123 } from "./sections/profile-experience/profile-experience"
+import { ProfileProjectsBlock as Block124 } from "./sections/profile-projects/profile-projects"
+import { InstitutionalContactBlock as Block125 } from "./sections/institutional-contact/institutional-contact"
+import { EditorialDockNavbarBlock as Block126 } from "./navbars/navbar-editorial-dock/navbar-editorial-dock"
+import { EditorialBlogIndexBlock as Block127 } from "./sections/editorial-blog-index/editorial-blog-index"
 import { MotionTextRevealBlock as Block128 } from "./motion/motion-text-reveal/motion-text-reveal"
 import { MotionAnimatedBadgeBlock as Block129 } from "./motion/motion-animated-badge/motion-animated-badge"
 import { MotionLoaderBlock as Block130 } from "./motion/motion-loader/motion-loader"
@@ -276,13 +276,13 @@ export const blockComponents = {
   "blog-index": Block118,
   "navbar-dock": Block119,
   "back-to-top": Block120,
-  "vh-hero": Block121,
-  "vh-about": Block122,
-  "vh-experience": Block123,
-  "vh-projects": Block124,
-  "vh-contact": Block125,
-  "navbar-vh-dock": Block126,
-  "vh-blog-index": Block127,
+  "profile-hero": Block121,
+  "profile-about": Block122,
+  "profile-experience": Block123,
+  "profile-projects": Block124,
+  "institutional-contact": Block125,
+  "navbar-editorial-dock": Block126,
+  "editorial-blog-index": Block127,
   "motion-text-reveal": Block128,
   "motion-animated-badge": Block129,
   "motion-loader": Block130,
@@ -9090,21 +9090,21 @@ export const registry: Definition[] = [
     "group": "navigation"
   }, component: Block120 },
   { ...{
-    "id": "vh-hero",
+    "id": "profile-hero",
     "name": "Portfólio — Capa imersiva",
-    "category": "vh-hero",
+    "category": "profile-hero",
     "variant": "fullscreen-portrait",
     "description": "Capa de portfólio em tela inteira, com figura central, assinatura visual e gradiente azul-violeta.",
     "defaults": {
       "eyebrow": "",
-      "title": "Victor Hugo",
-      "description": "",
+      "title": "ITES",
+      "description": "Conheça as iniciativas, projetos e ações da ITES.",
       "button": "",
       "href": "#hero",
       "imageUrl": "",
-      "imageAlt": "Victor Hugo em seu portfólio",
+      "imageAlt": "Imagem institucional da ITES",
       "backgroundLogoUrl": "",
-      "backgroundLogoAlt": "Assinatura visual do portfólio",
+      "backgroundLogoAlt": "Identidade visual da ITES",
       "animateBackground": true,
       "layoutWidth": "full",
       "layoutGutter": 0,
@@ -9120,8 +9120,8 @@ export const registry: Definition[] = [
       "animateBackground"
     ],
     "export": {
-      "componentName": "VhHeroBlock",
-      "sourceFile": "sections/vh-hero/vh-hero.tsx",
+      "componentName": "ProfileHeroBlock",
+      "sourceFile": "sections/profile-hero/profile-hero.tsx",
       "dependencies": [
         "react",
         "lucide-react"
@@ -9131,128 +9131,23 @@ export const registry: Definition[] = [
     "group": "marketing"
   }, component: Block121 },
   { ...{
-    "id": "vh-about",
+    "id": "profile-about",
     "name": "Portfólio — Perfil editorial",
-    "category": "vh-about",
+    "category": "profile-about",
     "variant": "compact-profile",
     "description": "Seção escura e compacta com retrato circular, apresentação e conteúdo editorial.",
     "defaults": {
       "eyebrow": "Sobre",
-      "title": "Victor Hugo",
-      "description": "Apaixonado por criar produtos inovadores de ponta a ponta, minha especialidade é entregar soluções robustas e performáticas.\n\nAtualmente curso Bacharelado em Engenharia da Computação pelo Instituto Federal do Rio de Janeiro (IFRJ), desde abril de 2025, com atuação no desenvolvimento de soluções digitais utilizando as tecnologias Java (Spring Boot), Node.js, Python e React (TypeScript). Tenho interesse particular em aplicações personalizadas e em arquiteturas escaláveis e performáticas.\n\nMeu envolvimento com pesquisa e desenvolvimento teve início ainda durante a formação técnica, por meio da bolsa Jovem Talento concedida pela FAPERJ (julho de 2023 a dezembro de 2024), período em que desenvolvi o MVP da plataforma #MostraTech em WordPress com Elementor, responsável por centralizar as bolsas de pesquisa do IFRJ – campus Niterói, reunindo aproximadamente dez projetos submetidos. Em 2024, fui reconhecido com o prêmio de Solução em Destaque (Top 15) na Olimpíada de Inovação do Agronegócio (OiAgro) pela solução TilApp e, na sequência, tornei-me Bolsista de Iniciação Científica Júnior pelo CNPq (maio a agosto de 2024), atuando no desenvolvimento de um aplicativo móvel de educação financeira com React Native, Node.js e Supabase.\n\nProfissionalmente, atuo desde março de 2026 como Estagiário de Desenvolvimento na Leste Telecom, onde desenvolvo e mantenho aplicações corporativas em Java Spring Boot e React TypeScript, utilizadas diariamente por cerca de 150 colaboradores. Anteriormente, atuei como Desenvolvedor Júnior na Ventrium Aceleradora de Crescimento (setembro de 2025 a fevereiro de 2026), onde implementei interfaces em React e TypeScript aplicando boas práticas de código reutilizável.",
-      "button": "Leia mais",
+      "title": "Quem somos",
+      "description": "A Incubadora Tecnológica de Economia Solidária do IFRJ Campus Niterói apoia empreendimentos, coletivos e iniciativas comunitárias.\n\nPromovemos formação, articulação e desenvolvimento de soluções em diálogo com os territórios e com os princípios da economia solidária.",
+      "button": "",
       "href": "#sobre",
       "imageUrl": "",
-      "imageAlt": "Foto de perfil de Victor Hugo",
+      "imageAlt": "Imagem institucional da ITES",
       "layoutWidth": "full",
       "layoutGutter": 0,
       "blockAnimation": "fade-up",
-      "items": [
-        {
-          "id": "skill-java",
-          "title": "Java",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-spring",
-          "title": "Spring Boot",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-node",
-          "title": "Node.js",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-python",
-          "title": "Python",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-react",
-          "title": "React",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-typescript",
-          "title": "TypeScript",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-tailwind",
-          "title": "Tailwind CSS",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-mysql",
-          "title": "MySQL",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-docker",
-          "title": "Docker",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "skill-figma",
-          "title": "Figma",
-          "description": "",
-          "href": "",
-          "value": "skill",
-          "features": []
-        },
-        {
-          "id": "profile-github",
-          "title": "Ver perfil no GitHub",
-          "description": "",
-          "href": "https://github.com/vhlima1008",
-          "value": "github",
-          "features": []
-        },
-        {
-          "id": "profile-linkedin",
-          "title": "Ver perfil no LinkedIn",
-          "description": "",
-          "href": "https://www.linkedin.com/in/vhlima1008",
-          "value": "linkedin",
-          "features": []
-        },
-        {
-          "id": "profile-cv",
-          "title": "Baixar currículo",
-          "description": "",
-          "href": "https://vhlima.com.br/Victor%20Hugo%20Lima%20Monteiro%20-%20Curriculo%20Vitae%20(CV).pdf",
-          "value": "cv",
-          "features": []
-        }
-      ]
+      "items": []
     },
     "editableProperties": [
       "eyebrow",
@@ -9264,8 +9159,8 @@ export const registry: Definition[] = [
       "items"
     ],
     "export": {
-      "componentName": "VhAboutBlock",
-      "sourceFile": "sections/vh-about/vh-about.tsx",
+      "componentName": "ProfileAboutBlock",
+      "sourceFile": "sections/profile-about/profile-about.tsx",
       "dependencies": [
         "react"
       ],
@@ -9274,121 +9169,21 @@ export const registry: Definition[] = [
     "group": "content"
   }, component: Block122 },
   { ...{
-    "id": "vh-experience",
+    "id": "profile-experience",
     "name": "Portfólio — Experiência em acordeão",
-    "category": "vh-experience",
+    "category": "profile-experience",
     "variant": "accordion-list",
     "description": "Trajetória, formação e certificações organizadas no acordeão compacto da referência.",
     "defaults": {
-      "eyebrow": "Trajetória",
-      "title": "Experiência",
-      "description": "Da sala de aula à produção: uma linha do tempo profissional, acadêmica e de pesquisa.",
+      "eyebrow": "Atuação",
+      "title": "Como trabalhamos",
+      "description": "A incubação é construída em colaboração com cada iniciativa e respeita seus contextos e objetivos.",
       "button": "",
       "href": "#experiencia",
       "layoutWidth": "full",
       "layoutGutter": 0,
       "blockAnimation": "fade-up",
-      "items": [
-        {
-          "id": "career-ifrj",
-          "title": "IFRJ",
-          "description": "Bacharelado em Engenharia da Computação",
-          "href": "",
-          "value": "Instituto Federal do Rio de Janeiro (IFRJ) · Abril 2025 – Atual",
-          "features": [
-            "Formação em andamento com foco em engenharia de software, algoritmos e sistemas."
-          ]
-        },
-        {
-          "id": "career-leste",
-          "title": "Leste Telecom",
-          "description": "Estagiário de Desenvolvimento",
-          "href": "",
-          "value": "Leste Telecom · Março 2026 – Atual",
-          "features": [
-            "Desenvolve e mantém 3 aplicações corporativas em Java Spring Boot e React TypeScript, usadas diariamente por cerca de 150 colaboradores.",
-            "Refatora estruturas de banco de dados MySQL e otimiza queries, reduzindo em 50% o tempo médio de resposta de APIs Node.js em produção.",
-            "Resolveu um gargalo arquitetural em componente de listagem aninhada, reduzindo o tempo de resposta em 75% sem alterar o escopo funcional.",
-            "Documenta o front-end para o setor de TI, apoiando a modernização do ecossistema interno da empresa."
-          ]
-        },
-        {
-          "id": "career-ventrium",
-          "title": "Ventrium",
-          "description": "Desenvolvedor Júnior (Contrato)",
-          "href": "",
-          "value": "Ventrium Aceleradora de Crescimento · Setembro 2025 – Fevereiro 2026",
-          "features": [
-            "Implementou interfaces em React e TypeScript aplicando clean code e padrões reutilizáveis.",
-            "Introduziu o Mantine UI nos projetos da empresa, reduzindo em ~50% o tempo de desenvolvimento de novas telas.",
-            "Projetou protótipos interativos no Figma, alinhando requisitos funcionais e implementação técnica.",
-            "Reestruturou fluxos de navegação aplicando as Heurísticas de Nielsen."
-          ]
-        },
-        {
-          "id": "career-faperj",
-          "title": "FAPERJ",
-          "description": "Bolsista Jovem Talento",
-          "href": "",
-          "value": "FAPERJ · Julho 2023 – Dezembro 2024",
-          "features": [
-            "Desenvolveu o MVP da plataforma #MostraTech (WordPress + Elementor), centralizando as bolsas de pesquisa do IFRJ campus Niterói — cerca de 10 projetos submetidos.",
-            "Estruturou a base de conhecimento da plataforma via Echo Knowledge Base, com apoio de JavaScript para as ações do usuário."
-          ]
-        },
-        {
-          "id": "career-cnpq",
-          "title": "CNPq",
-          "description": "Bolsista de Iniciação Científica Júnior",
-          "href": "",
-          "value": "CNPq · Maio 2024 – Agosto 2024",
-          "features": [
-            "Desenvolveu um aplicativo móvel de educação financeira com React Native, Node.js e Supabase.",
-            "Integrou uma API externa de cotação de dólar comercial em tempo real.",
-            "Projetou interfaces no Figma seguindo boas práticas de UI/UX."
-          ]
-        },
-        {
-          "id": "career-oiagro",
-          "title": "OiAgro",
-          "description": "Solução em Destaque — TilApp",
-          "href": "",
-          "value": "Olimpíada de Inovação do Agronegócio (OiAgro) · Abril 2024",
-          "features": [
-            "Reconhecimento Top 15 de Solução em Destaque pela solução TilApp."
-          ]
-        },
-        {
-          "id": "career-aws",
-          "title": "AWS Academy",
-          "description": "AWS Academy Graduate",
-          "href": "",
-          "value": "AWS Academy Cloud Foundations · Janeiro 2025",
-          "features": [
-            "Certificação de 20 horas em fundamentos de computação em nuvem AWS."
-          ]
-        },
-        {
-          "id": "career-cisco",
-          "title": "Cisco NetAcad",
-          "description": "Cisco Networking Essentials",
-          "href": "",
-          "value": "Cisco NetAcad · Janeiro 2024",
-          "features": [
-            "Certificação de 70 horas em fundamentos de redes de computadores."
-          ]
-        },
-        {
-          "id": "career-monitoria",
-          "title": "IFRJ — Monitoria",
-          "description": "Aluno Monitor (voluntário)",
-          "href": "",
-          "value": "IFRJ — Educação Popular no IFRJ · Fevereiro 2023 – Dezembro 2023",
-          "features": [
-            "Ministrou aulas de apoio em Programação, Desenvolvimento Web, Banco de Dados e Algoritmos para turmas de 15 a 20 alunos do Técnico em Informática."
-          ]
-        }
-      ]
+      "items": []
     },
     "editableProperties": [
       "eyebrow",
@@ -9397,8 +9192,8 @@ export const registry: Definition[] = [
       "items"
     ],
     "export": {
-      "componentName": "VhExperienceBlock",
-      "sourceFile": "sections/vh-experience/vh-experience.tsx",
+      "componentName": "ProfileExperienceBlock",
+      "sourceFile": "sections/profile-experience/profile-experience.tsx",
       "dependencies": [
         "react",
         "lucide-react",
@@ -9409,17 +9204,17 @@ export const registry: Definition[] = [
     "group": "content"
   }, component: Block123 },
   { ...{
-    "id": "vh-projects",
+    "id": "profile-projects",
     "name": "Portfólio — Projetos em mosaico",
-    "category": "vh-projects",
+    "category": "profile-projects",
     "variant": "masonry-text-cards",
     "description": "Lista editorial de projetos em duas colunas, com cartões textuais e tecnologias.",
     "defaults": {
-      "eyebrow": "Trabalhos",
-      "title": "Projetos recentes",
-      "description": "Uma seleção de produtos, APIs e experimentos publicados no GitHub, com repositórios fixados em destaque.",
-      "button": "Ver todos no GitHub",
-      "href": "https://github.com/vhlima1008",
+      "eyebrow": "Iniciativas",
+      "title": "Projetos e empreendimentos apoiados",
+      "description": "Conheça as iniciativas acompanhadas pela ITES.",
+      "button": "",
+      "href": "",
       "itemsApiUrl": "",
       "itemsApiPath": "",
       "itemsApiTitleKey": "name",
@@ -9430,69 +9225,7 @@ export const registry: Definition[] = [
       "layoutWidth": "full",
       "layoutGutter": 0,
       "blockAnimation": "fade-up",
-      "items": [
-        {
-          "id": "project-leetcode",
-          "title": "Leetcode",
-          "description": "My LeetCode solutions explained",
-          "href": "https://github.com/vhlima1008/leetcode",
-          "value": "Python",
-          "features": [
-            "Fixado",
-            "java",
-            "postgresql",
-            "react"
-          ]
-        },
-        {
-          "id": "project-data-formatters",
-          "title": "Data Formatters",
-          "description": "Utility library for formatting data using Intl API base.",
-          "href": "https://github.com/vhlima1008/data-formatters",
-          "value": "TypeScript",
-          "features": [
-            "Fixado",
-            "library",
-            "npm-package",
-            "typescript"
-          ]
-        },
-        {
-          "id": "project-git-user",
-          "title": "Git User",
-          "description": "Manage multiple Git's Accounts on Linux.",
-          "href": "https://github.com/vhlima1008/git-user",
-          "value": "Shell",
-          "features": [
-            "linux",
-            "shell",
-            "shell-script"
-          ]
-        },
-        {
-          "id": "project-ev3-line-follower",
-          "title": "Ev3 Line Follower",
-          "description": "Um rápido seguidor de linha utilizando o Open Roberta Lab",
-          "href": "https://github.com/vhlima1008/ev3-line-follower",
-          "value": "",
-          "features": [
-            "ev3",
-            "ev3dev",
-            "openroberta-lab"
-          ]
-        },
-        {
-          "id": "project-algorithms",
-          "title": "Algorithms",
-          "description": "Didatic algorithms collection made in Python",
-          "href": "https://github.com/vhlima1008/algorithms",
-          "value": "Python",
-          "features": [
-            "dsa-algorithm",
-            "python"
-          ]
-        }
-      ]
+      "items": []
     },
     "editableProperties": [
       "eyebrow",
@@ -9510,8 +9243,8 @@ export const registry: Definition[] = [
       "itemsApiFeaturesKey"
     ],
     "export": {
-      "componentName": "VhProjectsBlock",
-      "sourceFile": "sections/vh-projects/vh-projects.tsx",
+      "componentName": "ProfileProjectsBlock",
+      "sourceFile": "sections/profile-projects/profile-projects.tsx",
       "dependencies": [
         "react",
         "lucide-react"
@@ -9521,35 +9254,27 @@ export const registry: Definition[] = [
     "group": "content"
   }, component: Block124 },
   { ...{
-    "id": "vh-contact",
+    "id": "institutional-contact",
     "name": "Portfólio — Contato e rodapé",
-    "category": "vh-contact",
+    "category": "institutional-contact",
     "variant": "editorial-footer",
     "description": "Encerramento enxuto com chamada de contato, redes e retorno ao topo.",
     "defaults": {
       "eyebrow": "Contato",
-      "title": "Vamos construir seu próximo projeto?",
-      "button": "vhlima1008@gmail.com",
-      "href": "mailto:vhlima1008@gmail.com",
-      "description": "© 2026 Victor Hugo. Todos os direitos reservados.",
+      "title": "Entre em contato com a ITES",
+      "button": "Enviar uma demanda",
+      "href": "/demandas/nova",
+      "description": "Incubadora Tecnológica de Economia Solidária · IFRJ Campus Niterói",
       "layoutWidth": "full",
       "layoutGutter": 0,
       "blockAnimation": "fade-up",
       "items": [
         {
-          "id": "social-code",
-          "title": "GitHub",
-          "description": "",
-          "href": "https://github.com/vhlima1008",
-          "value": "github",
-          "features": []
-        },
-        {
-          "id": "social-email",
-          "title": "E-mail",
-          "description": "",
-          "href": "mailto:vhlima1008@gmail.com",
-          "value": "mail",
+          "id": "social-instagram",
+          "title": "Instagram da ITES",
+          "description": "Acompanhe as atividades da incubadora.",
+          "href": "https://www.instagram.com/ites.ifrjniteroi/",
+          "value": "instagram",
           "features": []
         }
       ]
@@ -9563,8 +9288,8 @@ export const registry: Definition[] = [
       "items"
     ],
     "export": {
-      "componentName": "VhContactBlock",
-      "sourceFile": "sections/vh-contact/vh-contact.tsx",
+      "componentName": "InstitutionalContactBlock",
+      "sourceFile": "sections/institutional-contact/institutional-contact.tsx",
       "dependencies": [
         "react",
         "lucide-react"
@@ -9574,7 +9299,7 @@ export const registry: Definition[] = [
     "group": "content"
   }, component: Block125 },
   { ...{
-    "id": "navbar-vh-dock",
+    "id": "navbar-editorial-dock",
     "name": "Navegação — Dock compacto",
     "category": "navbar",
     "variant": "portfolio-icon-dock",
@@ -9644,8 +9369,8 @@ export const registry: Definition[] = [
       "items"
     ],
     "export": {
-      "componentName": "NavbarVhDockBlock",
-      "sourceFile": "navbars/navbar-vh-dock/navbar-vh-dock.tsx",
+      "componentName": "EditorialDockNavbarBlock",
+      "sourceFile": "navbars/navbar-editorial-dock/navbar-editorial-dock.tsx",
       "dependencies": [
         "react",
         "lucide-react",
@@ -9656,20 +9381,20 @@ export const registry: Definition[] = [
     "group": "navigation"
   }, component: Block126 },
   { ...{
-    "id": "vh-blog-index",
+    "id": "editorial-blog-index",
     "name": "Portfólio — Artigos editoriais",
-    "category": "vh-blog-index",
+    "category": "editorial-blog-index",
     "variant": "editorial-article-list",
     "description": "Índice editorial de artigos com capa, data, categoria e resumo no estilo escuro do portfólio.",
     "defaults": {
       "eyebrow": "Blog",
-      "title": "Ideias, experiências e aprendizados",
-      "description": "Notas sobre engenharia de software, interfaces e o processo de transformar problemas em produtos.",
+      "title": "Notícias e atividades",
+      "description": "Acompanhe notícias, eventos e ações da Incubadora Tecnológica de Economia Solidária.",
       "button": "Voltar",
       "href": "/",
       "brandLogoUrl": "",
-      "brandLogoAlt": "Logo do blog de Victor Hugo",
-      "brandLogoText": "Victor Hugo",
+      "brandLogoAlt": "Identidade visual da ITES",
+      "brandLogoText": "ITES",
       "brandLogoHref": "/",
       "articleLayout": "grid",
       "showArticleImages": false,
@@ -9681,10 +9406,10 @@ export const registry: Definition[] = [
       "blockAnimation": "fade-up",
       "items": [
         {
-          "id": "vh-blog-architecture",
+          "id": "editorial-blog-architecture",
           "title": "Arquitetura que acompanha o crescimento do produto",
           "description": "Como separar responsabilidades e manter espaço para evoluir sem tornar cada mudança mais difícil do que precisa ser.",
-          "href": "#vh-blog-architecture",
+          "href": "#editorial-blog-architecture",
           "value": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85",
           "features": [
             "Exemplo de artigo",
@@ -9694,10 +9419,10 @@ export const registry: Definition[] = [
           ]
         },
         {
-          "id": "vh-blog-interfaces",
+          "id": "editorial-blog-interfaces",
           "title": "Interfaces rápidas começam com decisões simples",
           "description": "Uma leitura prática sobre carregamento, estado e pequenos detalhes que deixam a experiência mais responsiva.",
-          "href": "#vh-blog-interfaces",
+          "href": "#editorial-blog-interfaces",
           "value": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=85",
           "features": [
             "Exemplo de artigo",
@@ -9707,10 +9432,10 @@ export const registry: Definition[] = [
           ]
         },
         {
-          "id": "vh-blog-api",
+          "id": "editorial-blog-api",
           "title": "O que aprendi integrando uma API externa",
           "description": "Mapeamento de dados, estados de carregamento e alternativas quando uma fonte remota não responde.",
-          "href": "#vh-blog-api",
+          "href": "#editorial-blog-api",
           "value": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
           "features": [
             "Exemplo de artigo",
@@ -9739,8 +9464,8 @@ export const registry: Definition[] = [
       "items"
     ],
     "export": {
-      "componentName": "VhBlogIndexBlock",
-      "sourceFile": "sections/vh-blog-index/vh-blog-index.tsx",
+      "componentName": "EditorialBlogIndexBlock",
+      "sourceFile": "sections/editorial-blog-index/editorial-blog-index.tsx",
       "dependencies": [
         "react",
         "lucide-react"
@@ -10668,12 +10393,12 @@ export const variantsByCategory = new Map([
   ["portfolio-projects", registry.filter((definition) => definition.category === "portfolio-projects")],
   ["blog-index", registry.filter((definition) => definition.category === "blog-index")],
   ["back-to-top", registry.filter((definition) => definition.category === "back-to-top")],
-  ["vh-hero", registry.filter((definition) => definition.category === "vh-hero")],
-  ["vh-about", registry.filter((definition) => definition.category === "vh-about")],
-  ["vh-experience", registry.filter((definition) => definition.category === "vh-experience")],
-  ["vh-projects", registry.filter((definition) => definition.category === "vh-projects")],
-  ["vh-contact", registry.filter((definition) => definition.category === "vh-contact")],
-  ["vh-blog-index", registry.filter((definition) => definition.category === "vh-blog-index")],
+  ["profile-hero", registry.filter((definition) => definition.category === "profile-hero")],
+  ["profile-about", registry.filter((definition) => definition.category === "profile-about")],
+  ["profile-experience", registry.filter((definition) => definition.category === "profile-experience")],
+  ["profile-projects", registry.filter((definition) => definition.category === "profile-projects")],
+  ["institutional-contact", registry.filter((definition) => definition.category === "institutional-contact")],
+  ["editorial-blog-index", registry.filter((definition) => definition.category === "editorial-blog-index")],
   ["motion", registry.filter((definition) => definition.category === "motion")],
   ["reui-button", registry.filter((definition) => definition.category === "reui-button")],
   ["hero-space", registry.filter((definition) => definition.category === "hero-space")],

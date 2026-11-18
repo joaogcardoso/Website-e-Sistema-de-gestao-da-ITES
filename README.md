@@ -46,4 +46,4 @@ Os testes de backend usam Testcontainers e precisam de Docker. A pipeline de PR 
 ## Equipe
 
 _[Kauã Fiuza Clemente](https://github.com/kauafiuza)_
-_[Victor Hugo Lima Monteiro](https://github.com/vhlima1008)_
+_Victor Hugo Lima Monteiro_

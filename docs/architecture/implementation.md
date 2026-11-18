@@ -1,11 +1,49 @@
-# Arquitetura executável integrada
+# Arquitetura implementada
 
-O `web-builder` fornece a base única para frontend React/TypeScript/Vite, autenticação por cookie HttpOnly e JWT, API Spring Boot, persistência PostgreSQL/Flyway, componentes e catálogo de blocos, editor, prévia e publicação. Os diretórios `web/` e `server/` concentram os módulos; o projeto mantém a divisão por responsabilidade e os contratos de origem usados por essas capacidades.
+## Visão geral
 
-A V23 acrescenta `app_roles`, `app_permissions`, associações usuário/papel e papel/permissão, auditoria de concessões, `demands`, `demand_events`, `institutional_pages`, `institutional_page_versions` e auditoria de publicação. Reutiliza as tabelas existentes `users`, `organizations` e `organization_memberships`; não cria outro cadastro. Os papéis da ITES não derivam de afiliação. A conta administradora inicial recebe papel por operação manual descrita no README.
+A plataforma ITES adota uma aplicação modular com um frontend, uma API e um banco relacional.
 
-A API em `/ites/demands` usa o JWT para identificar solicitantes e restringe consultas ao proprietário. As rotas `/review`, `/classification` e `/decision` verificam permissões explícitas. Transições e eventos ficam na mesma transação e o gatilho valida o grafo de situações. `/ites/organizations` lista associações do usuário e verifica o vínculo antes de vincular uma organização à demanda. `/ites/roles` e `/ites/users` exigem concessões administrativas.
+```mermaid
+flowchart LR
+    Visitante[Visitante] --> Web[Portal e áreas autenticadas]
+    Solicitante[Solicitante] --> Web
+    Administrador[Equipe autorizada] --> Web
+    Web --> API[API Spring Boot]
+    API --> Auth[Autenticação e concessões]
+    API --> Domain[Serviços institucionais e de demandas]
+    API --> Editor[Persistência de páginas]
+    Auth --> DB[(PostgreSQL)]
+    Domain --> DB
+    Editor --> DB
+```
 
-As rotas públicas `/ites/pages` e `/ites/pages/{slug}` listam e entregam somente páginas publicadas. Rotas draft/save exigem `builder.pages.edit`; publish/unpublish exige `builder.pages.publish`. Documento JSON é limitado a uma página, até 20 blocos permitidos, campos textuais permitidos e URLs seguras. A interface usa `BuilderDocument`, `reduceDocument`, o catálogo `definitions` e `PageContent` do editor existente; a API não executa código do documento.
+## Responsabilidades
 
-Flyway em `server/src/main/resources/db/migration/` é a única fonte operacional de migrações. Os scripts `database/coursework/` são artefatos acadêmicos e ainda não foram reconciliados com todo o esquema integrado; não devem ser aplicados como segunda fonte de schema.
+- `web/`: portal institucional, jornadas de solicitantes, administração, editor visual e chamadas à API.
+- `server/`: identidade, sessões, concessões, validação de negócio, operações administrativas, auditoria e persistência.
+- `database/`: scripts acadêmicos, consultas, rotinas administrativas, privilégios e verificações reproduzíveis.
+- `docs/`: requisitos, decisões técnicas, modelo de dados, implantação e validações.
+
+Flyway em `server/src/main/resources/db/migration/` é a única fonte operacional das migrações. Os scripts em `database/coursework/` atendem às atividades acadêmicas e não substituem as migrações da aplicação.
+
+## Identidade e autorização
+
+A autenticação por sessão é compartilhada entre as áreas da plataforma. Os papéis e as concessões são persistidos no PostgreSQL. A afiliação a uma organização não concede acesso administrativo. O backend valida cada operação protegida e restringe demandas ao solicitante proprietário.
+
+## Portal e editor de páginas
+
+O portal consome a versão publicada das páginas. A administração edita páginas de conteúdo por meio de um catálogo permitido de blocos, propriedades e URLs validadas. Rascunhos são versionados no banco; a publicação e o registro de auditoria são transacionais. O documento persistido não executa código.
+
+Autenticação, formulários de demanda, decisões administrativas e informações pessoais ficam em telas e rotas protegidas. A configuração visual não controla autorização nem substitui validações da API.
+
+## Decisões de arquitetura
+
+| ADR | Decisão |
+|---|---|
+| ADR-001 | React, Spring Boot, PostgreSQL e Flyway compõem uma aplicação modular. |
+| ADR-002 | Identidade, autorização e persistência são compartilhadas entre portal e gestão. |
+| ADR-003 | A capacidade do solicitante é informada por demanda, não fixada na conta. |
+| ADR-004 | Transições de situação e eventos de auditoria são registrados de forma consistente. |
+| ADR-005 | O editor altera somente páginas de conteúdo e blocos validados. |
+| ADR-006 | Dados demonstrativos ficam separados da inicialização de produção. |

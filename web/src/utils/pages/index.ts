@@ -23,9 +23,9 @@ import { CustomerStoriesPage } from "./customer-stories"
 import { DeveloperResourcesPage } from "./developer-resources"
 import { ProjectManagementPage } from "./project-management"
 import { CustomerReviewsPage } from "./customer-reviews"
-import { VhPortfolioPage } from "./vh-portfolio"
-import { VhBlogPage } from "./vh-blog"
-import { VhBlogArticlePage } from "./vh-blog-article"
+import { ProfilePortfolioPage } from "./profile-portfolio"
+import { EditorialBlogPage } from "./editorial-blog"
+import { EditorialBlogArticlePage } from "./editorial-blog-article"
 import { PortfolioStudioPage } from "./portfolio-studio"
 
 export const templates = [
@@ -53,8 +53,8 @@ export const templates = [
   DeveloperResourcesPage,
   ProjectManagementPage,
   CustomerReviewsPage,
-  VhPortfolioPage,
-  VhBlogPage,
-  VhBlogArticlePage,
+  ProfilePortfolioPage,
+  EditorialBlogPage,
+  EditorialBlogArticlePage,
   PortfolioStudioPage,
 ]

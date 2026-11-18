@@ -1,35 +1,49 @@
-# Website e Sistema de Gestão da ITES
+# Portal institucional e gestão de demandas da ITES
 
-Sistema web composto por um **portal institucional** da Incubadora Tecnológica de Economia Solidária (ITES – IFRJ Campus Niterói) e por um **sistema de gestão de demandas**. O objetivo é permitir que pessoas e organizações interessadas se conectem à ITES, encaminhem demandas, e que a equipe da incubadora analise, acompanhe e gere relatórios a partir desses dados.
+Aplicação web da Incubadora Tecnológica de Economia Solidária do IFRJ Campus Niterói. O repositório contém `web/` (React e editor visual), `server/` (Spring Boot, autenticação e API), `database/` (scripts acadêmicos e de administração) e `docs/` (documentação técnica). As migrações executadas pela aplicação ficam exclusivamente em `server/src/main/resources/db/migration/`.
 
-## Contexto
+## Execução local com Docker
 
-A ITES apoia empreendimentos, grupos, coletivos e redes de economia solidária, promovendo trabalho, renda, formação, inclusão e desenvolvimento territorial em Niterói/RJ. Hoje os pedidos de apoio não têm registro centralizado, o que dificulta saber o que está pendente, quem decidiu cada pedido e quais resultados foram alcançados.
+Pré-requisitos: Docker Engine e Docker Compose. Copie o modelo de configuração e gere dois segredos distintos:
 
-A solução prevê dois ambientes integrados:
+```sh
+cp .env.example .env
+openssl rand -base64 32
+openssl rand -base64 32
+```
 
-- **Portal Web Institucional** — Quem Somos, Projetos e Empreendimentos Incubados, Notícias e Agenda, Publicações, Aplicativos e Ferramentas, Redes Sociais e Contato, e acesso à Solicitação de Demandas. O conteúdo é gerenciado por usuários autorizados, com rascunho e publicação.
-- **Sistema de Gestão de Demandas** — cadastro de solicitantes e organizações, envio de demandas com código único, triagem, aceite ou recusa com justificativa, acompanhamento pelo solicitante e indicadores para a gestão.
+Defina em `.env` a senha do banco e os valores gerados em `AUTH_JWT_SECRET` e `AUTH_TOTP_ENCRYPTION_KEY`. Para receber e-mails de confirmação de cadastro, configure `MAILER_ENABLED=true`, `RESEND_API_KEY` e `MAIL_FROM_ADDRESS` de um domínio autorizado. Com o envio de e-mails desativado, o cadastro por link de confirmação não pode ser concluído; as contas existentes ainda podem entrar.
 
-## Documentação
+Inicie os serviços:
 
-O ponto de partida é o [índice da documentação](docs/INDEX.md).
+```sh
+docker compose up --build -d
+docker compose ps
+docker compose logs --tail=100 server
+```
 
-| Documento | Conteúdo |
-|---|---|
-| [Especificação de requisitos](docs/requirements/specification.md) | Atores, regras de negócio, transições de situação e rastreabilidade dos requisitos |
-| [Arquitetura proposta](docs/architecture/target.md) | Visão geral da solução e decisões de arquitetura |
-| [Auditoria do repositório](docs/architecture/audit.md) | Situação inicial do repositório e o que será reaproveitado |
-| [Integração com o editor de páginas](docs/builder/integration.md) | Regras do editor visual do portal |
-| [Proposta da base de dados](docs/database/technical.md) | Dicionário de dados e plano das atividades APD1, APD2 e APD3 |
-| [Roteiro de entrega e validação](docs/plans/delivery.md) | Etapas, critérios de aceite e riscos |
-| [Situação atual](docs/CHECKPOINT.md) | O que já está pronto e o que falta |
+O portal fica em `http://localhost:3000`; a API é encaminhada por `/api/` no mesmo endereço. A verificação do frontend é `http://localhost:3000/health`, e a da API é `http://localhost:3000/api/actuator/health`. O PostgreSQL não publica porta no host. O volume `postgres_data` preserva dados entre recriações dos contêineres. Não execute `docker compose down -v` se desejar manter os dados.
 
-## Tecnologias previstas
+Após cadastrar uma conta institucional e confirmar seu e-mail, atribua o primeiro papel de administrador com acesso ao banco do contêiner:
 
-React + TypeScript (frontend), Spring Boot (API), PostgreSQL (banco de dados) e Flyway (migrações).
+```sh
+docker compose exec -T postgres psql -U ites -d ites -v admin_email='admin@example.org' < database/bootstrap_admin.sql
+```
+
+Substitua `admin@example.org` pelo endereço real. Depois disso, o administrador poderá conceder e revogar papéis na interface. O vínculo com uma organização não concede permissões administrativas.
+
+A página inicial é pública. O solicitante usa `/cadastro`, `/entrar` e `/demandas`. A equipe autorizada acessa `/administracao/demandas`, `/administracao/permissoes` e `/administracao/editor`. A API valida identidade e permissão no servidor.
+
+## Verificação local
+
+```sh
+cd web && npm ci && npm run typecheck && npm test && npm run build
+cd ../server && ./mvnw verify
+```
+
+Os testes de backend usam Testcontainers e precisam de Docker. Consulte [documentação](docs/INDEX.md), [contribuição](CONTRIBUTING.md), [implantação](docs/deployment.md) e [estado de implementação](docs/IMPLEMENTATION_STATUS.md).
 
 ## Equipe
 
-_[Kauã Fiuza Clemente](https://github.com/kauafiuza)_ <br>
+_[Kauã Fiuza Clemente](https://github.com/kauafiuza)_  
 _[Victor Hugo Lima Monteiro](https://github.com/vhlima1008)_

@@ -1,7 +1,18 @@
-# Implantação proposta com Docker Compose e Dokploy
+# Implantação em VPS com Docker Compose e Dokploy
 
-O `web-builder` usa imagens multietapas: Node/Nginx para frontend e JDK/JRE para backend. A plataforma ITES seguirá essa separação, com PostgreSQL 16 em volume persistente. O Nginx encaminhará `/api/` ao serviço `server` pela rede interna; o backend usará `database:5432`. O banco não terá porta pública em produção. A API terá verificação `/actuator/health`, e o frontend, `/health`. Inicialização aguardará banco saudável; Flyway aplicará migrações controladas. Dados demonstrativos não serão carregados automaticamente.
+A configuração usa três serviços: `web` (Nginx com frontend estático), `server` (Spring Boot) e `postgres` (PostgreSQL 16). Somente `web` publica porta no host. O Nginx encaminha `/api/` para `server:8080` na rede interna; o backend acessa `postgres:5432`. `postgres_data` mantém o banco após recriação dos contêineres. A aplicação aplica migrações Flyway na inicialização; a carga acadêmica não é executada automaticamente.
 
-Variáveis previstas estão em `.env.example`. Segredos devem ser definidos no ambiente do Dokploy; `AUTH_COOKIE_SECURE=true` exige HTTPS e domínio configurado. Configure o serviço Compose no Dokploy apontando para o repositório e o arquivo `compose.yaml` após sua implementação e validação. Associe domínio e proxy reverso ao serviço `web`, configure TLS e restrinja acesso à API e ao banco conforme a infraestrutura. Verifique logs e health checks após cada atualização. Faça backup do volume PostgreSQL antes de migrações; para restauração, interrompa gravações, restaure backup testado e reinicie serviços. Reversão de imagem não implica reversão segura de esquema: migrações precisam de estratégia compatível.
+## Preparação
 
-**Estado atual:** os diretórios de aplicação e o arquivo Compose ainda não foram implementados. Nenhum build Docker nem implantação Dokploy foi validado. Este documento especifica o procedimento e suas pré-condições, sem afirmar prontidão de produção.
+1. Instale Docker Engine e o plugin Compose na VPS.
+2. Disponibilize o repositório e crie `.env` a partir de `.env.example`.
+3. Defina `DB_PASSWORD` forte e dois segredos Base64 independentes, gerados por `openssl rand -base64 32`.
+4. Defina `AUTH_BROWSER_ORIGINS` e `APP_BASE_URL` para o domínio HTTPS definitivo e `AUTH_COOKIE_SECURE=true`.
+5. Configure `MAILER_ENABLED=true`, `RESEND_API_KEY` e `MAIL_FROM_ADDRESS` autorizado para o cadastro por e-mail.
+6. Defina `WEB_HOST_PORT` para a porta interna publicada no host; configure domínio, proxy reverso e certificado TLS no Dokploy apontando para o serviço `web`.
+
+No Dokploy, crie uma aplicação Docker Compose ligada ao repositório e a `compose.yaml`. Cadastre as variáveis como segredos do ambiente. Não exponha a porta do PostgreSQL. Atualizações devem usar uma revisão versionada do repositório; examine `docker compose ps`, `docker compose logs server` e os health checks após cada implantação. O frontend responde em `/health`, e a API em `/api/actuator/health`. O `server` aguarda o PostgreSQL saudável; `web` aguarda o `server` saudável. Os serviços reiniciam salvo parada explícita.
+
+Faça backup consistente do PostgreSQL antes de atualizações de esquema, por exemplo com `pg_dump` executado no contêiner e guardado fora da VPS. Teste restauração em ambiente isolado. Reverter uma imagem não reverte automaticamente migrações: planeje compatibilidade de esquema antes do rollback. Nunca restaure dados acadêmicos em produção.
+
+A execução local segue o [README](../README.md). A configuração de Dokploy ainda precisa de teste em uma instância real; não há evidência de publicação em VPS.

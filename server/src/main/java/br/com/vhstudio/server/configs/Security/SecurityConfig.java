@@ -9,6 +9,7 @@ import jakarta.servlet.DispatcherType;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -93,7 +94,8 @@ public class SecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
-                                auth.dispatcherTypeMatchers(DispatcherType.ERROR)
+                                auth.requestMatchers(HttpMethod.GET, "/ites/pages", "/ites/pages/*").permitAll()
+                                        .dispatcherTypeMatchers(DispatcherType.ERROR)
                                         .permitAll()
                                         .requestMatchers(
                                                 "/auth/account", "/auth/account/**")

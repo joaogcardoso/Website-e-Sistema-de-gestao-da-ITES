@@ -4,14 +4,14 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_DATABASE:-ites}
-      POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_USER: ${DB_USERNAME:-ites}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Defina DB_PASSWORD no arquivo .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-ites}
+        - pg_isready -U ${DB_USERNAME:-ites} -d ${DB_DATABASE:-ites}
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,8 +28,8 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: ${DB_DATABASE:-ites}
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_USERNAME: ${DB_USERNAME:-ites}
+      DB_PASSWORD: ${DB_PASSWORD:?Defina DB_PASSWORD no arquivo .env}
       AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:?Set AUTH_JWT_SECRET in .env}
       AUTH_TOTP_ENCRYPTION_KEY: ${AUTH_TOTP_ENCRYPTION_KEY:?Set AUTH_TOTP_ENCRYPTION_KEY in .env}
       AUTH_BROWSER_ORIGINS: ${AUTH_BROWSER_ORIGINS:-http://localhost:3000}
@@ -42,9 +42,6 @@ services:
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME:-VH Studio}
       MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
-    ports:
-      # SERVER_HOST_PORT é a porta do host; Spring e os demais contêineres usam 8080.
-      - "${SERVER_HOST_PORT:-8081}:8080"
     depends_on:
       postgres:
         condition: service_healthy

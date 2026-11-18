@@ -1,27 +1,27 @@
-# Requirements specification and traceability
+# Especificação de requisitos e rastreabilidade
 
-ITES at IFRJ Campus Niterói supports solidarity economy groups, education, events and partnerships. Actors: public visitor, requester, demand reviewer, administrator, builder editor and publisher. Affiliation confers no administrative grant. Public content requires publication; personal and operational data stay private.
+A ITES, vinculada ao IFRJ Campus Niterói, apoia grupos de economia solidária, educação, eventos e parcerias. Os atores são visitante, solicitante, analista de demandas, administrador, editor visual e publicador. Vínculo institucional não concede administração. Conteúdo público depende de publicação; dados pessoais e operacionais permanecem protegidos.
 
-Requester registers with name, contact and password, logs in, maintains profile, submits multiple demands, selects capacity per demand (group, forum, partner, other with required description), associates an organization where applicable, receives a unique code and tracks only own decisions. Admin filters/classifies and decides with explicit grant and reason. Builder editor edits allowed blocks, saves and reloads draft; publisher approves separately. Economic sector differs from requested service.
+O solicitante informa nome, contato e senha, autentica-se, mantém seu perfil, envia várias demandas, escolhe sua condição em cada demanda (grupo, fórum, instituição parceira ou outra com descrição obrigatória), associa uma organização quando couber, recebe código único e acompanha apenas suas próprias decisões. O administrador filtra, classifica e decide com permissão explícita e justificativa. O editor altera blocos permitidos, salva e reabre o rascunho; a publicação exige permissão própria. Setor econômico da organização e serviço solicitado são informações diferentes.
 
-Transitions: Pendente → Aceita para atendimento, Recusada or Cancelada; Aceita para atendimento → Em atendimento or Cancelada; Em atendimento → Concluída or Cancelada. Decisions need actor, date, reason. Completion needs note; rejection/cancellation reason retained. Transition and audit atomic.
+Transições: Pendente → Aceita para atendimento, Recusada ou Cancelada; Aceita para atendimento → Em atendimento ou Cancelada; Em atendimento → Concluída ou Cancelada. Decisões exigem responsável, data e justificativa. A conclusão exige informação final; recusa e cancelamento preservam a justificativa. Mudança de situação e histórico devem ser atômicos.
 
-| ID | Requirement | Target | Acceptance |
+| ID | Requisito | Destino previsto | Critério de aceite |
 |---|---|---|---|
-| M1 | Profile, organization, per-demand capacity | users/organizations/demands | same user submits for two groups |
-| M2 | Coded persistent demand, service, urgency, Pendente | demand API/UI | code and relogin persistence |
-| M3 | Auth, sessions, grants | security | unauthorized 403 |
-| M4 | List/filter/detail/classification | admin | status filter and associations |
-| M5 | Decisions and trace | transition/history | actor/time/reason; invalid fails |
-| M6 | Own tracking | requester | other user's record inaccessible |
-| M7 | Planning | future boundary | documented extension |
-| M8 | Reports | SQL metrics; future PDF | metrics verified |
-| M9 | Notifications | in-app status; future outbox | status visible |
-| P1 | Seven public sections and publication | pages/versions | draft hidden |
-| B1 | Builder edit/preview/save/publish/reload | editor/page API | published rendering |
-| G1 | Role grants/revocation | auth tables | backend enforcement |
-| D1 | Model and 20 rows/table | schema/seed | counts/FKs verified |
-| D2 | 5 basic, 3 JOIN, 3 subqueries | queries | results captured |
-| D3 | 3 procedures/functions/triggers | routines | positive/negative tests |
-| D4 | DB roles/privileges | security | denied operations |
-| DOC | dictionary, image, evidence | docs | actual schema matches |
+| M1 | Perfil, organização e condição por demanda | `users`, `organizations`, `demands` | mesma pessoa solicita por dois grupos |
+| M2 | Demanda persistente com código, serviço, urgência e situação inicial | API e interface de demanda | código exibido e demanda preservada após novo acesso |
+| M3 | Autenticação, sessões e permissões | módulo de segurança | operação sem permissão retorna 403 |
+| M4 | Lista, filtro, detalhe e classificação | área administrativa | filtro por situação e vínculos visíveis |
+| M5 | Decisões válidas e rastreáveis | rotina de transição e histórico | responsável, data e motivo; transição inválida falha |
+| M6 | Acompanhamento das próprias demandas | área do solicitante | demanda de terceiro inacessível |
+| M7 | Planejamento de atividades | ponto de extensão futuro | limite arquitetural documentado |
+| M8 | Relatórios | indicadores SQL; PDF futuro | indicadores verificados |
+| M9 | Notificações | situação na aplicação; integração futura | situação atual visível |
+| P1 | Sete seções públicas e publicação | páginas e versões | rascunho invisível ao público |
+| B1 | Edição, prévia, salvamento, publicação e reabertura | editor e API de páginas | versão publicada renderizada |
+| G1 | Concessão e revogação de permissões | tabelas de papéis e permissões | backend aplica permissão efetiva |
+| D1 | Modelo relacional e 20 linhas por tabela demonstrativa | esquema e carga | contagens e FKs verificadas |
+| D2 | Cinco consultas básicas, três JOINs e três subconsultas | SQL de consultas | resultados reais registrados |
+| D3 | Três procedimentos, funções e gatilhos de cada tipo | SQL de rotinas | cenários positivos e negativos |
+| D4 | Papéis e privilégios do banco | SQL de segurança | operações proibidas falham |
+| DOC | Dicionário, imagem e evidências | `docs/database` | modelo corresponde ao esquema real |

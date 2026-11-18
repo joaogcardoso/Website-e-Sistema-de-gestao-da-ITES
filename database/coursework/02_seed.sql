@@ -1,4 +1,4 @@
--- Fictional demonstration only; never run in production.
+-- Dados fictícios para demonstração; não executar em produção.
 INSERT INTO users(name,email,password_hash,whatsapp) SELECT 'Pessoa Exemplo '||n,'person'||n||'@example.invalid','{DEMO_ONLY_NON_LOGINABLE}', '000000'||lpad(n::text,4,'0') FROM generate_series(1,25)n;
 INSERT INTO roles(code,name) SELECT 'demo_role_'||n,'Papel demonstrativo '||n FROM generate_series(1,20)n;
 INSERT INTO permissions(code,description) SELECT 'demo.permission.'||n,'Permissão demonstrativa '||n FROM generate_series(1,20)n;

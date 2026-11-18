@@ -1,4 +1,4 @@
--- PostgreSQL proposal; run on an empty dedicated database.
+-- Proposta para PostgreSQL; executar em banco dedicado e vazio.
 CREATE TABLE users (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, name text NOT NULL, email text NOT NULL UNIQUE, password_hash text NOT NULL, whatsapp text, active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE roles (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, code text NOT NULL UNIQUE, name text NOT NULL);
 CREATE TABLE permissions (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, code text NOT NULL UNIQUE, description text NOT NULL);

@@ -1,0 +1,138 @@
+     code      |          created_at           
+---------------+-------------------------------
+ ITES-00000006 | 2026-11-18 02:12:32.189005+00
+ ITES-00000012 | 2026-11-18 02:12:32.189005+00
+ ITES-00000018 | 2026-11-18 02:12:32.189005+00
+(3 rows)
+
+     code      |       service        
+---------------+----------------------
+ ITES-00000002 | apoio administrativo
+ ITES-00000005 | apoio administrativo
+ ITES-00000008 | apoio administrativo
+ ITES-00000011 | apoio administrativo
+ ITES-00000014 | apoio administrativo
+ ITES-00000017 | apoio administrativo
+ ITES-00000020 | apoio administrativo
+(7 rows)
+
+         name         | economic_sector 
+----------------------+-----------------
+ Coletivo Fictício 12 | artesanato
+ Coletivo Fictício 16 | artesanato
+ Coletivo Fictício 20 | artesanato
+ Coletivo Fictício 4  | artesanato
+ Coletivo Fictício 8  | artesanato
+(5 rows)
+
+     code      |         status          
+---------------+-------------------------
+ ITES-00000001 | Aceita para atendimento
+ ITES-00000002 | Em atendimento
+ ITES-00000003 | Concluída
+ ITES-00000004 | Recusada
+ ITES-00000005 | Cancelada
+ ITES-00000006 | Pendente
+ ITES-00000007 | Aceita para atendimento
+ ITES-00000008 | Em atendimento
+ ITES-00000009 | Concluída
+ ITES-00000010 | Recusada
+ ITES-00000011 | Cancelada
+ ITES-00000012 | Pendente
+ ITES-00000013 | Aceita para atendimento
+ ITES-00000014 | Em atendimento
+ ITES-00000015 | Concluída
+ ITES-00000016 | Recusada
+ ITES-00000017 | Cancelada
+ ITES-00000018 | Pendente
+ ITES-00000019 | Aceita para atendimento
+ ITES-00000020 | Em atendimento
+(20 rows)
+
+   slug    |          title          
+-----------+-------------------------
+ pagina-1  | Página demonstrativa 1
+ pagina-10 | Página demonstrativa 10
+ pagina-11 | Página demonstrativa 11
+ pagina-12 | Página demonstrativa 12
+ pagina-13 | Página demonstrativa 13
+ pagina-14 | Página demonstrativa 14
+ pagina-15 | Página demonstrativa 15
+ pagina-16 | Página demonstrativa 16
+ pagina-17 | Página demonstrativa 17
+ pagina-18 | Página demonstrativa 18
+ pagina-19 | Página demonstrativa 19
+ pagina-2  | Página demonstrativa 2
+ pagina-20 | Página demonstrativa 20
+ pagina-3  | Página demonstrativa 3
+ pagina-4  | Página demonstrativa 4
+ pagina-5  | Página demonstrativa 5
+ pagina-6  | Página demonstrativa 6
+ pagina-7  | Página demonstrativa 7
+ pagina-8  | Página demonstrativa 8
+ pagina-9  | Página demonstrativa 9
+(20 rows)
+
+         name         |         status          | total 
+----------------------+-------------------------+-------
+ Coletivo Fictício 1  | Aceita para atendimento |     1
+ Coletivo Fictício 10 | Recusada                |     1
+ Coletivo Fictício 11 | Cancelada               |     1
+ Coletivo Fictício 12 | Pendente                |     1
+ Coletivo Fictício 13 | Aceita para atendimento |     1
+ Coletivo Fictício 14 | Em atendimento          |     1
+ Coletivo Fictício 15 | Concluída               |     1
+ Coletivo Fictício 16 | Recusada                |     1
+ Coletivo Fictício 17 | Cancelada               |     1
+ Coletivo Fictício 18 | Pendente                |     1
+ Coletivo Fictício 19 | Aceita para atendimento |     1
+ Coletivo Fictício 2  | Em atendimento          |     1
+ Coletivo Fictício 20 | Em atendimento          |     1
+ Coletivo Fictício 3  | Concluída               |     1
+ Coletivo Fictício 4  | Recusada                |     1
+ Coletivo Fictício 5  | Cancelada               |     1
+ Coletivo Fictício 6  | Pendente                |     1
+ Coletivo Fictício 7  | Aceita para atendimento |     1
+ Coletivo Fictício 8  | Em atendimento          |     1
+ Coletivo Fictício 9  | Concluída               |     1
+(20 rows)
+
+       name        | decisions 
+-------------------+-----------
+ Pessoa Exemplo 25 |         7
+(1 row)
+
+ economic_sector |       service        | total 
+-----------------+----------------------+-------
+ cultura         | comunicação          |     2
+ artesanato      | apoio administrativo |     2
+ tecnologia      | formação             |     2
+ cultura         | formação             |     2
+ artesanato      | comunicação          |     2
+ agricultura     | apoio administrativo |     2
+ tecnologia      | apoio administrativo |     2
+ agricultura     | comunicação          |     2
+ artesanato      | formação             |     1
+ cultura         | apoio administrativo |     1
+ tecnologia      | comunicação          |     1
+ agricultura     | formação             |     1
+(12 rows)
+
+         name         
+----------------------
+ Coletivo Fictício 19
+ Coletivo Fictício 13
+ Coletivo Fictício 7
+ Coletivo Fictício 1
+(4 rows)
+
+ name 
+------
+(0 rows)
+
+       name        
+-------------------
+ Pessoa Exemplo 20
+ Pessoa Exemplo 8
+(2 rows)
+

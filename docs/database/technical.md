@@ -20,4 +20,4 @@ Papéis do banco: execução da aplicação (`ites_runtime`), leitura para relat
 
 ## Evidências
 
-Nenhum SQL foi executado. Registrar saídas reais do `psql` para criação, contagem, 11 consultas, três procedimentos, funções, gatilhos, privilégios e restrições. Comparar `information_schema` com a imagem. Os hashes demonstrativos não permitem autenticação.
+Uma validação exploratória em PostgreSQL 17 foi executada; consulte [evidências](evidence/validation-postgresql17.md). Ainda é necessário registrar saídas reais em PostgreSQL 16 para produção e executar os cenários restantes. Registrar saídas reais do `psql` para criação, contagem, 11 consultas, três procedimentos, funções, gatilhos, privilégios e restrições. Comparar `information_schema` com a imagem. Os hashes demonstrativos não permitem autenticação.

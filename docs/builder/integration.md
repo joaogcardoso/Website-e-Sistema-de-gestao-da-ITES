@@ -22,8 +22,9 @@ O catálogo é controlado pelo frontend e pelas definições de contrato utiliza
 
 | Operação | Concessão |
 |---|---|
-| Salvar rascunho | `builder.pages.edit` |
-| Publicar ou retirar do ar | `builder.pages.publish` |
+| Abrir o rascunho | `builder.access` e `builder.pages.edit` |
+| Salvar rascunho | `builder.access`, `portal.content.manage` e `builder.pages.edit` |
+| Publicar ou retirar do ar | `builder.access`, `portal.content.manage` e `builder.pages.publish` |
 | Gerenciar modelos | `builder.templates.manage` |
 
 A autenticação, os formulários de demandas, a revisão de pedidos e os dados pessoais não são áreas editáveis. O frontend apresenta ações conforme as concessões efetivas, enquanto a API é responsável pela autorização final.
@@ -35,3 +36,11 @@ A autenticação, os formulários de demandas, a revisão de pedidos e os dados 
 - Endereços externos devem obedecer às regras de URL segura.
 - Rascunhos não são expostos ao público.
 - Publicação e auditoria persistem em conjunto.
+
+## Página inicial e painel de demandas
+
+A página `inicio` recebe um documento inicial versionado a partir de `ites-homepage.json` quando o administrador inicial já foi provisionado e ainda não existe uma versão pública. O portal lê essa versão publicada e renderiza apenas seus blocos; não mantém uma segunda composição institucional fixa em código. O editor usa o catálogo e o `PropertyEditor` do construtor já integrado. Na área institucional, o servidor permite categorias de conteúdo selecionadas, valida contratos dos manifests e limita quantidade e tamanho de propriedades. A ação de recuperar a versão publicada cria um novo rascunho versionado.
+
+O painel `/administracao/indicadores` compartilha o armazenamento `institutional_pages` e `institutional_page_versions` sob o slug privado `painel-demandas`. Seus blocos usam fontes e visualizações enumeradas pelo servidor e consultam endpoints agregados protegidos; o documento não contém SQL nem cópias dos dados. A configuração exige `dashboards.manage`, enquanto os dados exigem `analytics.view`. O painel não é publicado como página pública.
+
+Os documentos do portal e os do painel têm validações distintas, porque o formato e a finalidade são distintos, mas compartilham as mesmas tabelas de versões e auditoria do ciclo de páginas. As APIs controladas aplicam uma allowlist de categorias e de fontes de dados em vez de aceitar componentes executáveis.

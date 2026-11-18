@@ -1,6 +1,7 @@
 package br.com.ites.server.controllers.Ites;
 
 import br.com.ites.server.services.Ites.ItesAccessService;
+import br.com.ites.server.services.Web.Project.BlockContractCatalog;
 import tools.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +18,15 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/ites/pages")
 public class InstitutionalPageController {
-    private static final Set<String> BLOCKS = Set.of("hero-classic", "features-classic", "contact-channels");
-    private static final Set<String> PROPERTIES = Set.of("eyebrow", "title", "description", "button", "href");
+    private static final Set<String> EDITABLE_CATEGORIES = Set.of(
+            "hero", "about", "features", "portfolio", "blog", "download", "contact",
+            "social", "cta", "testimonials", "team", "gallery", "faq", "timeline", "logos");
     private final JdbcTemplate jdbc;
     private final ItesAccessService access;
+    private final BlockContractCatalog contracts;
 
-    public InstitutionalPageController(JdbcTemplate jdbc, ItesAccessService access) {
-        this.jdbc = jdbc; this.access = access;
+    public InstitutionalPageController(JdbcTemplate jdbc, ItesAccessService access, BlockContractCatalog contracts) {
+        this.jdbc = jdbc; this.access = access; this.contracts = contracts;
     }
 
     public record DraftRequest(int revision, JsonNode document) {}
@@ -31,11 +34,12 @@ public class InstitutionalPageController {
 
     @GetMapping
     public List<Map<String,Object>> list() {
-        return jdbc.queryForList("SELECT id,slug,title FROM institutional_pages ORDER BY title");
+        return jdbc.queryForList("SELECT id,slug,title FROM institutional_pages WHERE slug<>'painel-demandas' ORDER BY title");
     }
 
     @GetMapping("/{slug}")
     public Map<String,Object> published(@PathVariable String slug) {
+        ensureInstitutionalPage(slug);
         List<Map<String,Object>> rows = jdbc.queryForList("""
                 SELECT p.id,p.slug,p.title,v.id AS version_id,v.revision,v.document::text AS document
                 FROM institutional_pages p JOIN institutional_page_versions v ON v.id=p.published_version_id
@@ -47,7 +51,10 @@ public class InstitutionalPageController {
 
     @GetMapping("/{slug}/draft")
     public Map<String,Object> draft(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug) {
-        access.require(UUID.fromString(jwt.getSubject()), "builder.pages.edit");
+        ensureInstitutionalPage(slug);
+        UUID actor = UUID.fromString(jwt.getSubject());
+        access.require(actor, "builder.access");
+        access.require(actor, "builder.pages.edit");
         List<Map<String,Object>> rows = jdbc.queryForList("""
                 SELECT p.id,p.slug,p.title,v.id AS version_id,v.revision,v.document::text AS document
                 FROM institutional_pages p LEFT JOIN LATERAL (
@@ -63,7 +70,10 @@ public class InstitutionalPageController {
     @Transactional
     public Map<String,Object> save(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug,
                                    @RequestBody DraftRequest request) {
+        ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
+        access.require(actor, "builder.access");
+        access.require(actor, "portal.content.manage");
         access.require(actor, "builder.pages.edit");
         validate(request.document());
         List<Map<String,Object>> pages = jdbc.queryForList("SELECT id FROM institutional_pages WHERE slug=? FOR UPDATE",slug);
@@ -83,7 +93,10 @@ public class InstitutionalPageController {
     @Transactional
     public void publish(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug,
                         @RequestBody PublishRequest request) {
+        ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
+        access.require(actor, "builder.access");
+        access.require(actor, "portal.content.manage");
         access.require(actor, "builder.pages.publish");
         int count = jdbc.update("""
                 UPDATE institutional_pages p SET published_version_id=?
@@ -99,7 +112,10 @@ public class InstitutionalPageController {
     @DeleteMapping("/{slug}/published")
     @Transactional
     public void unpublish(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug) {
+        ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
+        access.require(actor, "builder.access");
+        access.require(actor, "portal.content.manage");
         access.require(actor, "builder.pages.publish");
         List<Map<String,Object>> pages = jdbc.queryForList("SELECT id,published_version_id FROM institutional_pages WHERE slug=? FOR UPDATE",slug);
         if (pages.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Página não encontrada");
@@ -110,24 +126,58 @@ public class InstitutionalPageController {
         jdbc.update("INSERT INTO institutional_page_events(page_id,version_id,actor_id,action) VALUES(?,?,?,'UNPUBLISH')",pageId,versionId,actor);
     }
 
+    @PostMapping("/{slug}/draft/restore-published")
+    @Transactional
+    public Map<String,Object> restorePublished(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug) {
+        ensureInstitutionalPage(slug);
+        UUID actor = UUID.fromString(jwt.getSubject());
+        access.require(actor, "builder.access");
+        access.require(actor, "builder.pages.edit");
+        var pages = jdbc.queryForList("SELECT id,published_version_id FROM institutional_pages WHERE slug=? FOR UPDATE", slug);
+        if (pages.isEmpty() || pages.getFirst().get("published_version_id") == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Página sem versão publicada");
+        UUID pageId = (UUID) pages.getFirst().get("id");
+        UUID publishedId = (UUID) pages.getFirst().get("published_version_id");
+        String document = jdbc.queryForObject("SELECT document::text FROM institutional_page_versions WHERE id=?", String.class, publishedId);
+        Integer revision = jdbc.queryForObject("SELECT COALESCE(max(revision),0)+1 FROM institutional_page_versions WHERE page_id=?", Integer.class, pageId);
+        UUID versionId = UUID.randomUUID();
+        jdbc.update("INSERT INTO institutional_page_versions(id,page_id,revision,document,author_id) VALUES(?,?,?,?::jsonb,?)",
+                versionId,pageId,revision,document,actor);
+        return Map.of("versionId",versionId,"revision",revision);
+    }
+
     private void validate(JsonNode document) {
         if (document == null || !document.isObject() || document.toString().length() > 100_000) invalid();
         JsonNode pages = document.path("pages");
         if (!pages.isArray() || pages.size()!=1) invalid();
         JsonNode blocks = pages.get(0).path("blocks");
-        if (!blocks.isArray() || blocks.size()>20) invalid();
+        if (!blocks.isArray() || blocks.size()>40) invalid();
         for (JsonNode block: blocks) {
-            if (!BLOCKS.contains(block.path("definitionId").asText())) invalid();
+            String definitionId = block.path("definitionId").asText();
+            if (!contracts.knows(definitionId) || !EDITABLE_CATEGORIES.contains(contracts.category(definitionId))) invalid();
             JsonNode props=block.path("props");
-            if (!props.isObject()) invalid();
-            var fields=props.properties().iterator();
-            while(fields.hasNext()) {
-                var field=fields.next();
-                if (!PROPERTIES.contains(field.getKey()) || !field.getValue().isTextual() || field.getValue().asText().length()>2000) invalid();
-                if (field.getKey().equals("href") && !field.getValue().asText().matches("(/[^\\s]*|#[^\\s]*|https://[^\\s]*)")) invalid();
-            }
+            contracts.validate(block);
+            validateLinks(props);
         }
     }
 
+    private void validateLinks(JsonNode value) {
+        if (value.isObject()) value.properties().forEach(field -> {
+            String key = field.getKey();
+            JsonNode item = field.getValue();
+            if (item.isTextual() && (key.equalsIgnoreCase("href") || key.toLowerCase().endsWith("url"))) {
+                String link = item.asText();
+                boolean valid = link.isBlank() || link.matches("(/[^\\s]*|#[^\\s]*|https://[^\\s]*)");
+                if (!valid) invalid();
+            }
+            validateLinks(item);
+        });
+        else if (value.isArray()) value.forEach(this::validateLinks);
+    }
+
     private void invalid() { throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Documento inválido"); }
+
+    private void ensureInstitutionalPage(String slug) {
+        if ("painel-demandas".equals(slug)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Página não encontrada");
+    }
 }

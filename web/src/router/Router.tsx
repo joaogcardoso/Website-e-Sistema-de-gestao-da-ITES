@@ -18,6 +18,12 @@ import { NotFoundPage } from "@/pages/auxiliary/NotFoundPage"
 
 // ─── Páginas públicas ────────────────────────────────────────────────────────
 
+const InstitutionalPage = lazy(() => import("@/pages/ites/InstitutionalPage"))
+const PortalPage = lazy(() => import("@/pages/ites/PortalPage"))
+const GrantsPage = lazy(() => import("@/pages/ites/GrantsPage"))
+const AdminDemandsPage = lazy(() => import("@/pages/ites/AdminDemandsPage"))
+const InstitutionalEditorPage = lazy(() => import("@/pages/ites/InstitutionalEditorPage"))
+const DemandsPage = lazy(() => import("@/pages/ites/DemandsPage"))
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"))
 const SignupPage = lazy(() => import("@/pages/auth/SignupPage"))
 const SignupConfirmPage = lazy(
@@ -77,6 +83,8 @@ function AppRoutes() {
       <Suspense fallback={defaultFallback}>
         <Routes>
           <Route path="/p/:key/*" element={<PublicSitePage />} />
+          <Route path="/" element={<PortalPage />} />
+          <Route path="/institucional/:slug" element={<InstitutionalPage />} />
           <Route path={webPaths.acceptOrganizationInvitation} element={<AcceptOrganizationInvitationPage />} />
           {/* ── Rotas públicas ────────────────────────────────────────── */}
 
@@ -105,6 +113,10 @@ function AppRoutes() {
           {/* ── Rotas privadas ────────────────────────────────────────── */}
 
           <Route element={<Private />}>
+            <Route path="/demandas" element={<DemandsPage />} />
+            <Route path="/administracao/editor" element={<InstitutionalEditorPage />} />
+            <Route path="/administracao/demandas" element={<AdminDemandsPage />} />
+            <Route path="/administracao/permissoes" element={<GrantsPage />} />
             <Route
               path={webPaths.accountSettings}
               element={<AccountSecurityPage />}
@@ -159,10 +171,7 @@ function AppRoutes() {
 
           {/* ── Rotas auxiliares ──────────────────────────────────────── */}
 
-          <Route
-            path="/"
-            element={<Navigate to={webPaths.projects} replace />}
-          />
+
           <Route path="*" element={<NotFoundPage/>} />
         </Routes>
       </Suspense>

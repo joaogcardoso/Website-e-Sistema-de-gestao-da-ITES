@@ -1,6 +1,6 @@
 # Índice da documentação — ITES
 
-**Situação da proposta:** a proposta da base de dados aguarda aprovação do professor. O documento de referência da ITES (*Proposta de Desenvolvimento do Portal Web e Sistema de Gestão da ITES*) foi recebido e serve de base para os requisitos. Os scripts SQL e a aplicação ainda não foram executados.
+**Situação:** a proposta da base de dados foi validada pelo responsável do projeto. O modelo acadêmico, as consultas, rotinas, privilégios e contas foram executados em PostgreSQL 16 com evidências; os quatro papéis e as treze permissões são uma exceção semântica documentada ao mínimo de 20. Esses artefatos ainda não foram reconciliados com o schema integrado. O PDF original de requisitos e o modelo institucional não foram localizados; a especificação reproduzida no pedido é a fonte utilizada.
 
 - [Auditoria do repositório](architecture/audit.md)
 - [Especificação de requisitos](requirements/specification.md)
@@ -8,7 +8,9 @@
 - [Integração com o editor de páginas](builder/integration.md)
 - [Proposta da base de dados](database/technical.md)
 - [Modelo lógico (imagem)](database/logical-model.svg)
-- [Scripts SQL](../database/coursework/)
+- [Scripts SQL e execução reprodutível](../database/coursework/)
+- [Evidência PostgreSQL 16](database/evidence/coursework-validation-postgresql16.md)
+- [Evidência de contas e privilégios](database/evidence/database-users-validation-postgresql16.txt)
 - [Roteiro de entrega e validação](plans/delivery.md)
 - [Situação atual](CHECKPOINT.md)
 
@@ -18,3 +20,6 @@ A organização preserva os nomes `docs` e `database` previstos no repositório.
 - [Modelo de pull request](../.github/pull_request_template.md)
 A organização do repositório mantém as pastas `docs` (documentação) e `database` (scripts do banco de dados). Os arquivos de texto que existiam inicialmente nesses caminhos apenas indicavam a finalidade de cada pasta; ver a auditoria.
 - [Integração da base executável](architecture/implementation.md)
+- [Estado de implementação e ponto de retomada](IMPLEMENTATION_STATUS.md)
+
+- [Integração contínua](ci.md)

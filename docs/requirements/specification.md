@@ -2,7 +2,7 @@
 
 ## Contexto
 
-A ITES, no IFRJ Campus Niterói, apoia grupos de economia solidária com assessoria, formação, eventos e parcerias. Referência: *Proposta de Desenvolvimento do Portal Web e Sistema de Gestão da ITES*.
+A ITES, no IFRJ Campus Niterói, apoia grupos de economia solidária com assessoria, formação, eventos e parcerias. O PDF original de requisitos não foi localizado no ambiente; esta especificação usa como fonte os requisitos reproduzidos no pedido do projeto.
 
 ## Atores
 
@@ -29,22 +29,22 @@ Toda decisão registra responsável, data e justificativa. A conclusão exige um
 
 ## Rastreabilidade
 
-| ID | Requisito | Onde é atendido | Critério de aceite |
+| ID | Requisito | Onde é atendido | Critério de aceite | Estado observado |
 |---|---|---|---|
-| M1 | Perfil, organização e condição por demanda | usuários / organizações / demandas | o mesmo usuário envia demandas por dois grupos diferentes |
-| M2 | Demanda com código, serviço, urgência e situação Pendente | API e telas de demanda | código gerado e dados mantidos após novo login |
-| M3 | Autenticação, sessões e permissões | segurança | acesso sem permissão retorna 403 |
-| M4 | Listar, filtrar, detalhar e classificar | área administrativa | filtro por situação e associações corretas |
-| M5 | Decisões e histórico | transição e histórico | responsável, data e motivo registrados; transição inválida falha |
-| M6 | Acompanhamento das próprias demandas | área do solicitante | demanda de outro usuário inacessível |
-| M7 | Planejamento das atividades | evolução futura | extensão documentada |
-| M8 | Relatórios | métricas em SQL; PDF no futuro | métricas conferidas |
-| M9 | Notificações | situação visível no sistema; e-mail/WhatsApp no futuro | situação exibida ao solicitante |
-| P1 | Sete seções públicas e publicação | páginas e versões | rascunho não aparece para o público |
-| B1 | Editar, pré-visualizar, salvar, publicar e recarregar páginas | editor e API de páginas | página publicada exibida corretamente |
-| G1 | Atribuição e revogação de papéis | tabelas de autorização | regra garantida pelo backend |
-| D1 | Modelo de dados e 20 registros por tabela | schema e dados | contagens e chaves estrangeiras conferidas |
-| D2 | 5 consultas simples, 3 com JOIN e 3 subconsultas | consultas | resultados registrados |
-| D3 | 3 procedures, 3 functions e 3 triggers | rotinas | testes de sucesso e de erro |
-| D4 | Papéis e privilégios do banco | segurança | operações não permitidas são negadas |
-| DOC | Dicionário de dados, imagem do modelo e evidências | documentação | schema real igual ao documentado |
+| M1 | Perfil, organização e condição por demanda | `/ites/organizations`, `/ites/demands` e telas do solicitante | associações de organização verificadas pelo servidor; condição gravada por demanda | Implementado; teste integrado cobre cadastro de demanda e vínculo |
+| M2 | Demanda com código, serviço, urgência e situação Pendente | `DemandController`, `DemandService`, migração V23 e telas | código gerado e dados persistidos | Implementado e testado com PostgreSQL 16 |
+| M3 | Autenticação, sessões e permissões | autenticação existente, `ItesAccessService`, papéis e grants | operação sem autenticação/permissão negada no servidor | Implementado; testes integrados e 401 verificado no Compose |
+| M4 | Listar, filtrar, detalhar e classificar | `/ites/demands/review` e tela administrativa | filtro por situação e associações corretas | Implementado; testes de backend |
+| M5 | Decisões e histórico | `DemandService.decide`, `demand_events` | responsável, data e motivo registrados; transição inválida falha | Implementado e testado com auditoria transacional |
+| M6 | Acompanhamento das próprias demandas | `/ites/demands` e tela do solicitante | demanda de outro usuário inacessível | Implementado; teste de titularidade |
+| M7 | Planejamento das atividades | evolução futura | extensão documentada | Futuro; não incluído no MVP |
+| M8 | Relatórios | consultas acadêmicas | métricas conferidas | Parcial; consultas propostas existem, mas ainda precisam ser reconciliadas ao schema efetivo |
+| M9 | Notificações | estado e decisões visíveis na área do solicitante | situação exibida ao solicitante | Parcial; confirmação interna implementada, e-mail transacional de status não incluído |
+| P1 | Sete seções públicas e publicação | páginas institucionais e portal | somente versões publicadas aparecem publicamente | Implementado para estrutura de páginas; conteúdo de notícias/publicações ainda é estático |
+| B1 | Editar, pré-visualizar, salvar, publicar e recarregar páginas | editor integrado e `/ites/pages` | versão persistida publicada e renderizada; operação protegida | Implementado para catálogo restrito; testes integrados cobrem gravação/publicação |
+| G1 | Atribuição e revogação de papéis | tabelas de autorização e `/ites/roles`, `/ites/users` | autorização aplicada no backend | Implementado e testado |
+| D1 | Modelo de dados e 20 registros por tabela | migrações Flyway e `database/coursework/` | contagens e chaves estrangeiras conferidas | Validado no schema acadêmico PostgreSQL 16 para tabelas com dados de negócio; 4 papéis e 13 permissões são exceção semântica. Aplicação usa schema independente |
+| D2 | 5 consultas simples, 3 com JOIN e 3 subconsultas | `database/coursework/03_queries.sql` | resultados registrados | 11 consultas executadas com saída real no schema acadêmico; falta reconciliar com as tabelas operacionais |
+| D3 | 3 procedures, 3 functions e 3 triggers | `database/coursework/04_routines.sql` | testes positivos e negativos | 5 procedures, 3 functions e 3 triggers testados no modelo acadêmico; gatilho operacional de transição também foi testado |
+| D4 | Papéis e privilégios do banco | `database/coursework/05_security.sql`, `07_security_tests.sql` e `08_provision_users.sql` | operações não permitidas são negadas | Grupos e quatro contas LOGIN testados em banco descartável; runtime do produto ainda usa conta proprietária |
+| DOC | Dicionário de dados, imagem do modelo e evidências | `docs/database/` | schema acadêmico representado no modelo | Diagrama e dicionário refletem o modelo acadêmico; falta diagrama abrangente do schema operacional |

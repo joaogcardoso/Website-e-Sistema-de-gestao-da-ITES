@@ -502,6 +502,12 @@ class ProjectFlowTests {
         JsonNode inboxItems = inbox.get("items");
         assertEquals(1, inboxItems.size());
         assertEquals("=1+1", inboxItems.get(0).get("fields").get("name").asText());
+        mvc.perform(get("/projects/" + id + "/publication/submissions").param("search", "ana@example.com")
+                .header("Authorization", "Bearer " + owner)).andExpect(status().isOk())
+                .andDo(result -> assertEquals(1, json.readTree(result.getResponse().getContentAsString()).get("items").size()));
+        mvc.perform(get("/projects/" + id + "/publication/submissions").param("search", "sem-resultado")
+                .header("Authorization", "Bearer " + owner)).andExpect(status().isOk())
+                .andDo(result -> assertEquals(0, json.readTree(result.getResponse().getContentAsString()).get("items").size()));
         mvc.perform(get("/projects/" + id + "/publication/submissions/export")
                 .header("Authorization", "Bearer " + owner)).andExpect(status().isForbidden());
         mvc.perform(get("/projects/" + id + "/publication/submissions/export")
@@ -531,10 +537,13 @@ class ProjectFlowTests {
                     assertTrue(csv.contains("'=1+1"));
                     assertTrue(csv.contains("'\\t@SUM(1,1)"));
                 });
-        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM organization_audit_events "
+        mvc.perform(get("/projects/" + id + "/publication/submissions/export").param("search", "ana@example.com")
+                .header("Authorization", "Bearer " + owner)).andExpect(status().isOk())
+                .andDo(result -> assertTrue(result.getResponse().getContentAsString().contains("ana@example.com")));
+        assertEquals(3, jdbc.queryForObject("SELECT count(*) FROM organization_audit_events "
                 + "WHERE organization_id = ? AND action = 'SUBMISSIONS_READ' AND target_id = ?",
                 Integer.class, organizationId, UUID.fromString(id)));
-        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM organization_audit_events "
+        assertEquals(2, jdbc.queryForObject("SELECT count(*) FROM organization_audit_events "
                 + "WHERE organization_id = ? AND action = 'SUBMISSIONS_EXPORTED' AND target_id = ?",
                 Integer.class, organizationId, UUID.fromString(id)));
         assertFalse(jdbc.queryForObject("SELECT string_agg(action || target_type || target_id::text, '') "

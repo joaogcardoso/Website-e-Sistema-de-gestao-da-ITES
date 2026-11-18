@@ -104,6 +104,11 @@ public class FormSubmissionService {
 
     @Transactional
     public PageResponse<Submission> list(UUID ownerId, UUID selectedOrganizationId, UUID projectId, int page, int size) {
+        return list(ownerId,selectedOrganizationId,projectId,page,size,null);
+    }
+
+    @Transactional
+    public PageResponse<Submission> list(UUID ownerId, UUID selectedOrganizationId, UUID projectId, int page, int size, String search) {
         UUID organizationId = selectedOrganizationId == null
                 ? organizations.findDefaultOrganizationId(ownerId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN))
@@ -126,22 +131,42 @@ public class FormSubmissionService {
                 FROM form_submissions s JOIN publications p ON p.id = s.publication_id
                 JOIN projects pr ON pr.id = p.project_id
                 WHERE p.project_id = ? AND pr.organization_id = ?
+                  AND (CAST(? AS text) IS NULL OR s.form_name ILIKE ? OR s.fields::text ILIKE ? OR s.field_schema::text ILIKE ?)
                 ORDER BY s.occurred_at DESC, s.id DESC LIMIT ? OFFSET ?
                 """, (rs, row) -> new Submission(UUID.fromString(rs.getString(1)), rs.getInt(2), rs.getString(3),
                 rs.getString(4), rs.getString(5), json.readTree(rs.getString(6)),
                 rs.getString(7) == null ? null : json.readTree(rs.getString(7)), rs.getObject(8, OffsetDateTime.class)),
-                projectId, organizationId, request.size(), request.offset());
+                projectId, organizationId, normalizedSearch(search), searchPattern(search), searchPattern(search), searchPattern(search), request.size(), request.offset());
         Long total = db.queryForObject("""
                 SELECT count(*) FROM form_submissions s
                 JOIN publications p ON p.id = s.publication_id
                 JOIN projects pr ON pr.id = p.project_id
                 WHERE p.project_id = ? AND pr.organization_id = ?
-                """, Long.class, projectId, organizationId);
+                  AND (CAST(? AS text) IS NULL OR s.form_name ILIKE ? OR s.fields::text ILIKE ? OR s.field_schema::text ILIKE ?)
+                """, Long.class, projectId, organizationId, normalizedSearch(search), searchPattern(search), searchPattern(search), searchPattern(search));
         return PageResponse.of(items, request, total == null ? 0 : total);
+    }
+
+    private static String normalizedSearch(String search) {
+        if (search == null || search.isBlank()) return null;
+        String normalized = search.trim();
+        if (normalized.length() > 200)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Busca de respostas muito extensa");
+        return normalized;
+    }
+
+    private static String searchPattern(String search) {
+        String value = normalizedSearch(search);
+        return value == null ? null : "%" + value + "%";
     }
 
     @Transactional
     public String exportCsv(UUID userId, UUID selectedOrganizationId, UUID projectId) {
+        return exportCsv(userId,selectedOrganizationId,projectId,null);
+    }
+
+    @Transactional
+    public String exportCsv(UUID userId, UUID selectedOrganizationId, UUID projectId, String search) {
         UUID organizationId = selectedOrganizationId == null
                 ? organizations.findDefaultOrganizationId(userId)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN))
@@ -164,11 +189,12 @@ public class FormSubmissionService {
                 FROM form_submissions s JOIN publications p ON p.id = s.publication_id
                 JOIN projects pr ON pr.id = p.project_id
                 WHERE p.project_id = ? AND pr.organization_id = ?
+                  AND (CAST(? AS text) IS NULL OR s.form_name ILIKE ? OR s.fields::text ILIKE ? OR s.field_schema::text ILIKE ?)
                 ORDER BY s.occurred_at, s.id
                 """, (rs, row) -> new Submission(UUID.fromString(rs.getString(1)), rs.getInt(2), rs.getString(3),
                 rs.getString(4), rs.getString(5), json.readTree(rs.getString(6)),
                 rs.getString(7) == null ? null : json.readTree(rs.getString(7)), rs.getObject(8, OffsetDateTime.class)),
-                projectId, organizationId);
+                projectId, organizationId, normalizedSearch(search), searchPattern(search), searchPattern(search), searchPattern(search));
         StringBuilder csv = new StringBuilder("occurredAt,formName,fields\r\n");
         for (Submission submission : submissions) {
             String fields = csvFields(submission.fields());

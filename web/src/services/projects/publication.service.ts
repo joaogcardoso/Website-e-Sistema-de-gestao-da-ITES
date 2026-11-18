@@ -87,8 +87,9 @@ async function authenticated<T>(token: string, path: string, method = "GET", bod
   return response.json() as Promise<T>
 }
 
-export async function exportFormSubmissions(token: string, id: string): Promise<Blob> {
-  const response = await fetch(`/api/projects/${encodeURIComponent(id)}/publication/submissions/export`, {
+export async function exportFormSubmissions(token: string, id: string, search = ""): Promise<Blob> {
+  const query = search.trim() ? `?search=${encodeURIComponent(search.trim())}` : ""
+  const response = await fetch(`/api/projects/${encodeURIComponent(id)}/publication/submissions/export${query}`, {
     headers: { Authorization: `Bearer ${token}`, ...organizationRequestHeaders() },
   })
   if (!response.ok) throw new Error(response.status === 401
@@ -114,7 +115,11 @@ export const listPublications = (
 export const getPublicationsOverview = (token: string) => authenticated<DailyActivity[]>(token, "/publications/analytics")
 export const getPublication = (token: string, id: string) => authenticated<Publication>(token, `/projects/${encodeURIComponent(id)}/publication`)
 export const getPublicationAnalytics = (token: string, id: string) => authenticated<PublicationAnalytics>(token, `/projects/${encodeURIComponent(id)}/publication/analytics`)
-export const getFormSubmissions = (token: string, id: string, page = 0, size = 10) => authenticated<PageResponse<FormSubmission>>(token, `/projects/${encodeURIComponent(id)}/publication/submissions?page=${page}&size=${size}`)
+export const getFormSubmissions = (token: string, id: string, page = 0, size = 10, search = "") => {
+  const params = new URLSearchParams({ page: String(page), size: String(size) })
+  if (search.trim()) params.set("search", search.trim())
+  return authenticated<PageResponse<FormSubmission>>(token, `/projects/${encodeURIComponent(id)}/publication/submissions?${params}`)
+}
 export const getPublicationActivity = (token: string, id: string, page = 0, size = 10) => authenticated<PageResponse<PublicationAnalytics["recent"]["items"][number]>>(token, `/projects/${encodeURIComponent(id)}/publication/activity?page=${page}&size=${size}`)
 export const listPublicationReviewRequests = (token: string, id: string) => authenticated<PublicationReviewRequest[]>(token, `/projects/${encodeURIComponent(id)}/publication/review-requests`)
 export const listPublicationReviewInbox = (token: string) => authenticated<PublicationReviewInboxItem[]>(token, "/publication/review-requests")

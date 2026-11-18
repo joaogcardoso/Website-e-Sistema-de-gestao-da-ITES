@@ -23,3 +23,5 @@ A organização do repositório mantém as pastas `docs` (documentação) e `dat
 - [Estado de implementação e ponto de retomada](IMPLEMENTATION_STATUS.md)
 
 - [Integração contínua](ci.md)
+- [Comparação de autorização e provisão de administrador](security/comparison-cplug-scraper.md)
+- [Consulta de respostas, indicadores e exportações](security/analytics-and-responses.md)

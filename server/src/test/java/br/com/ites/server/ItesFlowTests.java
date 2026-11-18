@@ -99,6 +99,13 @@ class ItesFlowTests {
         mvc.perform(post("/ites/pages/inicio/publish").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
                 .content(json.writeValueAsString(Map.of("versionId",saved.get("versionId").asText()))))
                 .andExpect(status().isOk());
+        mvc.perform(post("/ites/pages/inicio/draft/restore-published").header("Authorization",editor))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/ites/pages/inicio/draft/restore-published").header("Authorization",admin))
+                .andExpect(status().isOk());
+        JsonNode restored = json.readTree(mvc.perform(get("/ites/pages/inicio/draft").header("Authorization",admin))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertEquals("Portal ITES",json.readTree(restored.get("document").asText()).at("/pages/0/blocks/0/props/title").asText());
         JsonNode published=json.readTree(mvc.perform(get("/ites/pages/inicio")).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString());
         JsonNode publishedDocument=json.readTree(published.get("document").asText());
@@ -135,6 +142,77 @@ class ItesFlowTests {
         mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsString(Map.of("email", "nova-solicitante@example.invalid", "password", "RequesterPass45!"))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void newlyRegisteredPermissionIsAutomaticallyGrantedOnlyToAdministratorRole() throws Exception {
+        String admin = register();
+        String requester = register();
+        UUID adminId = userId(admin);
+        UUID requesterId = userId(requester);
+        UUID roleId = jdbc.queryForObject("SELECT id FROM app_roles WHERE code='ADMINISTRATOR'", UUID.class);
+        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)",adminId,roleId);
+        jdbc.update("INSERT INTO app_permissions(code,description) VALUES('analytics.future_test','Teste de grant futuro') ON CONFLICT DO NOTHING");
+        assertEquals(jdbc.queryForObject("SELECT count(*) FROM app_permissions", Long.class),
+                jdbc.queryForObject("SELECT count(*) FROM app_role_permissions WHERE role_id=?", Long.class, roleId));
+        assertTrue(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM app_role_permissions rp JOIN app_permissions p ON p.code=rp.permission_code WHERE rp.role_id=? AND p.code='analytics.future_test')",Boolean.class,roleId));
+        assertTrue(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM app_user_roles ur JOIN app_role_permissions rp ON rp.role_id=ur.role_id WHERE ur.user_id=? AND rp.permission_code='analytics.future_test')",Boolean.class,adminId));
+        assertFalse(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM app_user_roles ur JOIN app_role_permissions rp ON rp.role_id=ur.role_id WHERE ur.user_id=? AND rp.permission_code='analytics.future_test')",Boolean.class,requesterId));
+    }
+
+    @Test
+    void analyticsAndExportsRequireExplicitAdministrativeGrants() throws Exception {
+        String requester = register();
+        String analyst = register();
+        String admin = register();
+        UUID adminId = userId(admin);
+        UUID analystId = userId(analyst);
+        UUID roleId = jdbc.queryForObject("SELECT id FROM app_roles WHERE code='ADMINISTRATOR'",UUID.class);
+        UUID analystRole = UUID.randomUUID();
+        jdbc.update("INSERT INTO app_roles(id,code,name) VALUES(?,?,?)",analystRole,"ANALYTICS_READER","Analista de leitura");
+        jdbc.update("INSERT INTO app_role_permissions(role_id,permission_code) VALUES(?, 'analytics.view')",analystRole);
+        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)",analystId,analystRole);
+        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)",adminId,roleId);
+        mvc.perform(get("/ites/analytics/demands").header("Authorization",requester)).andExpect(status().isForbidden());
+        mvc.perform(get("/ites/reports/demands.csv").header("Authorization",requester)).andExpect(status().isForbidden());
+        JsonNode aggregate = json.readTree(mvc.perform(get("/ites/analytics/demands").header("Authorization",analyst))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertEquals(0,aggregate.get("demands").size());
+        mvc.perform(get("/ites/analytics/demands").param("search", "solicitante")
+                .header("Authorization", analyst)).andExpect(status().isForbidden());
+        mvc.perform(get("/ites/analytics/demands").param("urgency", "arbitrary")
+                .header("Authorization", admin)).andExpect(status().isBadRequest());
+        mvc.perform(get("/ites/reports/demands.csv").header("Authorization",analyst)).andExpect(status().isForbidden());
+        mvc.perform(get("/ites/analytics/demands").header("Authorization",admin)).andExpect(status().isOk());
+        mvc.perform(get("/ites/reports/demands.csv").header("Authorization",admin)).andExpect(status().isOk());
+    }
+
+    @Test
+    void demandDashboardUsesVersionedPageStorageAndValidatesDataSources() throws Exception {
+        String requester = register();
+        String admin = register();
+        UUID adminId = userId(admin);
+        UUID roleId = jdbc.queryForObject("SELECT id FROM app_roles WHERE code='ADMINISTRATOR'",UUID.class);
+        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)",adminId,roleId);
+        mvc.perform(get("/ites/dashboards/demandas").header("Authorization",requester)).andExpect(status().isForbidden());
+        mvc.perform(get("/ites/pages/painel-demandas")).andExpect(status().isNotFound());
+        mvc.perform(get("/ites/pages/painel-demandas/draft").header("Authorization",admin)).andExpect(status().isNotFound());
+        String document = json.writeValueAsString(Map.of("kind","demand-dashboard","title","Painel de teste","blocks",java.util.List.of(
+                Map.of("id","status","title","Situação","dataSource","byStatus","visualization","bar","metric","total"))));
+        mvc.perform(put("/ites/dashboards/demandas").header("Authorization",requester).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("revision",0,"document",json.readTree(document)))))
+                .andExpect(status().isForbidden());
+        mvc.perform(put("/ites/dashboards/demandas").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("revision",0,"document",json.readTree(document)))))
+                .andExpect(status().isOk());
+        JsonNode saved = json.readTree(mvc.perform(get("/ites/dashboards/demandas").header("Authorization",admin))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertTrue(saved.get("document").asText().contains("Painel de teste"));
+        String invalid = json.writeValueAsString(Map.of("kind","demand-dashboard","title","Painel inválido","blocks",java.util.List.of(
+                Map.of("id","unsafe","title","Consulta","dataSource","sql","visualization","table","metric","total"))));
+        mvc.perform(put("/ites/dashboards/demandas").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsString(Map.of("revision",1,"document",json.readTree(invalid)))))
+                .andExpect(status().isBadRequest());
     }
 
     private String register() throws Exception {

@@ -22,6 +22,7 @@ const InstitutionalPage = lazy(() => import("@/pages/ites/InstitutionalPage"))
 const PortalPage = lazy(() => import("@/pages/ites/PortalPage"))
 const GrantsPage = lazy(() => import("@/pages/ites/GrantsPage"))
 const AdminDemandsPage = lazy(() => import("@/pages/ites/AdminDemandsPage"))
+const DemandAnalyticsPage = lazy(() => import("@/pages/ites/DemandAnalyticsPage"))
 const InstitutionalEditorPage = lazy(() => import("@/pages/ites/InstitutionalEditorPage"))
 const DemandsPage = lazy(() => import("@/pages/ites/DemandsPage"))
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"))
@@ -116,6 +117,7 @@ function AppRoutes() {
             <Route path="/demandas" element={<DemandsPage />} />
             <Route path="/administracao/editor" element={<InstitutionalEditorPage />} />
             <Route path="/administracao/demandas" element={<AdminDemandsPage />} />
+            <Route path="/administracao/indicadores" element={<DemandAnalyticsPage />} />
             <Route path="/administracao/permissoes" element={<GrantsPage />} />
             <Route
               path={webPaths.accountSettings}

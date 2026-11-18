@@ -1,26 +1,20 @@
 {
-  "name": "builder.vhstudio",
-  "short_name": "VH Builder",
-  "description": "A visual workspace for composing, previewing, and exporting React pages.",
+  "name": "ITES · IFRJ Campus Niterói",
+  "short_name": "ITES",
+  "description": "Portal da Incubadora Tecnológica de Economia Solidária do IFRJ Campus Niterói.",
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/ites-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ],
-  "theme_color": "#fafbfb",
-  "background_color": "#fafbfb",
+  "theme_color": "#24724f",
+  "background_color": "#f5f7ef",
   "display": "standalone",
   "start_url": "/",
   "scope": "/",
   "id": "/",
-  "lang": "en"
+  "lang": "pt-BR"
 }

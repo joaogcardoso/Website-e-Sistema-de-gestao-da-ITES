@@ -50,7 +50,7 @@ export function PropertyEditor({
   if (!definition) return null
   const categoryLabel = definition.category === "navbar"
     ? "Navegação"
-    : definition.category.startsWith("vh-")
+    : definition.category.startsWith("profile-")
       ? "Portfólio"
       : definition.category.replaceAll("-", " ")
   const fields = definition.editableProperties
@@ -335,7 +335,7 @@ export function PropertyEditor({
             ))}
           </div>
         </section>}
-        {definition.id === "vh-blog-index" && (
+        {definition.id === "editorial-blog-index" && (
           <>
             <section className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5">
             <div className="mb-4">
@@ -375,7 +375,7 @@ export function PropertyEditor({
             </section>
           </>
         )}
-        {definition.id === "vh-hero" && (
+        {definition.id === "profile-hero" && (
           <>
             <section className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5">
             <div className="mb-4">
@@ -400,7 +400,7 @@ export function PropertyEditor({
             </section>
           </>
         )}
-        {definition.id === "vh-projects" && (
+        {definition.id === "profile-projects" && (
           <>
             <section className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5">
             <div className="mb-4">
@@ -428,7 +428,7 @@ export function PropertyEditor({
             </section>
           </>
         )}
-        {fields.includes("imageUrl") && definition.id !== "vh-hero" && (
+        {fields.includes("imageUrl") && definition.id !== "profile-hero" && (
           <section className="rounded-xl border border-border bg-muted/20 p-4 sm:p-5">
             <div className="mb-4">
               <h4 className="text-sm font-semibold text-foreground">Imagem do bloco</h4>

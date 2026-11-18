@@ -12,7 +12,7 @@ openssl rand -base64 32
 openssl rand -base64 32
 ```
 
-Defina em `.env` a senha do banco e os valores gerados em `AUTH_JWT_SECRET` e `AUTH_TOTP_ENCRYPTION_KEY`. Para receber e-mails de confirmação de cadastro, configure `MAILER_ENABLED=true`, `RESEND_API_KEY` e `MAIL_FROM_ADDRESS` de um domínio autorizado. Com o envio de e-mails desativado, o cadastro por link de confirmação não pode ser concluído; as contas existentes ainda podem entrar.
+Defina em `.env` a senha do banco e os valores gerados em `AUTH_JWT_SECRET` e `AUTH_TOTP_ENCRYPTION_KEY`. Preencha `INITIAL_ADMIN_EMAIL` e `INITIAL_ADMIN_PASSWORD` para provisionar o primeiro administrador na inicialização. O provisionamento só cria a conta se ela ainda não existir; não redefine a senha de uma conta preexistente. Mantenha `MAILER_ENABLED=false` para operar sem provedor de e-mail. A verificação por e-mail não é exigida para contas criadas pela administração e o segundo fator é opcional.
 
 Inicie os serviços:
 
@@ -24,13 +24,9 @@ docker compose logs --tail=100 server
 
 O portal fica em `http://localhost:3000`; a API é encaminhada por `/api/` no mesmo endereço. A verificação do frontend é `http://localhost:3000/health`, e a da API é `http://localhost:3000/api/actuator/health`. O PostgreSQL não publica porta no host. O volume `postgres_data` preserva dados entre recriações dos contêineres. Não execute `docker compose down -v` se desejar manter os dados.
 
-Após cadastrar uma conta institucional e confirmar seu e-mail, atribua o primeiro papel de administrador com acesso ao banco do contêiner:
+Após entrar com a conta inicial, a administração pode criar contas de solicitantes em `/administracao/permissoes`. A pessoa receberá o acesso por um canal definido pela equipe; a plataforma não envia nem exibe a senha criada. Recomenda-se trocar a senha inicial após o primeiro acesso.
 
-```sh
-docker compose exec -T postgres psql -U ites -d ites -v admin_email='admin@example.org' < database/bootstrap_admin.sql
-```
-
-Substitua `admin@example.org` pelo endereço real. Depois disso, o administrador poderá conceder e revogar papéis na interface. O vínculo com uma organização não concede permissões administrativas.
+Para habilitar cadastro público com confirmação por link, configure `MAILER_ENABLED=true`, `RESEND_API_KEY` e `MAIL_FROM_ADDRESS` de um domínio autorizado. O vínculo com uma organização não concede permissões administrativas.
 
 A página inicial é pública. O solicitante usa `/cadastro`, `/entrar` e `/demandas`. A equipe autorizada acessa `/administracao/demandas`, `/administracao/permissoes` e `/administracao/editor`. A API valida identidade e permissão no servidor.
 
@@ -46,4 +42,4 @@ Os testes de backend usam Testcontainers e precisam de Docker. A pipeline de PR 
 ## Equipe
 
 _[Kauã Fiuza Clemente](https://github.com/kauafiuza)_
-_[Victor Hugo Lima Monteiro](https://github.com/vhlima1008)_
+_Victor Hugo Lima Monteiro_

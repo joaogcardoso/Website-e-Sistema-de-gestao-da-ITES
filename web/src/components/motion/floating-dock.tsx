@@ -18,7 +18,7 @@ function FloatingDockMobile({ items, className, onNavigate }: { items: FloatingD
   const [open, setOpen] = useState(false)
   return <div className={cn("relative block md:hidden", className)}>
     <AnimatePresence>
-      {open ? <motion.div layoutId="vh-dock" className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2">
+      {open ? <motion.div layoutId="ites-dock" className="absolute inset-x-0 bottom-full mb-2 flex flex-col gap-2">
         {items.map((item, index) => <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10, transition: { delay: index * 0.05 } }} transition={{ delay: (items.length - 1 - index) * 0.05 }}>
           <a href={item.href} aria-label={item.title} title={item.title} data-editor-action="scroll" onClick={(event) => { if (!onNavigate) return; event.preventDefault(); onNavigate(item.href); setOpen(false) }} className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-md hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"><span className="size-4">{item.icon}</span></a>
         </motion.div>)}

@@ -273,7 +273,7 @@ export default function AccountSecurityPage() {
               [
                 "preferences",
                 "Preferências",
-                "Experiência no Builder",
+                "Experiência no editor",
                 Settings2,
               ],
             ] as const

@@ -20,7 +20,7 @@ export function SubmitButton({
       icon={icon}
       disabled={disabled}
       size="lg"
-      className="vh-cta-gradient w-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="ites-cta-gradient w-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       {children}
     </StatefulButton>

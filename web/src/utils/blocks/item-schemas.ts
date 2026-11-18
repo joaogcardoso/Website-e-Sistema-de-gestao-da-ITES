@@ -282,24 +282,24 @@ export const editableItems: Record<
     value: "URL da imagem de capa",
     featureLabels: ["Texto alternativo da imagem", "Tecnologias", "Repositório"],
   },
-  "vh-about": {
+  "profile-about": {
     title: "Tecnologia, habilidade ou link do perfil",
     href: "URL do perfil ou currículo",
     value: "Tipo (skill, github, linkedin, cv)",
   },
-  "vh-experience": {
+  "profile-experience": {
     title: "Instituição ou experiência",
     description: "Cargo, período e detalhes (texto longo)",
     value: "Tipo (trabalho, formação, certificação, pesquisa)",
   },
-  "vh-projects": {
+  "profile-projects": {
     title: "Projeto",
     description: "Resumo do projeto",
     href: "Link de detalhes ou repositório",
     value: "Categoria do projeto",
     features: "Tecnologias",
   },
-  "vh-blog-index": {
+  "editorial-blog-index": {
     title: "Título do artigo",
     description: "Resumo do artigo",
     href: "Link do artigo",
@@ -307,7 +307,7 @@ export const editableItems: Record<
     featureLabels: ["Data de publicação", "Categoria", "Texto alternativo da imagem", "Conteúdo do artigo"],
     multilineFeatures: [3],
   },
-  "vh-contact": {
+  "institutional-contact": {
     title: "Rede ou canal",
     href: "Link do canal",
     value: "Ícone (github, linkedin, mail)",

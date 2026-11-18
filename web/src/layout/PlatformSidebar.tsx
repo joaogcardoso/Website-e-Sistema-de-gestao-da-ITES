@@ -16,7 +16,7 @@ import {
 } from "lucide-react"
 import { useAuth } from "@/context/auth/auth.context"
 import { webPaths } from "@/router/helpers/route-paths"
-import brand from "@/assets/brand/vh-symbol-editable.svg"
+import brand from "@/assets/brand/ites-mark.svg"
 import { Button } from "@/components/ui/button"
 import {
   CenterMorphModal,
@@ -101,7 +101,7 @@ export function AppSidebar({
         </span>
         {!collapsed ? (
           <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
-            builder<span className="font-normal">.vhstudio</span>
+            <span className="font-semibold tracking-wide">ITES</span>
           </span>
         ) : null}
         <Button
@@ -117,7 +117,7 @@ export function AppSidebar({
       {section === "navigation" ? (
         <nav
           className="flex min-h-0 flex-1 flex-col gap-1 p-3"
-          aria-label="Seções do Builder"
+          aria-label="Seções do editor"
         >
           {items.map(({ id, label, to, icon: Icon }) => (
             <Link

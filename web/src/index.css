@@ -23,20 +23,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Identidade oficial: valores mantidos no :root. */
-  --color-vh-malibu: var(--vh-malibu);
-  --color-vh-royal-blue: var(--vh-royal-blue);
-  --color-vh-cornflower-blue: var(--vh-cornflower-blue);
-  --color-vh-foam: var(--vh-foam);
-  --color-vh-chambray: var(--vh-chambray);
-  --color-vh-half-baked: var(--vh-half-baked);
-  --color-vh-danube: var(--vh-danube);
-  --color-vh-botticelli: var(--vh-botticelli);
-  --color-vh-raven: var(--vh-raven);
-  --color-vh-geyser: var(--vh-geyser);
-  --color-vh-mirage: var(--vh-mirage);
-  --color-vh-cadet-blue: var(--vh-cadet-blue);
-  /* Compatibilidade com blocos autorais legados. */
+  /* Paleta institucional da ITES. */
+  --color-ites-green: var(--ites-green);
+  --color-ites-forest: var(--ites-forest);
+  --color-ites-sage: var(--ites-sage);
+  --color-ites-cream: var(--ites-cream);
+  --color-ites-red: var(--ites-red);
+  --color-ites-orange: var(--ites-orange);
+  /* Cores semânticas usadas pelos blocos de conteúdo. */
   --color-brand-amber: #ffb110;
   --color-brand-coral: #f64932;
   --color-brand-sky: #62aef0;
@@ -60,7 +54,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
-  --color-border-strong: var(--vh-border-strong);
+  --color-border-strong: var(--ites-border-strong);
   --color-field: var(--field);
   --color-input-border: var(--input-border);
   --color-input: var(--input);
@@ -90,19 +84,13 @@
 }
 
 :root {
-  /* Paleta VH Studio imutável. */
-  --vh-malibu: #7ebbfc;
-  --vh-royal-blue: #5339eb;
-  --vh-cornflower-blue: #4d65f9;
-  --vh-foam: #d2f1fc;
-  --vh-chambray: #344e8c;
-  --vh-half-baked: #8db7da;
-  --vh-danube: #7697ce;
-  --vh-botticelli: #c6d9e7;
-  --vh-raven: #6f778b;
-  --vh-geyser: #cbd3dc;
-  --vh-mirage: #1d2736;
-  --vh-cadet-blue: #b4bcc7;
+  /* Cores da identidade visual institucional. */
+  --ites-green: #24724f;
+  --ites-forest: #174d38;
+  --ites-sage: #84ac8b;
+  --ites-cream: #f5f7ef;
+  --ites-red: #b9403b;
+  --ites-orange: #c78d26;
 
   /* Contrato semântico: superfícies e texto neutros. */
   --background: #fafafa;
@@ -111,7 +99,7 @@
   --card-foreground: var(--foreground);
   --popover: #ffffff;
   --popover-foreground: var(--foreground);
-  --primary: #4d65f9; /* Fallback sólido; não determina fundo do shell. */
+  --primary: #24724f; /* Cor principal dos controles e ações. */
   --primary-foreground: #ffffff;
   --secondary: #f5f5f5;
   --secondary-foreground: #262626;
@@ -121,12 +109,12 @@
   --accent-foreground: var(--foreground);
   --destructive: #c62828;
   --border: #e5e5e5;
-  --vh-border-strong: #d4d4d4;
+  --ites-border-strong: #d4d4d4;
   --field: #f5f5f5;
   --input-border: #d4d4d4;
   --input: var(--input-border); /* Compatibilidade com o mapeamento existente. */
   --overlay-border: var(--border);
-  --ring: #4d65f9;
+  --ring: #24724f;
 
   --sidebar: var(--card);
   --sidebar-foreground: var(--foreground);
@@ -137,12 +125,12 @@
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 
-  /* Identidade vs. CTA: o último tem stops escurecidos para texto branco. */
-  --vh-brand-gradient: linear-gradient(110deg, #a0eaf6 0%, #7ebbfc 28%, #4d65f9 68%, #5339eb 100%);
-  --vh-cta-gradient: linear-gradient(110deg, #3154b8 0%, #4147b7 65%, #5339eb 100%);
-  --builder-badge-gradient: var(--vh-brand-gradient);
+  /* Gradientes institucionais com contraste adequado para ações. */
+  --ites-brand-gradient: linear-gradient(110deg, #9bc9a8 0%, #4c956b 45%, #174d38 100%);
+  --ites-cta-gradient: linear-gradient(110deg, #2f8054 0%, #24724f 65%, #174d38 100%);
+  --ites-badge-gradient: var(--ites-brand-gradient);
 
-  /* Shell Builder sem tingimento cromático. */
+  /* Área de edição com superfícies neutras. */
   --builder-toolbar: var(--card);
   --builder-compact-control: var(--secondary);
   --builder-toolbar-group: var(--secondary);
@@ -184,7 +172,7 @@
   --card-foreground: var(--foreground);
   --popover: #222222;
   --popover-foreground: var(--foreground);
-  --primary: #8bb8ff;
+  --primary: #9bc9a8;
   --primary-foreground: #101010;
   --secondary: #222222;
   --secondary-foreground: #e5e5e5;
@@ -194,12 +182,12 @@
   --accent-foreground: var(--foreground);
   --destructive: #ff655a;
   --border: #303030;
-  --vh-border-strong: #454545;
+  --ites-border-strong: #454545;
   --field: #222222;
   --input-border: #454545;
   --input: var(--input-border);
   --overlay-border: var(--border);
-  --ring: #8bb8ff;
+  --ring: #9bc9a8;
   --sidebar: var(--card);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -239,16 +227,16 @@
 }
 
 /* Aplicar somente a uma ação explicitamente definida como CTA principal. */
-.vh-cta-gradient:not(:disabled):not([aria-disabled="true"]) {
-  background-color: #4147b7;
-  background-image: var(--vh-cta-gradient);
+.ites-cta-gradient:not(:disabled):not([aria-disabled="true"]) {
+  background-color: #174d38;
+  background-image: var(--ites-cta-gradient);
   color: #ffffff;
   border-color: transparent;
 }
-.vh-cta-gradient:hover:not(:disabled):not([aria-disabled="true"]) {
+.ites-cta-gradient:hover:not(:disabled):not([aria-disabled="true"]) {
   filter: brightness(0.96);
 }
-.vh-cta-gradient:focus-visible {
+.ites-cta-gradient:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
 }
@@ -286,7 +274,7 @@
 }
 .builder-ui .builder-outline-item[aria-pressed="true"] {
   background-color: var(--builder-outline-selected);
-  box-shadow: inset 3px 0 var(--vh-border-strong);
+  box-shadow: inset 3px 0 var(--ites-border-strong);
 }
 @media (min-width: 640px) {
   .builder-toolbar-actions .builder-toolbar-action {
@@ -513,7 +501,7 @@ html.light { color-scheme: light; }
   box-shadow: none;
 }
 .builder-ui [data-slot="card"][data-active-page="true"]:not([data-builder-content-preview] *) {
-  border-color: var(--vh-border-strong);
+  border-color: var(--ites-border-strong);
   background-color: var(--secondary);
 }
 .builder-ui [data-slot="alert"] {

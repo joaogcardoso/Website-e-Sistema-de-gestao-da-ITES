@@ -18,7 +18,15 @@ export default function SignupPage() {
   const [resending, setResending] = useState(false)
   const [availableAt, setAvailableAt] = useState(0)
   const [now, setNow] = useState(() => Date.now())
+  const [emailSignupEnabled, setEmailSignupEnabled] = useState<boolean | null>(null)
   const seconds = Math.max(0, Math.ceil((availableAt - now) / 1000))
+
+  useEffect(() => {
+    fetch("/api/public/auth/config")
+      .then(response => response.ok ? response.json() as Promise<{ emailSignupEnabled: boolean }> : null)
+      .then(config => setEmailSignupEnabled(config?.emailSignupEnabled ?? false))
+      .catch(() => setEmailSignupEnabled(false))
+  }, [])
 
   async function send(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -60,6 +68,21 @@ export default function SignupPage() {
     const timer = window.setInterval(() => setNow(Date.now()), 1000)
     return () => window.clearInterval(timer)
   }, [sent, availableAt])
+
+  if (emailSignupEnabled !== true) {
+    return (
+      <AuthShell
+        eyebrow="Acesso à plataforma"
+        title="Solicite seu acesso"
+        description="Neste momento, a equipe da ITES cria as contas diretamente. Entre em contato com a administração para receber suas credenciais."
+        footer={<>Já recebeu suas credenciais? <Link to={webPaths.login} className="font-semibold text-primary hover:underline">Entrar</Link></>}
+      >
+        <p className="rounded-lg bg-primary/10 p-4 text-sm text-foreground">
+          Não é necessário confirmar o cadastro por e-mail. A equipe informará quando sua conta estiver disponível.
+        </p>
+      </AuthShell>
+    )
+  }
 
   return (
     <AuthShell

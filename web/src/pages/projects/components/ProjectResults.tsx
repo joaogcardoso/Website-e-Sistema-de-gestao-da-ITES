@@ -86,7 +86,7 @@ export function ProjectResults({
             <h2>Seu espaço de criação começa aqui</h2>
           </EmptyTitle>
           <EmptyDescription>
-            Crie um projeto para começar a construir no VH Studio.
+            Crie um projeto para começar a organizar as páginas institucionais da ITES.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>

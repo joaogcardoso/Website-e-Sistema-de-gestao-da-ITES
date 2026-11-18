@@ -4,13 +4,13 @@ import { themePresets } from "@/pages/editor/lib/project-theme"
 export const PortfolioStudioPage: PageTemplate = {
   order: 28,
   name: "Portfólio imersivo",
-  navbar: "navbar-vh-dock",
-  blocks: ["vh-hero", "vh-about", "vh-experience", "vh-projects", "vh-contact"],
+  navbar: "navbar-editorial-dock",
+  blocks: ["profile-hero", "profile-about", "profile-experience", "profile-projects", "institutional-contact"],
   theme: {
-    preset: "VH Portfolio",
+    preset: "ITES Institucional",
     mode: "dark",
-    light: { ...themePresets["VH Portfolio"].light },
-    dark: { ...themePresets["VH Portfolio"].dark },
+    light: { ...themePresets["ITES Institucional"].light },
+    dark: { ...themePresets["ITES Institucional"].dark },
     headingFont: "Roboto Variable",
     bodyFont: "Nunito Sans Variable",
     headingSize: 100,

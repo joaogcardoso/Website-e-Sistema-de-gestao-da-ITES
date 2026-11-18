@@ -72,12 +72,12 @@ export default function LoginPage() {
       title={challenge ? "Confirme seu acesso" : "Entrar"}
       footer={
         <>
-          Ainda não tem conta?{" "}
+          Precisa de acesso?{" "}
           <Link
             to={`${webPaths.signup}${addingAccount ? "?addAccount=1" : ""}`}
             className="font-semibold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
-            Criar conta
+            Solicitar acesso
           </Link>
         </>
       }

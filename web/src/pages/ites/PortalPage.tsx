@@ -26,7 +26,7 @@ export default function PortalPage() {
       }).catch(() => setPublished(null))
   }, [])
   return <main className="ites-page">
-    <header className="ites-header"><strong>ITES · IFRJ Niterói</strong><nav><Link to="/entrar">Entrar</Link><Link to="/cadastro">Cadastrar</Link><Link to="/demandas">Minhas demandas</Link></nav></header>
+    <header className="ites-header"><strong>ITES · IFRJ Niterói</strong><nav><Link to="/entrar">Entrar</Link><Link to="/cadastro">Solicitar acesso</Link><Link to="/demandas">Minhas demandas</Link></nav></header>
     {published?.pages[0] ? <PageContent page={published.pages[0]} /> : <section className="ites-hero"><p>Incubadora Tecnológica de Economia Solidária</p><h1>Conexões para uma economia mais solidária</h1><p>Compartilhe sua necessidade com a ITES e acompanhe cada etapa do atendimento.</p><Link className="ites-button" to="/demandas">Enviar demanda</Link></section>}
     <div className="ites-grid">{sections.map(section => <section className="ites-card" key={section.title}><h2><Link to={`/institucional/${section.slug}`}>{section.title}</Link></h2><p>{section.text}</p></section>)}</div>
   </main>

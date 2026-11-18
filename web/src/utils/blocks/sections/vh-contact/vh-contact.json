@@ -1,0 +1,30 @@
+{
+  "id": "vh-contact",
+  "name": "Portfólio — Contato e rodapé",
+  "category": "vh-contact",
+  "categoryName": "Contato",
+  "variant": "editorial-footer",
+  "description": "Encerramento enxuto com chamada de contato, redes e retorno ao topo.",
+  "defaults": {
+    "eyebrow": "Contato",
+    "title": "Vamos construir seu próximo projeto?",
+    "button": "vhlima1008@gmail.com",
+    "href": "mailto:vhlima1008@gmail.com",
+    "description": "© 2026 Victor Hugo. Todos os direitos reservados.",
+    "layoutWidth": "full",
+    "layoutGutter": 0,
+    "blockAnimation": "fade-up",
+    "items": [
+      { "id": "social-code", "title": "GitHub", "description": "", "href": "https://github.com/vhlima1008", "value": "github", "features": [] },
+      { "id": "social-email", "title": "E-mail", "description": "", "href": "mailto:vhlima1008@gmail.com", "value": "mail", "features": [] }
+    ]
+  },
+  "editableProperties": ["eyebrow", "title", "button", "href", "description", "items"],
+  "export": {
+    "componentName": "VhContactBlock",
+    "sourceFile": "sections/vh-contact/vh-contact.tsx",
+    "dependencies": ["react", "lucide-react"],
+    "tailwindVersion": 4
+  },
+  "order": 205
+}

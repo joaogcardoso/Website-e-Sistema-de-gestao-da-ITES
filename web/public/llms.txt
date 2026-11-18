@@ -1,0 +1,5 @@
+# builder.vhstudio
+
+builder.vhstudio is a VH Studio visual page builder. Users can browse and arrange reusable sections, manage pages, preview responsive layouts, and export React/TypeScript project files. The current application routes lead to editing and preview rather than public documentation.
+
+Brand reference: https://vhlima.com.br/

@@ -2,7 +2,7 @@
 
 O SGBD escolhido é o **PostgreSQL**, o mesmo do `web-builder`. Um único banco relacional guarda identidade e permissões, demandas, conteúdo público do portal e versões das páginas do editor.
 
-Scripts propostos (ainda não executados): [schema](../../database/coursework/01_schema.sql), [dados de demonstração](../../database/coursework/02_seed.sql), [consultas](../../database/coursework/03_queries.sql), [rotinas](../../database/coursework/04_routines.sql) e [segurança](../../database/coursework/05_security.sql).
+Scripts propostos (executados exploratoriamente em PostgreSQL 17; ainda não integrados à aplicação): [schema](../../database/coursework/01_schema.sql), [dados de demonstração](../../database/coursework/02_seed.sql), [consultas](../../database/coursework/03_queries.sql), [rotinas](../../database/coursework/04_routines.sql) e [segurança](../../database/coursework/05_security.sql).
 
 ## Dicionário de dados
 
@@ -57,11 +57,11 @@ Os papéis do banco de dados são diferentes das permissões dos usuários dentr
 ## Evidências
 
 Uma validação exploratória em PostgreSQL 17 foi executada; consulte [evidências](evidence/validation-postgresql17.md). Ainda é necessário registrar saídas reais em PostgreSQL 16 para produção e executar os cenários restantes. Registrar saídas reais do `psql` para criação, contagem, 11 consultas, três procedimentos, funções, gatilhos, privilégios e restrições. Comparar `information_schema` com a imagem. Os hashes demonstrativos não permitem autenticação.
-Nenhum script foi executado até agora. Devem ser registradas as saídas reais do `psql` para: criação das tabelas, contagens, as 11 consultas, as 3 procedures, 3 functions e 3 triggers, os privilégios e as restrições. Também é preciso comparar o `information_schema` com o diagrama. As senhas de demonstração não permitem login.
+A execução exploratória está em `evidence/`. Ainda faltam validação na versão de implantação, testes de autorização completos e comparação automatizada entre esquema e diagrama. As senhas de demonstração não permitem login.
 
 ## Ajustes planejados
 
-- Traduzir os nomes de tabelas e colunas para português.
+- Preservar identificadores programáticos em inglês, conforme a política do projeto.
 - Dados de demonstração realistas (organizações, serviços e demandas do contexto da economia solidária).
 - Criar os usuários de login do banco, exigidos pelo APD3.
 - Corrigir a falha de segurança do papel da aplicação.

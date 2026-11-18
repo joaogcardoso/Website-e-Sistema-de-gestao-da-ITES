@@ -1,4 +1,4 @@
--- Owner runs this; login credentials provisioned externally.
+-- O proprietário do banco executa este script; credenciais de login são provisionadas externamente.
 CREATE ROLE ites_runtime NOLOGIN;
 CREATE ROLE ites_reporting NOLOGIN;
 CREATE ROLE ites_migration NOLOGIN;

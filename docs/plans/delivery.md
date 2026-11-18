@@ -1,20 +1,20 @@
-# Implementation roadmap and validation plan
+# Plano de implementação e validação
 
-Every stage depends on approval of database proposal and preceding stage. Each requires passing checks and stored evidence before progression.
+Cada etapa depende da aprovação da proposta do banco e das etapas anteriores. Nenhuma etapa avança sem verificações e evidências registradas.
 
-| Stage | Objective and deliverable | Acceptance/validation | Risk |
+| Etapa | Objetivo e entrega | Aceite e validação | Risco |
 |---|---|---|---|
-| 1 | DB foundation: Flyway and schema | clean migration, FK/check tests | schema drift |
-| 2 | Auth/grants: registration, roles | login/logout, 403, revocation | privilege escalation |
-| 3 | Portal: seven sections/content | published-only public rendering | leaked drafts |
-| 4 | Requester profile/org | persistence and ownership | duplicate identity |
-| 5 | Demand submission | code, Pendente, relogin | lost data |
-| 6 | Admin review/decisions | filter, reasons, audit | invalid transition |
-| 7 | Tracking | own data only | IDOR |
-| 8 | Builder | save/reload/preview/publish | unsafe blocks |
-| 9 | Automations | 3 procedures/functions/triggers | conflicting rules |
-| 10 | DB security | roles, grants, denies | bypass via direct DML |
-| 11 | Integration tests | requester/admin/builder E2E | environment |
-| 12 | Final evidence/docs | real transcripts and mapping | incomplete evidence |
+| 1 | Base de dados com Flyway | migração limpa, testes de FK e CHECK | divergência do esquema |
+| 2 | Autenticação e permissões | acesso, saída, 403 e revogação | elevação de privilégio |
+| 3 | Portal com sete seções | somente publicação aparece | exposição de rascunho |
+| 4 | Perfil e organização | persistência e titularidade | identidade duplicada |
+| 5 | Envio de demanda | código, Pendente e novo acesso | perda de dados |
+| 6 | Análise e decisão | filtro, motivo e auditoria | transição inválida |
+| 7 | Acompanhamento | acesso apenas ao próprio registro | acesso indevido por ID |
+| 8 | Editor visual | salvar, reabrir, prévia e publicação | bloco inseguro |
+| 9 | Automações do banco | três procedimentos, funções e gatilhos | regras conflitantes |
+| 10 | Segurança do banco | papéis, concessões e negativas | escrita direta indevida |
+| 11 | Testes integrados | jornadas completas | ambiente indisponível |
+| 12 | Evidências e documentação final | resultados reais e rastreabilidade | evidência incompleta |
 
-Use fresh PostgreSQL to apply migrations and demo seed; count all tables (>=20), execute 5 basic/3 JOIN/3 subqueries, procedures/functions/triggers including negative cases, role privilege checks, compare diagram to schema. Test requester registration/login/submit/relogin/foreign demand denial. Test admin accept/reject/status/audit and requester visibility. Test builder unauthorized denial, draft reload, publish and public render. Run typecheck/lint/unit/backend integration/build/startup/Playwright when available. Save commands, outputs and screenshots as real evidence; never use mocks for final E2E. Accessibility: keyboard navigation, labels, contrast and responsive viewport checks.
+Em PostgreSQL vazio, executar migrações e carga demonstrativa; contar todas as tabelas (mínimo 20), executar cinco consultas básicas, três JOINs e três subconsultas, testar procedimentos, funções e gatilhos com casos positivos e negativos, verificar privilégios e restrições e comparar imagem e esquema. Testar cadastro, autenticação, envio, persistência após novo acesso e negação de demanda alheia. Testar aceite, recusa, histórico e visibilidade para solicitante. Testar negação de edição não autorizada, reabertura do rascunho, publicação e renderização. Executar verificação de tipos, lint, testes unitários, integração de backend, build, inicialização e Playwright quando disponíveis. Guardar comandos, saídas e capturas reais; testes finais ponta a ponta não usarão respostas simuladas. Verificar teclado, rótulos, contraste e telas responsivas.

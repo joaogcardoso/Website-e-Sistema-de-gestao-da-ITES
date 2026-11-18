@@ -107,6 +107,36 @@ class ItesFlowTests {
         mvc.perform(get("/ites/pages/inicio")).andExpect(status().isNotFound());
     }
 
+    @Test
+    void administratorCreatesVerifiedRequesterWithoutEmailDelivery() throws Exception {
+        String admin = register();
+        String requester = register();
+        UUID adminId = userId(admin);
+        UUID adminRole = jdbc.queryForObject("SELECT id FROM app_roles WHERE code='ADMINISTRATOR'", UUID.class);
+        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)", adminId, adminRole);
+
+        String accountJson = json.writeValueAsString(Map.of(
+                "firstName", "Nova", "lastName", "Solicitante", "email", "nova-solicitante@example.invalid",
+                "password", "RequesterPass45!"));
+        mvc.perform(post("/ites/users").header("Authorization", requester)
+                        .contentType(MediaType.APPLICATION_JSON).content(accountJson))
+                .andExpect(status().isForbidden());
+
+        String createdBody = mvc.perform(post("/ites/users").header("Authorization", admin)
+                        .contentType(MediaType.APPLICATION_JSON).content(accountJson))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        JsonNode created = json.readTree(createdBody);
+        UUID createdId = UUID.fromString(created.get("id").asText());
+        assertTrue(createdBody.contains("nova-solicitante@example.invalid"));
+        assertFalse(createdBody.contains("RequesterPass45!"));
+        assertTrue(jdbc.queryForObject("SELECT email_verified_at IS NOT NULL FROM users WHERE id=?", Boolean.class, createdId));
+        assertTrue(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM app_user_roles ur JOIN app_roles r ON r.id=ur.role_id WHERE ur.user_id=? AND r.code='REQUESTER')", Boolean.class, createdId));
+
+        mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsString(Map.of("email", "nova-solicitante@example.invalid", "password", "RequesterPass45!"))))
+                .andExpect(status().isOk());
+    }
+
     private String register() throws Exception {
         String email="ites-"+UUID.randomUUID()+"@example.invalid";
         int sequence=IP_SEQUENCE.incrementAndGet();

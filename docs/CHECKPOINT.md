@@ -5,7 +5,8 @@ A plataforma está organizada em `web/`, `server/` e `database/`. O portal públ
 ## Implementado
 
 - Portal público com áreas institucionais e acesso ao fluxo de demandas.
-- Cadastro autenticado por confirmação de e-mail, login e sessão.
+- Login e sessão; o cadastro público por e-mail é opcional e administradores podem provisionar solicitantes sem envio de mensagens.
+- Administrador inicial configurável por ambiente e preparado apenas quando a conta ainda não existe.
 - Cadastro de organizações e associação por demanda.
 - Envio e acompanhamento persistente de demandas com código e histórico.
 - Administração com classificação, filtros, decisões justificadas e permissões explícitas.

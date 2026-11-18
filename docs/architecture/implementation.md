@@ -31,6 +31,8 @@ Flyway em `server/src/main/resources/db/migration/` é a única fonte operaciona
 
 A autenticação por sessão é compartilhada entre as áreas da plataforma. Os papéis e as concessões são persistidos no PostgreSQL. A afiliação a uma organização não concede acesso administrativo. O backend valida cada operação protegida e restringe demandas ao solicitante proprietário.
 
+O administrador inicial pode ser provisionado uma única vez pelas variáveis `INITIAL_ADMIN_EMAIL` e `INITIAL_ADMIN_PASSWORD`. A conta é marcada como verificada e recebe o papel administrativo sem depender de e-mail; o provisionador não substitui a senha de uma conta preexistente. Com o provedor de e-mail desligado, a administração cria solicitantes pela interface de permissões e a API atribui o papel de solicitante. A confirmação por e-mail do cadastro público permanece opcional e o segundo fator não é obrigatório.
+
 ## Portal e editor de páginas
 
 O portal consome a versão publicada das páginas. A administração edita páginas de conteúdo por meio de um catálogo permitido de blocos, propriedades e URLs validadas. Rascunhos são versionados no banco; a publicação e o registro de auditoria são transacionais. O documento persistido não executa código.

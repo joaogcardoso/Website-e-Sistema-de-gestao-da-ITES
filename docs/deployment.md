@@ -8,8 +8,9 @@ A configuração usa três serviços: `web` (Nginx com frontend estático), `ser
 2. Disponibilize o repositório e crie `.env` a partir de `.env.example`.
 3. Defina `DB_PASSWORD` forte e dois segredos Base64 independentes, gerados por `openssl rand -base64 32`.
 4. Defina `AUTH_BROWSER_ORIGINS` e `APP_BASE_URL` para o domínio HTTPS definitivo e `AUTH_COOKIE_SECURE=true`.
-5. Configure `MAILER_ENABLED=true`, `RESEND_API_KEY` e `MAIL_FROM_ADDRESS` autorizado para o cadastro por e-mail.
-6. Defina `WEB_HOST_PORT` para a porta interna publicada no host; configure domínio, proxy reverso e certificado TLS no Dokploy apontando para o serviço `web`.
+5. Configure `INITIAL_ADMIN_EMAIL` e `INITIAL_ADMIN_PASSWORD` antes da primeira inicialização. O backend cria essa conta uma única vez, já verificada, e associa o papel de administrador. Guarde a senha inicial em um canal seguro e troque-a após o primeiro acesso.
+6. O e-mail é opcional. Sem provedor, administradores criam contas de solicitantes em `/administracao/permissoes`; para ativar cadastro público com link, configure `MAILER_ENABLED=true`, `RESEND_API_KEY` e `MAIL_FROM_ADDRESS` autorizado.
+7. Defina `WEB_HOST_PORT` para a porta interna publicada no host; configure domínio, proxy reverso e certificado TLS no Dokploy apontando para o serviço `web`.
 
 No Dokploy, crie uma aplicação Docker Compose ligada ao repositório e a `compose.yaml`. Cadastre as variáveis como segredos do ambiente. Não exponha a porta do PostgreSQL. Atualizações devem usar uma revisão versionada do repositório; examine `docker compose ps`, `docker compose logs server` e os health checks após cada implantação. O frontend responde em `/health`, e a API em `/api/actuator/health`. O `server` aguarda o PostgreSQL saudável; `web` aguarda o `server` saudável. Os serviços reiniciam salvo parada explícita.
 

@@ -10,7 +10,8 @@ A interface combina o portal institucional, jornadas autenticadas e administraç
 
 ## Funcionalidades disponíveis
 
-- Cadastro com confirmação por e-mail, login, sessão e gestão de conta.
+- Login, sessão e gestão de conta; cadastro público por e-mail opcional; provisionamento administrativo sem dependência de e-mail.
+- Provisionamento do primeiro administrador por variáveis de ambiente, com e-mail marcado como verificado e sem segundo fator obrigatório.
 - Organizações, membros, papéis e permissões explícitas.
 - Criação, classificação, decisão e acompanhamento de demandas com histórico.
 - Páginas institucionais com versões de rascunho, prévia, publicação e retirada do ar.
@@ -34,7 +35,7 @@ Esses resultados descrevem execuções anteriores e não substituem nova valida�
 3. As credenciais operacionais do banco ainda precisam ser segregadas das credenciais que aplicam migrações antes de produção.
 4. Os scripts acadêmicos e o diagrama ainda não representam o esquema operacional completo; catálogos semânticos finitos têm exceções de contagem documentadas.
 5. A proteção obrigatória da branch depende de configuração no GitHub e da execução do workflow no remoto.
-6. A criação de contas exige um provedor de e-mail configurado para confirmar o endereço.
+6. O cadastro público por link e as notificações dependem de provedor de e-mail; contas criadas pela administração não dependem desse serviço.
 7. O PDF original de requisitos e o modelo institucional não estavam disponíveis no repositório.
 
 ## Próximos passos

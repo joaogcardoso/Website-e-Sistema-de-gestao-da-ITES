@@ -141,17 +141,33 @@ public class SignupService {
         policy.validate(password, token.getEmail(), firstName, lastName);
         guard.accept(null);
         if (tokens.consume(token.getId(), clock.instant()) != 1) throw AuthProblem.invalidToken();
-        if (users.existsByEmailIgnoreCase(token.getEmail()))
+        UserEntity user = createAccount(token.getEmail(), firstName, lastName, password, true);
+        mailer.notice(
+                user.getEmail(), "Bem-vindo ao ITES", "Sua conta foi criada com sucesso.");
+        return auth.open(user, client);
+    }
+
+    /** Cria uma conta verificada por solicitação administrativa, sem exigir envio de e-mail. */
+    @Transactional
+    public UserEntity provision(String rawEmail, String firstName, String lastName, String password) {
+        String email = TokenTools.email(rawEmail);
+        policy.validate(password, email, firstName, lastName);
+        return createAccount(email, firstName, lastName, password, false);
+    }
+
+    private UserEntity createAccount(
+            String email, String firstName, String lastName, String password, boolean acceptTerms) {
+        if (users.existsByEmailIgnoreCase(email))
             throw new AuthProblem(HttpStatus.CONFLICT, "EMAIL_TAKEN", "E-mail já cadastrado.");
         Instant now = clock.instant();
         UserEntity user =
                 new UserEntity(
                         firstName.strip(),
                         lastName.strip(),
-                        token.getEmail(),
+                        email,
                         passwords.encode(password));
         user.verifyEmail(now);
-        user.acceptTerms(now);
+        if (acceptTerms) user.acceptTerms(now);
         user.changePassword(user.getPasswordHash(), now);
         try {
             user = users.insert(user);
@@ -161,9 +177,7 @@ public class SignupService {
         } catch (DataIntegrityViolationException e) {
             throw new AuthProblem(HttpStatus.CONFLICT, "EMAIL_TAKEN", "E-mail já cadastrado.");
         }
-        mailer.notice(
-                user.getEmail(), "Bem-vindo ao ITES", "Sua conta foi criada com sucesso.");
-        return auth.open(user, client);
+        return user;
     }
 
     private EmailTokenEntity usable(String raw) {

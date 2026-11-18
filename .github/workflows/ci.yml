@@ -12,11 +12,10 @@ permissions:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   web:
-    name: CI / web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,13 +28,14 @@ jobs:
         working-directory: web
       - run: npm run typecheck
         working-directory: web
+      - run: npm run lint -- --max-warnings=0
+        working-directory: web
       - run: npm test
         working-directory: web
       - run: npm run build
         working-directory: web
 
   server:
-    name: CI / server
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,8 +49,8 @@ jobs:
         working-directory: server
 
   deployment:
-    name: CI / deployment
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -66,9 +66,44 @@ jobs:
           AUTH_JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
           AUTH_TOTP_ENCRYPTION_KEY: ZmVkY2JhOTg3NjU0MzIxMGZlZGNiYTk4NzY1NDMyMTA=
         run: docker compose build
+      - name: Iniciar a aplicação e aguardar os health checks
+        env:
+          DB_PASSWORD: ci-dummy-password
+          AUTH_JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+          AUTH_TOTP_ENCRYPTION_KEY: ZmVkY2JhOTg3NjU0MzIxMGZlZGNiYTk4NzY1NDMyMTA=
+        run: docker compose up --detach --wait --wait-timeout 180
+      - name: Validar portal, catálogo público e proteção da API
+        run: |
+          python3 - <<'PY'
+          import json
+          from urllib.error import HTTPError
+          from urllib.request import urlopen
+
+          base_url = "http://localhost:3000"
+          with urlopen(f"{base_url}/health") as response:
+              assert response.status == 200
+          with urlopen(f"{base_url}/") as response:
+              assert response.status == 200
+              assert 'lang="pt-BR"' in response.read().decode()
+          with urlopen(f"{base_url}/api/ites/pages") as response:
+              pages = json.load(response)
+              assert response.status == 200 and len(pages) == 7
+          try:
+              urlopen(f"{base_url}/api/ites/demands")
+          except HTTPError as error:
+              assert error.code == 401
+          else:
+              raise AssertionError("A rota protegida aceitou uma chamada anônima")
+          PY
+      - name: Encerrar os serviços de CI
+        if: always()
+        env:
+          DB_PASSWORD: ci-dummy-password
+          AUTH_JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+          AUTH_TOTP_ENCRYPTION_KEY: ZmVkY2JhOTg3NjU0MzIxMGZlZGNiYTk4NzY1NDMyMTA=
+        run: docker compose down --volumes --remove-orphans
 
   ci-success:
-    name: CI / ci-success
     if: always()
     needs: [web, server, deployment]
     runs-on: ubuntu-latest
@@ -82,3 +117,34 @@ jobs:
           test "$WEB_RESULT" = success
           test "$SERVER_RESULT" = success
           test "$DEPLOYMENT_RESULT" = success
+
+  deploy-production:
+    needs: [ci-success]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    concurrency:
+      group: production-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Confirmar que o commit validado continua na branch principal
+        run: |
+          current=$(git ls-remote origin refs/heads/main | cut -f1)
+          test -n "$current"
+          test "$current" = "$GITHUB_SHA"
+      - name: Acionar implantação Compose no Dokploy
+        env:
+          DOKPLOY_URL: ${{ vars.DOKPLOY_URL }}
+          DOKPLOY_COMPOSE_ID: ${{ vars.DOKPLOY_COMPOSE_ID }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+        run: |
+          test -n "$DOKPLOY_URL"
+          test -n "$DOKPLOY_COMPOSE_ID"
+          test -n "$DOKPLOY_API_KEY"
+          curl --fail --show-error --silent --max-time 30 \
+            --request POST "${DOKPLOY_URL%/}/api/compose.deploy" \
+            --header "x-api-key: $DOKPLOY_API_KEY" \
+            --header 'Content-Type: application/json' \
+            --data "$(printf '{\"composeId\":\"%s\",\"title\":\"CI %s\"}' "$DOKPLOY_COMPOSE_ID" "$GITHUB_SHA")"

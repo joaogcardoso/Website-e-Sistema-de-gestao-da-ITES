@@ -37,13 +37,13 @@ A página inicial é pública. O solicitante usa `/cadastro`, `/entrar` e `/dema
 ## Verificação local
 
 ```sh
-cd web && npm ci && npm run typecheck && npm test && npm run build
+cd web && npm ci && npm run typecheck && npm run lint -- --max-warnings=0 && npm test && npm run build
 cd ../server && ./mvnw verify
 ```
 
-Os testes de backend usam Testcontainers e precisam de Docker. Consulte [documentação](docs/INDEX.md), [contribuição](CONTRIBUTING.md), [implantação](docs/deployment.md) e [estado de implementação](docs/IMPLEMENTATION_STATUS.md).
+Os testes de backend usam Testcontainers e precisam de Docker. A pipeline de PR executa também o build das imagens Docker; veja [CI e proteção de PR](docs/ci.md). Consulte [documentação](docs/INDEX.md), [contribuição](CONTRIBUTING.md), [implantação](docs/deployment.md) e [estado de implementação](docs/IMPLEMENTATION_STATUS.md).
 
 ## Equipe
 
-_[Kauã Fiuza Clemente](https://github.com/kauafiuza)_  
+_[Kauã Fiuza Clemente](https://github.com/kauafiuza)_
 _[Victor Hugo Lima Monteiro](https://github.com/vhlima1008)_

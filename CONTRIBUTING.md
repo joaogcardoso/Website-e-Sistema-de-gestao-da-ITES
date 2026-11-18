@@ -2,9 +2,9 @@
 
 ## Ambiente de desenvolvimento
 
-Pré-requisitos previstos: Docker e Compose, Node.js 22, Java 25 e PostgreSQL 16. `web/` conterá o frontend React; `server/`, a API Spring Boot; `database/`, scripts acadêmicos e de administração; `docs/`, especificações e operação. Enquanto os módulos de aplicação não forem integrados, os comandos de instalação e inicialização descritos abaixo são metas de implementação, não um ambiente operacional validado.
+Pré-requisitos: Docker Engine com Docker Compose, Node.js 22 e Java 25 para execução local dos testes. O PostgreSQL 16 é iniciado pelo Compose; não é necessário instalá-lo no host. `web/` contém o frontend React; `server/`, a API Spring Boot; `database/`, scripts acadêmicos e de administração; `docs/`, especificações e operação.
 
-Quando os módulos estiverem disponíveis, copie `.env.example` para `.env`, defina segredos locais distintos e execute `docker compose up --build`. Execute `npm ci` em `web/` e `./mvnw verify` em `server/` para verificações locais. Migrações Flyway terão fonte autoritativa em `server/src/main/resources/db/migration/`; `database/` conterá cargas demonstrativas, consultas, rotinas e verificações, sem cópias concorrentes de migrações. Não execute a carga acadêmica em produção.
+Copie `.env.example` para `.env`, defina credenciais e segredos locais distintos e execute `docker compose up --build`. Para o frontend, execute `npm ci` e os comandos `npm run typecheck`, `npm run lint -- --max-warnings=0`, `npm test` e `npm run build` em `web/`. Para o backend, execute `./mvnw --batch-mode verify` em `server/`; os testes usam Testcontainers e precisam do Docker. Migrações Flyway têm fonte autoritativa em `server/src/main/resources/db/migration/`; `database/` contém cargas demonstrativas, consultas, rotinas e verificações, sem cópias concorrentes de migrações. Não execute a carga acadêmica em produção.
 
 ## Organização e padrões
 
@@ -12,7 +12,7 @@ Implemente interfaces e testes de frontend em `web/`; regras, autorização e ac
 
 ## Fluxo de alteração
 
-1. Inspecione o módulo e a documentação relacionada.
+1. Inspecione o módulo e a documentação relacionada; consulte o estado atual em `docs/IMPLEMENTATION_STATUS.md`.
 2. Implemente com os padrões existentes, sem duplicar funcionalidades.
 3. Atualize testes e documentação afetados.
 4. Execute as verificações aplicáveis e revise o diff.

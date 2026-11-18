@@ -1,13 +1,33 @@
-# Situação atual da documentação — incompleta
+# Estado atual de implementação
 
-Existem auditoria, requisitos, proposta arquitetural, especificação do editor visual, SQL proposto, imagem SVG do modelo lógico e plano de testes. O PDF de origem e o modelo institucional estão ausentes. A aprovação da proposta de banco está **pendente**. O SQL proposto passou por validação exploratória em PostgreSQL 17, com [evidências](database/evidence/validation-postgresql17.md), mas ainda não foi validado no PostgreSQL 16 previsto nem integrado ao aplicativo. Os scripts ainda têm lacunas de segurança para produção e precisam ser corrigidos e testados. Nenhum comportamento da aplicação foi alterado. O pacote documental ainda não constitui um marco completo e validado; a implementação não começou. Este relatório não declara a conclusão do MVP.
-**Pronto:** auditoria do repositório, especificação de requisitos, arquitetura proposta, regras do editor de páginas, proposta da base de dados (scripts SQL iniciais), imagem do modelo lógico e roteiro de entrega e testes. O documento de referência da ITES foi recebido e incorporado aos requisitos.
+A arquitetura executável está em `web/`, `server/` e `database/`. A base de autenticação e editor do `web-builder` foi integrada; os fluxos ITES de portal, organização, demanda, administração, permissões e conteúdo institucional foram adicionados sobre essa aplicação. A proposta da base de dados foi validada pelo responsável do projeto nesta conversa.
 
-**Pendente:**
+## Implementado
 
-- aprovação da proposta da base de dados pelo professor;
-- revisão dos scripts SQL (dados de exemplo realistas, correções de segurança e nomes em português) e execução no PostgreSQL;
-- evidências reais de execução (criação das tabelas, dados inseridos, consultas, procedures, functions, triggers e testes de acesso);
-- implementação da aplicação, que ainda não começou.
+- Portal público com sete áreas institucionais e páginas publicáveis.
+- Cadastro autenticado por confirmação de e-mail, login e sessão usando o fluxo existente.
+- Cadastro de organizações e associação do solicitante.
+- Envio e acompanhamento de demandas persistentes com código, urgência, serviço e condição por solicitação.
+- Gestão administrativa com filtros, classificação, decisões justificadas e histórico.
+- Papéis, permissões e concessão/revogação controlados no backend.
+- Editor institucional com lista segura de blocos, rascunho versionado, prévia, publicação e retirada do ar.
+- Docker Compose com serviços de frontend, backend e PostgreSQL, volume persistente e proxy interno.
+- Workflow GitHub Actions com lint sem avisos, testes, builds, smoke test Compose, teste de persistência de volume, job agregado recomendado como verificação obrigatória e etapa de deploy Dokploy após verificação bem-sucedida.
 
-Este relatório não declara o MVP como concluído.
+## Validação executada
+
+- Frontend: TypeScript, ESLint, 50 testes e build Vite aprovados.
+- Backend: `./mvnw --batch-mode verify` executado em JDK 25 via contêiner; 40 testes aprovados, inclusive testes integrados ITES com PostgreSQL 16.
+- Migrações: Flyway aplicou V1–V23 em banco limpo PostgreSQL 16.
+- Compose: configuração, build e inicialização local realizados. PostgreSQL, API e frontend ficaram saudáveis; HTML em pt-BR, sete páginas públicas, 401 em rota protegida e retenção de um registro após recriação dos contêineres foram verificados. A migração registrou 23 versões e 11 permissões iniciais.
+
+## Pendências
+
+- Os scripts acadêmicos em `database/coursework/` e o diagrama não estão reconciliados com todo o esquema físico integrado do `web-builder` e da ITES; evidências acadêmicas completas continuam pendentes.
+- As permissões do banco de dados em runtime usam a conta proprietária; separar credenciais de migração/runtime antes de produção.
+- Cadastro por e-mail exige chave e domínio Resend válidos; sem envio de e-mail, novas contas não completam a confirmação.
+- Não foram validados testes de navegador ponta a ponta, acessibilidade manual nem publicação em Dokploy/VPS.
+- A proteção da branch não pode ser definida por arquivo. Administrador do GitHub precisa tornar `CI / ci-success` obrigatória em `main`, exigir PR e branch atualizada.
+- O PDF original e o modelo institucional não foram encontrados.
+
+A aplicação está em fase de MVP funcional, mas a implantação de produção e os entregáveis acadêmicos completos ainda não estão concluídos. Consulte [estado detalhado de implementação](IMPLEMENTATION_STATUS.md), [CI e bloqueio de PR](ci.md) e [implantação](deployment.md).

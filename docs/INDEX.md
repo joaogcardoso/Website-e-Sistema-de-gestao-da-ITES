@@ -1,6 +1,6 @@
 # Índice da documentação — ITES
 
-**Situação da proposta:** a proposta da base de dados aguarda aprovação do professor. O documento de referência da ITES (*Proposta de Desenvolvimento do Portal Web e Sistema de Gestão da ITES*) foi recebido e serve de base para os requisitos. Os scripts SQL e a aplicação ainda não foram executados.
+**Situação:** a proposta da base de dados foi validada pelo responsável do projeto nesta conversa. A implementação do MVP e sua validação local estão em andamento; os artefatos acadêmicos ainda não foram reconciliados com o schema integrado. O PDF original de requisitos e o modelo institucional não foram localizados; a especificação reproduzida no pedido do projeto é a fonte de requisitos utilizada.
 
 - [Auditoria do repositório](architecture/audit.md)
 - [Especificação de requisitos](requirements/specification.md)

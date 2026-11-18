@@ -1,8 +1,10 @@
-# Proposta da base de dados — aguardando aprovação
+# Proposta e documentação da base de dados
+
+A proposta foi aprovada pelo responsável do projeto nesta conversa. Os scripts abaixo atendem ao modelo acadêmico proposto, mas permanecem independentes do schema operacional Flyway (`server/src/main/resources/db/migration/`), que inclui a base integrada do editor e as tabelas ITES. A reconciliação e validação acadêmica com a estrutura operacional ainda são pendências; não aplicar estes scripts como migrações da aplicação.
 
 O SGBD escolhido é o **PostgreSQL**, o mesmo do `web-builder`. Um único banco relacional guarda identidade e permissões, demandas, conteúdo público do portal e versões das páginas do editor.
 
-Scripts propostos (executados exploratoriamente em PostgreSQL 17; ainda não integrados à aplicação): [schema](../../database/coursework/01_schema.sql), [dados de demonstração](../../database/coursework/02_seed.sql), [consultas](../../database/coursework/03_queries.sql), [rotinas](../../database/coursework/04_routines.sql) e [segurança](../../database/coursework/05_security.sql).
+Scripts propostos (validados exploratoriamente em PostgreSQL 17, com limitações registradas em [evidências](evidence/validation-postgresql17.md)): [schema](../../database/coursework/01_schema.sql), [dados de demonstração](../../database/coursework/02_seed.sql), [consultas](../../database/coursework/03_queries.sql), [rotinas](../../database/coursework/04_routines.sql) e [segurança](../../database/coursework/05_security.sql).
 
 ## Dicionário de dados
 

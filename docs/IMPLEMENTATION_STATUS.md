@@ -5,42 +5,41 @@ Data da atualização: 18/11/2026. Este documento registra o estado observado no
 ## Estado do Git
 
 - Branch: `main`.
-- HEAD e `origin/main`: `f7410fb` (`feat(core): incorpora base de autenticação e editor visual`). O remoto está sincronizado até esse commit; as alterações abaixo ainda não foram commitadas nem enviadas.
+- Os marcos de backend, frontend e CI estão registrados nos commits `63df021`, `4b90c74` e `f0048bf`, sobre a contribuição do colaborador `c903490`. Consulte `git log` para verificar o HEAD e commits posteriores de documentação.
 - Identidade Git verificada: identidade do proprietário configurada local e globalmente.
-- Diretório de trabalho contém as mudanças não commitadas listadas na próxima seção. Preservá-las ao retomar.
+- As alterações de aplicação e pipeline deste marco foram commitadas; confira `git status` para mudanças posteriores.
 
 ## O que foi integrado
 
 O commit `f7410fb` incorporou os diretórios executáveis `web/` e `server/` do repositório `web-builder`, além de `compose.yaml`. A base traz React/TypeScript/Vite, catálogo e editor visual de blocos, autenticação com sessão baseada em cookie e JWT, Spring Boot, PostgreSQL, JdbcTemplate e Flyway, incluindo as migrações V1–V22 e testes que já existiam no repositório de origem. A integração aproveitou componentes coesos do editor e da autenticação, mas trouxe um conjunto extenso de funcionalidades do VH Studio que ainda não foi reduzido ao escopo da ITES.
 
-A configuração do Compose remove a publicação da porta do banco e da API, deixando o frontend como entrada pública e encaminhando `/api/` à API pela rede Docker. O Nginx encaminha para `ites-api`. O banco persiste em volume. O `README.md` foi reescrito com instruções locais e configuração do provedor Resend para confirmação de cadastro. Essas alterações estão no diretório de trabalho e precisam ser revisadas.
+A configuração do Compose remove a publicação da porta do banco e da API, deixando o frontend como entrada pública e encaminhando `/api/` à API pela rede Docker. O Nginx encaminha para `ites-api`. O banco persiste em volume. O `README.md` contém instruções locais e configuração do provedor Resend para confirmação de cadastro.
 
-## Funcionalidades ITES em desenvolvimento
+## Funcionalidades ITES implementadas
 
-Existe a migração ainda não commitada `V23__ites_domain.sql`, que acrescenta setor econômico às organizações já existentes, papéis/permissões da aplicação, demandas, histórico, páginas institucionais, versões JSONB, auditoria de publicação e gatilho de transições de situação. Os papéis são distintos da associação institucional e o cadastro não atribui administrador automaticamente. A primeira atribuição administrativa está prevista no script manual `database/bootstrap_admin.sql`.
+`V23__ites_domain.sql` acrescenta setor econômico às organizações já existentes, papéis/permissões da aplicação, demandas, histórico, páginas institucionais, versões JSONB, auditoria de publicação e gatilho de transições de situação. Os papéis são distintos da associação institucional e o cadastro não atribui administrador automaticamente. A primeira atribuição administrativa está no script manual `database/bootstrap_admin.sql`.
 
-Foram criados, ainda sem commit, serviços e controladores para permissões efetivas, criação/listagem de organizações associadas, envio e acompanhamento de demandas, classificação, decisões com justificativa e gestão de papéis. As páginas React incluem portal público com as sete áreas, cadastro/consulta de organização e demanda, análise administrativa, atribuição de papéis, edição institucional com os blocos `hero-classic`, `features-classic` e `contact-channels`, prévia, salvamento otimista, publicação e retirada do ar. As decisões e publicações têm autorização no backend. O documento do editor aceita somente uma página, até 20 blocos permitidos, propriedades textuais controladas e URLs limitadas.
+Os serviços e controladores implementam permissões efetivas, criação/listagem de organizações associadas, envio e acompanhamento de demandas, classificação, decisões com justificativa e gestão de papéis. As páginas React incluem portal público com as sete áreas, cadastro/consulta de organização e demanda, análise administrativa, atribuição de papéis, edição institucional com os blocos `hero-classic`, `features-classic` e `contact-channels`, prévia, salvamento otimista, publicação e retirada do ar. As decisões e publicações têm autorização no backend. O documento do editor aceita somente uma página, até 20 blocos permitidos, propriedades textuais controladas e URLs limitadas.
 
-Esses fluxos ainda não foram demonstrados de ponta a ponta com autenticação real. Não declarar M1–M6, grants ou editor completos até a validação integrada.
+Os testes integrados executam as rotas com autenticação real e PostgreSQL: solicitante cria e consulta apenas suas demandas, administrador decide e gera histórico, páginas persistem e são publicadas e grants são verificados no servidor. A validação ainda não cobre automação de navegador nem persistência após recriação do contêiner.
 
-## Alterações não commitadas
+## Arquivos principais da implementação
 
-- `compose.yaml`, `.env.example`, `README.md` e `docs/deployment.md`: ajustes de execução local e VPS.
+- `.github/workflows/ci.yml`: valida web, backend, build/health checks Compose e smoke checks; job agregado recomendado como bloqueio de PR e acionamento condicional do Dokploy.
+- `compose.yaml`, `.env.example`, `README.md` e `docs/deployment.md`: execução local e VPS.
 - `server/src/main/resources/db/migration/V23__ites_domain.sql`.
 - `server/src/main/java/br/com/vhstudio/server/controllers/Ites/`: controladores de demanda, organizações, páginas, permissões, usuários e papéis.
 - `server/src/main/java/br/com/vhstudio/server/services/Ites/`: autorização e regras de demanda.
 - `server/src/main/java/br/com/vhstudio/server/configs/Security/SecurityConfig.java`: rota pública de leitura de páginas publicadas.
-- `web/src/router/Router.tsx` e `web/src/pages/ites/`: portal e jornadas ITES.
+- `web/src/pages/ites/`: portal e jornadas ITES; o roteador foi integrado à navegação existente.
 - `database/bootstrap_admin.sql`: atribuição inicial manual de administrador.
 
 ## Validações observadas
 
-- A configuração Compose foi analisada com `docker compose --env-file .env.example -f compose.yaml config --quiet` antes dos últimos ajustes de ambiente; repetir após revisão.
-- A instalação de dependências do frontend terminou. Uma execução de `npm run typecheck`, `npm test` e `npm run build` passou em versões anteriores das telas ITES: 50 testes passaram e o build de produção terminou. Foram adicionadas telas e alterações depois dessa execução; repetir a validação para o estado atual.
-- As migrações Flyway V1–V23 foram concatenadas e aplicadas com uma transação por migração em um PostgreSQL 17 temporário; a execução terminou com sucesso após a inclusão de V23. Isso valida sintaxe e dependências em PostgreSQL 17, não em PostgreSQL 16 nem pela própria inicialização do Flyway.
-- Foram inseridos dados temporários para verificar código único, estado inicial e rejeição da transição direta inválida. A tentativa de `capacity=OTHER` sem descrição foi recusada pelo CHECK.
-- A compilação Java e o build Docker do backend não terminaram. O ambiente não tinha Java instalado. Uma tentativa de instalar JDK 25 por `dnf` permaneceu lenta/em andamento na última observação; confira processos antes de iniciar outra instalação. O download das imagens Temurin no build Docker também estava lento. Não afirmar que a API compila.
-- Não foi executado fluxo de navegador ou teste ponta a ponta. Não foi feita implantação em Dokploy/VPS.
+- Frontend: `npm run typecheck`, `npm run lint -- --max-warnings=0`, `npm test` (50 aprovados) e `npm run build` passaram após as telas ITES.
+- Backend: `./mvnw --batch-mode verify`, em contêiner JDK 25, aprovou 40 testes (zero falhas/erros). Flyway aplicou V1–V23 pelo fluxo real da aplicação em PostgreSQL 16 limpo.
+- Docker Compose: configuração e build das imagens passaram. A execução local deixou PostgreSQL, API e web saudáveis; foram verificados HTML em pt-BR, sete páginas públicas e HTTP 401 em endpoint protegido. Banco/API sem portas públicas. A aplicação registrou 23 migrações e 11 permissões iniciais.
+- O workflow foi analisado sintaticamente; os passos Compose/smoke e a retenção de um registro após recriação foram executados localmente. A pipeline ainda precisa de execução no GitHub. A branch protection não pode ser ativada por este checkout e depende de configuração administrativa no GitHub.
 
 ## Limitações e riscos conhecidos
 
@@ -48,32 +47,28 @@ Esses fluxos ainda não foram demonstrados de ponta a ponta com autenticação r
 2. Cadastro exige e-mail de confirmação. Com `MAILER_ENABLED=false`, o provedor descarta mensagens e novas contas não concluem cadastro. O guia local precisa de credencial válida do Resend ou de um mecanismo local seguro de entrega de links.
 3. A configuração do banco na aplicação usa uma conta proprietária para Flyway e runtime; privilégios mínimos ainda não foram implementados na stack Compose. Separar credenciais de migração e runtime e verificar acesso por tabela/rotina.
 4. Os scripts acadêmicos em `database/coursework/` ainda são um modelo separado e não correspondem ao esquema real V1–V23. O diagrama também não cobre as 35 tabelas físicas atuais. Reconciliar consultas, rotinas, carga de 20 registros, modelo e documentação com a base efetiva; não manter duas fontes autoritativas de migração.
-5. A trilha de auditoria de transições é escrita pelo serviço na mesma transação. O usuário runtime de banco pode fazer DML direto; assegurar que as permissões e rotinas impeçam alteração de situação sem histórico.
-6. A UI de editor integra operações e renderização de blocos do `web-builder`, mas ainda não cobre todo o ciclo original nem executou persistência e publicação após reinicialização.
+5. A trilha de auditoria de transições é escrita pelo serviço na mesma transação. O usuário runtime de banco pode fazer DML direto; separar privilégios e impedir alteração de situação sem histórico.
+6. A UI de editor integra operações e renderização de blocos do `web-builder`; persistência/reabertura/publicação foi validada em teste integrado. A persistência de volume foi validada com registro sentinela após recriação; ainda não foi feita automação de navegador real.
 7. Notícias, eventos, publicações, biblioteca e conteúdo institucional ainda são cartões estáticos; apenas páginas institucionais versionadas podem ser editadas pelo editor.
 8. O PDF de requisitos original não foi encontrado. O código e a documentação usam a especificação reproduzida na solicitação.
 
 ## Próximos passos para retomar
 
-1. Preservar todas as alterações do diretório de trabalho e conferir processos Docker/`dnf` ativos.
-2. Rodar `npm run typecheck`, `npm test`, `npm run build` em `web/` após as telas ITES atuais.
-3. Concluir compilação backend com JDK 25, corrigir erros e executar `./mvnw verify`.
-4. Construir e iniciar `docker compose up --build`, observar migrações e health checks, testar portal e login com configuração de e-mail.
-5. Testar cadastro, organização, envio de demanda, titularidade, revisão, concessões e transições com banco real; corrigir defeitos antes de commits funcionais.
-6. Testar salvar/reabrir/publicar/despublicar página e acesso público/negado após reinício.
-7. Reconciliar o banco acadêmico e seus artefatos com o esquema físico; gerar diagrama e evidências da versão efetiva.
-8. Atualizar rastreabilidade e documentação para estado implementado, então criar commits focados em português com identidade Git verificada.
-9. Validar implantação Compose local. Dokploy/VPS permanece pendente de acesso à infraestrutura.
+1. Configurar no GitHub `CI / ci-success` como verificação obrigatória de PR e confirmar execução real da pipeline.
+2. Reconciliar o banco acadêmico, rotinas, carga de dados, privilégios, modelo e evidências com o schema operacional efetivo.
+3. Executar testes de navegador, acessibilidade e persistência do volume após recriação.
+4. Separar usuário/credenciais de runtime e migração do PostgreSQL.
+5. Configurar segredos e ambiente protegido do Dokploy; validar implantação real em VPS e plano de rollback.
 
 ## Comandos úteis
 
 ```sh
-cd web && npm run typecheck && npm test && npm run build
-cd ../server && ./mvnw verify
-cd .. && docker compose --env-file .env.example -f compose.yaml config
+cd web && npm run typecheck && npm run lint -- --max-warnings=0 && npm test && npm run build
+cd ../server && ./mvnw --batch-mode verify
+cd .. && DB_PASSWORD=... AUTH_JWT_SECRET=... AUTH_TOTP_ENCRYPTION_KEY=... docker compose config
 cp .env.example .env
 # Depois de preencher .env com segredos válidos:
 docker compose up --build
 ```
 
-O roteiro é um registro de retomada, não uma declaração de conclusão do MVP.
+O MVP funcional foi validado em testes e execução local; a conclusão integral permanece condicionada às pendências de segurança, entregáveis acadêmicos e implantação listadas acima.

@@ -23,4 +23,4 @@ O editor usa os módulos `web/src/pages/editor/lib/{document,registry,use-builde
 
 ## Riscos
 
-Toda a aplicação da ITES ainda precisa ser desenvolvida. Os principais riscos são o acoplamento com o código do builder e a aprovação da proposta da base de dados.
+No início da auditoria, a aplicação específica da ITES ainda precisava ser desenvolvida. A proposta da base de dados foi posteriormente aprovada; a integração funcional foi registrada em [arquitetura executável](implementation.md). Permanecem riscos de acoplamento com a base ampla do builder e de reconciliação dos artefatos acadêmicos com o schema operacional.

@@ -1,6 +1,6 @@
 # Roteiro de implementação e plano de validação
 
-Cada etapa depende da aprovação da proposta da base de dados e da conclusão da etapa anterior. Uma etapa só termina com os testes aprovados e as evidências guardadas.
+A proposta do banco foi aprovada pelo responsável do projeto. O roteiro abaixo registra critérios de validação por etapa; a implementação ITES de autenticação, demandas e páginas já está integrada e coberta por testes, enquanto os entregáveis acadêmicos e a implantação de produção continuam pendentes.
 
 | Etapa | Objetivo e entrega | Aceite / validação | Risco |
 |---|---|---|---|

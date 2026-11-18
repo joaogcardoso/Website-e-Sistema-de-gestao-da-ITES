@@ -95,6 +95,21 @@ jobs:
           else:
               raise AssertionError("A rota protegida aceitou uma chamada anônima")
           PY
+      - name: Confirmar persistência do banco após recriar os contêineres
+        env:
+          DB_DATABASE: ites
+          DB_USERNAME: ites
+          DB_PASSWORD: ci-dummy-password
+          AUTH_JWT_SECRET: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+          AUTH_TOTP_ENCRYPTION_KEY: ZmVkY2JhOTg3NjU0MzIxMGZlZGNiYTk4NzY1NDMyMTA=
+        run: |
+          docker compose exec -T postgres psql -v ON_ERROR_STOP=1 -U "$DB_USERNAME" -d "$DB_DATABASE" \
+            -c "INSERT INTO institutional_pages(slug,title) VALUES ('ci-volume-probe','Verificação de volume')"
+          docker compose down
+          docker compose up --detach --wait --wait-timeout 180
+          persisted=$(docker compose exec -T postgres psql -v ON_ERROR_STOP=1 -U "$DB_USERNAME" -d "$DB_DATABASE" \
+            -tA -c "SELECT count(*) FROM institutional_pages WHERE slug='ci-volume-probe'")
+          test "$persisted" = 1
       - name: Encerrar os serviços de CI
         if: always()
         env:

@@ -87,25 +87,25 @@ As consultas estão em `database/coursework/03_queries.sql`. Cada comando tem us
 
 ### Cinco consultas simples
 
-1. Demandas pendentes ordenadas pela criação: fila de trabalho atual.
-2. Demandas de alta urgência: priorização de atendimento.
-3. Organizações do setor de artesanato: recorte por setor econômico.
-4. Demandas em intervalo temporal: acompanhamento por período.
-5. Páginas publicadas: inventário do conteúdo público.
+1. **A1** — Demandas pendentes, das mais recentes para as mais antigas: fila de trabalho da triagem.
+2. **A2** — Demandas de urgência alta que ainda não foram encerradas: priorização do atendimento.
+3. **A3** — Organizações do setor de artesanato: recorte por setor econômico.
+4. **A4** — Demandas sem organização vinculada ou com condição "outros" (`IS NULL`, `OR`): casos que exigem atenção na triagem para identificar quem o solicitante representa.
+5. **A5** — Páginas publicadas: inventário do conteúdo público do portal.
 
 ### Três consultas com JOIN
 
-1. Total de demandas por organização e situação: volume e andamento por grupo.
-2. Decisões por responsável: distribuição das análises entre administradores.
-3. Demandas por setor econômico e serviço: diferencia o setor da organização da assistência solicitada.
+1. **B1** — Demandas em andamento por organização e situação (`JOIN`, `WHERE`, `GROUP BY`, `count`): volume e andamento por grupo, sem as recusadas e canceladas.
+2. **B2** — Decisões registradas por responsável, com o número de recusas (`JOIN` com o histórico, `count`, `FILTER`): distribuição das análises entre a equipe.
+3. **B3** — Serviços mais solicitados por setor econômico (`JOIN`, `GROUP BY`, `HAVING count(*) > 1`): diferencia o setor da organização do serviço pedido à ITES.
 
 ### Três subconsultas
 
-1. `EXISTS`: organizações que têm ao menos uma demanda aceita.
-2. Subconsulta escalar com média: solicitantes cujo número de demandas supera a média entre solicitantes ativos.
-3. `IN` aninhado: solicitantes com demanda urgente associada a organização de artesanato.
+1. **C1** — `EXISTS`: organizações que têm ao menos uma demanda aceita para atendimento.
+2. **C2** — Comparação com subconsulta escalar: solicitantes cujo número de demandas supera a média entre os solicitantes.
+3. **C3** — `IN` aninhado: solicitantes com demanda de urgência alta ligada a organizações de artesanato.
 
-As três categorias de consultas são executadas pelo `run_all.sql`; seus resultados constam na evidência PostgreSQL 16.
+As três categorias de consultas são executadas pelo `run_all.sql`. A evidência [`apd1-estrutura-dados-consultas-postgresql16.txt`](evidence/apd1-estrutura-dados-consultas-postgresql16.txt), gerada pelo script `09_apd1_evidencias.sql`, mostra a estrutura de cada tabela, todos os dados inseridos e cada consulta seguida do seu resultado.
 
 ## Rotinas e automações — APD2
 

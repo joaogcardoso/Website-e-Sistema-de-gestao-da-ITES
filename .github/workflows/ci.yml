@@ -87,7 +87,7 @@ jobs:
               assert 'lang="pt-BR"' in response.read().decode()
           with urlopen(f"{base_url}/api/ites/pages") as response:
               pages = json.load(response)
-              assert response.status == 200 and len(pages) == 7
+              assert response.status == 200 and len(pages) == 6
           try:
               urlopen(f"{base_url}/api/ites/demands")
           except HTTPError as error:
@@ -132,34 +132,3 @@ jobs:
           test "$WEB_RESULT" = success
           test "$SERVER_RESULT" = success
           test "$DEPLOYMENT_RESULT" = success
-
-  deploy-production:
-    needs: [ci-success]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment: production
-    concurrency:
-      group: production-deployment
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Confirmar que o commit validado continua na branch principal
-        run: |
-          current=$(git ls-remote origin refs/heads/main | cut -f1)
-          test -n "$current"
-          test "$current" = "$GITHUB_SHA"
-      - name: Acionar implantação Compose no Dokploy
-        env:
-          DOKPLOY_URL: ${{ vars.DOKPLOY_URL }}
-          DOKPLOY_COMPOSE_ID: ${{ vars.DOKPLOY_COMPOSE_ID }}
-          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-        run: |
-          test -n "$DOKPLOY_URL"
-          test -n "$DOKPLOY_COMPOSE_ID"
-          test -n "$DOKPLOY_API_KEY"
-          curl --fail --show-error --silent --max-time 30 \
-            --request POST "${DOKPLOY_URL%/}/api/compose.deploy" \
-            --header "x-api-key: $DOKPLOY_API_KEY" \
-            --header 'Content-Type: application/json' \
-            --data "$(printf '{\"composeId\":\"%s\",\"title\":\"CI %s\"}' "$DOKPLOY_COMPOSE_ID" "$GITHUB_SHA")"

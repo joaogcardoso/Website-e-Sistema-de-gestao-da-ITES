@@ -15,6 +15,7 @@ import br.com.ites.server.models.Organization.GrantScopeType;
 import br.com.ites.server.services.Organization.OrganizationAuthorizationService;
 import br.com.ites.server.services.Organization.OrganizationAuditEventService;
 import br.com.ites.server.services.Organization.OrganizationFeatureService;
+import br.com.ites.server.services.Ites.ItesAccessService;
 import br.com.ites.server.models.Organization.OrganizationFeature;
 import br.com.ites.server.utils.pagination.PageRequest;
 import br.com.ites.server.utils.pagination.PageResponse;
@@ -48,6 +49,7 @@ public class PublicationService {
     private final OrganizationFeatureService features;
     private final FormResourceVersionService formVersions;
     private final OrganizationAuditEventService auditEvents;
+    private final ItesAccessService access;
 
     public PublicationService(JdbcTemplate db, ProjectRepository projects, ProjectRevisionRepository revisions,
                               PublicationRepository publications, ObjectMapper json,
@@ -56,7 +58,7 @@ public class PublicationService {
                               OrganizationAuthorizationService authorization,
                               OrganizationFeatureService features,
                               FormResourceVersionService formVersions,
-                              OrganizationAuditEventService auditEvents) {
+                              OrganizationAuditEventService auditEvents, ItesAccessService access) {
         this.db = db;
         this.projects = projects;
         this.revisions = revisions;
@@ -68,6 +70,7 @@ public class PublicationService {
         this.features = features;
         this.formVersions = formVersions;
         this.auditEvents = auditEvents;
+        this.access = access;
     }
 
     public record Version(int number, long projectRevision, UUID projectRevisionId,
@@ -98,8 +101,11 @@ public class PublicationService {
                 .orElseThrow(() -> new IllegalStateException("Revisão atual do projeto não encontrada"));
         JsonNode draftDocument = readDocument(draftRevision.documentJson());
         JsonNode formReferences = formVersions.snapshotReferences(organizationId, projectId, draftDocument);
-        consumeApprovedReview(ownerId, organizationId, projectId, reviewRequestId,
-                draftRevision.id(), ReviewOperation.PUBLISH, null);
+        boolean rootAdministrator = access.isSystemAdministrator(ownerId) && Boolean.TRUE.equals(
+                db.queryForObject("SELECT site_role='ROOT' FROM projects WHERE id=?", Boolean.class, projectId));
+        if (!rootAdministrator)
+            consumeApprovedReview(ownerId, organizationId, projectId, reviewRequestId,
+                    draftRevision.id(), ReviewOperation.PUBLISH, null);
         List<UUID> existing = db.query("SELECT id FROM publications WHERE project_id = ? FOR UPDATE",
                 (rs, row) -> UUID.fromString(rs.getString(1)), projectId);
         UUID publicationId;

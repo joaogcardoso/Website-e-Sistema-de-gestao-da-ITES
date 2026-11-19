@@ -102,6 +102,11 @@ public class ProjectRepository {
         return Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS (SELECT 1 FROM projects WHERE id = ? AND organization_id = ?)", Boolean.class, id, organizationId));
     }
 
+    public boolean isRoot(UUID id) {
+        return Boolean.TRUE.equals(jdbc.queryForObject(
+                "SELECT EXISTS (SELECT 1 FROM projects WHERE id = ? AND site_role = 'ROOT')", Boolean.class, id));
+    }
+
     public void deleteByOwner_Id(UUID ownerId) { jdbc.update("DELETE FROM projects WHERE owner_id = ?", ownerId); }
 
     private JsonNode read(String value) {

@@ -1,33 +1,25 @@
-# Gestão unificada de páginas do ITES
+# Gestão de páginas do ITES
 
-## Diagnóstico em 19/11/2026
+## Estado implementado em 19/11/2026
 
-O editor principal utiliza `projects.document`, revisões imutáveis e `publications`. O portal institucional utiliza `institutional_pages` e `institutional_page_versions`. O painel de demandas utiliza essas mesmas tabelas institucionais sob o slug `painel-demandas`. As rotas operacionais e de autenticação são declaradas diretamente em `web/src/router/Router.tsx`. Portanto, o requisito de um projeto ITES único com todas as páginas gerenciadas pelo editor principal ainda não está implementado.
+A página pública `/` pertence ao projeto `ITES`, identificado por `projects.site_role = 'ROOT'`. O índice parcial `uq_projects_root_site` limita esse papel a um projeto. O provisionamento transacional importa a última versão publicada de `inicio`, preserva o conteúdo existente e cria uma publicação vinculada ao projeto. A operação é idempotente; reiniciar a API não cria outro projeto raiz.
 
-## Contrato arquitetural proposto
+O editor principal usa `projects.document` para o rascunho, `project_revisions` para histórico e `publication_versions` para instantâneos publicados. O endpoint público `/ites/pages/inicio` lê exclusivamente a publicação ativa do projeto raiz. A rota `/` renderiza o documento retornado. A URL anterior `/administracao/editor` redireciona para a lista principal de projetos; a API anterior de edição de `inicio` responde 404. Os registros institucionais anteriores permanecem no banco como origem histórica da migração.
 
-O projeto institucional ITES deve ser provisionado uma única vez em `projects`, com rota pública `/` e página inicial no documento do editor principal. As páginas operacionais devem receber uma representação gerenciada nesse projeto, com componentes de aplicação registrados e propriedades limitadas. A execução de autenticação, demandas, revisões e auditoria continua nos serviços existentes; o documento controla composição, apresentação e localização do componente.
+O administrador do sistema pode publicar diretamente a revisão atual do projeto raiz, sem uma segunda pessoa. A exceção é resolvida no serviço de publicação com o papel administrativo persistido e o papel `ROOT` do projeto. Para os demais projetos, a revisão por outra pessoa continua obrigatória. O projeto raiz não pode ser excluído pela API.
 
-Cada publicação deve registrar visibilidade `PUBLIC` ou `PRIVATE`, versão, responsável, data e concessões exigidas. A resolução no servidor verifica a rota, recupera a versão publicada e autoriza projeto, página e fontes de dados antes de devolver o documento. Conteúdo privado não deve aparecer em listagens públicas. Rotas de sistema e API não podem ser reservadas por páginas configuráveis.
+## Fronteiras ainda existentes
 
-## Migração necessária
+As páginas operacionais e de autenticação continuam declaradas em `web/src/router/Router.tsx`, e o painel de indicadores mantém seu documento em `institutional_pages`. Publicação privada, permissões por página, resolução unificada de rotas e componentes operacionais no registro do editor ainda não foram implementados. Por isso, a migração da página inicial está concluída, mas a gestão de **todas** as páginas pelo editor principal permanece pendente.
 
-| Área | Estado atual | Integração necessária |
+| Área | Estado atual | Próxima integração |
 |---|---|---|
-| Portal inicial e páginas institucionais | Documento versionado em `institutional_pages` | Incorporar ao projeto ITES e preservar histórico publicado |
-| Autenticação e conta | Rotas React próprias | Gerenciar apresentação e extensão visual; preservar componentes e validação de autenticação |
-| Demandas e organizações | Telas React com API protegida | Registrar componentes funcionais e controlar composição por página |
-| Revisões e auditoria | Telas React com grants organizacionais | Registrar componentes protegidos e exigir autorização no servidor |
-| Indicadores e relatórios | Painel versionado e telas de exportação | Unificar páginas, fontes de dados permitidas e permissões de publicação |
-| Projetos e editor | Editor principal com `projects` e `publications` | Usar como ambiente administrativo central |
+| Página inicial `/` | Projeto único `ROOT`, rascunho e publicação pelo editor principal | Configuração explícita de visibilidade |
+| Outras páginas institucionais | Versões em `institutional_pages` | Importação e roteamento por projeto |
+| Autenticação e conta | Rotas React protegidas e API própria | Blocos de apresentação com comportamento protegido |
+| Demandas, organizações, revisões e auditoria | Telas React e serviços autorizados | Componentes funcionais registrados no editor |
+| Indicadores e relatórios | Telas e documento de painel separados | Fontes de dados autorizadas e composição no editor |
 
-## Sequência de implementação
+## Regras da migração restante
 
-1. Definir migração relacional de páginas, visibilidade, rota e concessões com tratamento de colisões.
-2. Provisionar o projeto ITES e importar a versão institucional publicada sem perder o histórico.
-3. Criar resolução de página no servidor e publicar páginas públicas e privadas com escolha explícita de visibilidade.
-4. Integrar os componentes operacionais ao registro do editor, preservando os endpoints e regras de negócio.
-5. Substituir as rotas de apresentação independentes após validação de cada jornada.
-6. Executar testes de navegador para publicação, redirecionamento, resposta 404, persistência e regressão operacional.
-
-Este documento descreve a direção e as lacunas observadas; não declara a migração como concluída.
+A publicação deverá exigir visibilidade `PUBLIC` ou `PRIVATE`. O servidor deverá resolver projeto, rota, revisão publicada, autenticação e concessões antes de devolver um documento privado. Visitantes anônimos serão redirecionados para a entrada; usuários autenticados sem permissão receberão 404. Componentes operacionais deverão manter autorização e validação nos serviços existentes. Rotas de sistema não poderão ser ocupadas por páginas configuráveis. A migração será feita por área, com regressão de cada jornada antes de retirar sua apresentação anterior.

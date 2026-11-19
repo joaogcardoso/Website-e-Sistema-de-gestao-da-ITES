@@ -1,48 +1,24 @@
-# Editor visual de páginas institucionais
+# Integração do editor visual ao ITES
 
-## Escopo funcional
+## Projeto institucional raiz
 
-O editor integrado permite abrir páginas institucionais, organizar blocos disponíveis, editar propriedades suportadas, visualizar a prévia, salvar rascunhos e publicar versões autorizadas. As operações utilizam a identidade, as permissões e a persistência da plataforma ITES.
+O projeto `ITES` é provisionado em `projects` com `site_role = ROOT`. A migração V27 cria a restrição de unicidade; `RootProjectProvisioner` importa a versão institucional publicada mais recente e cria a publicação inicial na mesma transação. A carga só ocorre quando existe um administrador ativo e ainda não existe projeto raiz. Reiniciar a aplicação conserva o mesmo projeto e as revisões já salvas.
 
-## Blocos e validação
+No portal público, **Editar página inicial** abre `/editor/{projectId}`. O projeto também aparece na lista principal de projetos. A rota anterior `/administracao/editor` redireciona para essa lista. As operações de edição antigas para `inicio` não são mais aceitas; as tabelas institucionais são mantidas para preservar o histórico anterior à migração.
 
-O catálogo é controlado pelo frontend e pelas definições de contrato utilizadas pela API. O servidor valida tipos de bloco, propriedades aceitas, URLs e tamanho do documento. Blocos desconhecidos não podem ser publicados. Documentos são dados JSON; nenhum código fornecido pelo usuário é executado.
+## Edição e publicação
 
-## Ciclo de publicação
+1. O administrador abre o projeto `ITES` no editor visual principal.
+2. O documento do projeto é alterado com blocos do catálogo controlado e salvo com revisão concorrente.
+3. A prévia usa o rascunho; a página pública continua usando `publication_versions`.
+4. O administrador principal pode publicar diretamente o projeto raiz. A verificação é feita no serviço de publicação pelo papel persistido e pelo marcador `ROOT`.
+5. A API `/ites/pages/inicio` devolve somente a versão publicada ativa do projeto raiz; `/` renderiza esse documento.
+6. Alterações posteriores permanecem privadas até a próxima publicação.
 
-1. A equipe autorizada abre uma página institucional.
-2. O editor carrega a versão atual e permite alterações apenas nos blocos suportados.
-3. O rascunho é salvo com controle de revisão.
-4. A prévia renderiza o documento validado sem alterar a versão pública.
-5. Um usuário com a concessão de publicação ativa publica a versão.
-6. A página pública consulta somente conteúdo publicado.
-7. As alterações podem ser reabertas para edição e publicadas em nova revisão.
+Para os demais projetos, a aprovação por outra pessoa continua exigida. A publicação do projeto raiz não concede acesso a dados operacionais. O servidor valida o documento, os contratos dos blocos e os recursos associados. O projeto raiz não pode ser excluído pela API.
 
-## Limites de edição e autorização
+## Segurança e limites
 
-| Operação | Concessão |
-|---|---|
-| Abrir o rascunho | `builder.access` e `builder.pages.edit` |
-| Salvar rascunho | `builder.access`, `portal.content.manage` e `builder.pages.edit` |
-| Publicar ou retirar do ar | `builder.access`, `portal.content.manage` e `builder.pages.publish` |
-| Gerenciar modelos | `builder.templates.manage` |
+O acesso ao editor e à publicação depende da autorização de projeto no backend. O endpoint `/ites/site/root` exige `builder.access` e `builder.pages.edit`; uma pessoa sem esses grants não recebe o identificador administrativo. A leitura pública usa uma consulta separada que não devolve rascunhos. Blocos não executam código enviado no documento.
 
-A autenticação, os formulários de demandas, a revisão de pedidos e os dados pessoais não são áreas editáveis. O frontend apresenta ações conforme as concessões efetivas, enquanto a API é responsável pela autorização final.
-
-## Segurança
-
-- Conteúdo não confiável é validado e renderizado pelo conjunto controlado de componentes.
-- Scripts, propriedades arbitrárias e atributos executáveis não são aceitos.
-- Endereços externos devem obedecer às regras de URL segura.
-- Rascunhos não são expostos ao público.
-- Publicação e auditoria persistem em conjunto.
-
-## Página inicial e painel de demandas
-
-A página `inicio` recebe um documento inicial versionado a partir de `ites-homepage.json` quando o administrador inicial já foi provisionado e ainda não existe uma versão pública. O portal lê essa versão publicada e renderiza apenas seus blocos; não mantém uma segunda composição institucional fixa em código. O editor usa o catálogo e o `PropertyEditor` do construtor já integrado. Na área institucional, o servidor permite categorias de conteúdo selecionadas, valida contratos dos manifests e limita quantidade e tamanho de propriedades. A ação de recuperar a versão publicada cria um novo rascunho versionado.
-
-Na página pública `/`, uma sessão autenticada com `builder.access` e `builder.pages.edit` recebe o link **Editar página inicial**. O seletor do editor identifica o slug `inicio` como **Página inicial do ITES**. A edição continua protegida no servidor por `builder.access`, `portal.content.manage` e `builder.pages.edit`; a publicação também exige `builder.pages.publish`. A última versão publicada permanece visível ao público durante alterações em rascunho. A navegação condicional serve apenas para descoberta: chamadas sem grants são negadas pela API.
-
-O painel `/administracao/indicadores` compartilha o armazenamento `institutional_pages` e `institutional_page_versions` sob o slug privado `painel-demandas`. Seus blocos usam fontes e visualizações enumeradas pelo servidor e consultam endpoints agregados protegidos; o documento não contém SQL nem cópias dos dados. A configuração exige `dashboards.manage`, enquanto os dados exigem `analytics.view`. O painel não é publicado como página pública.
-
-Os documentos do portal e os do painel têm validações distintas, porque o formato e a finalidade são distintos, mas compartilham as mesmas tabelas de versões e auditoria do ciclo de páginas. As APIs controladas aplicam uma allowlist de categorias e de fontes de dados em vez de aceitar componentes executáveis.
+A migração atual cobre a página inicial. O painel de indicadores, outras páginas institucionais e telas operacionais ainda usam representações próprias. A integração delas, a publicação `PUBLIC`/`PRIVATE` e a autorização por página estão descritas em [gestão de páginas](../architecture/unified-pages.md) como trabalho pendente.

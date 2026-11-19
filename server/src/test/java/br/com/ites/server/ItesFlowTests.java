@@ -33,6 +33,8 @@ class ItesFlowTests {
     @Autowired ObjectMapper json;
     @Autowired JdbcTemplate jdbc;
     @Autowired RecordingMailGateway.Inbox inbox;
+    @Autowired br.com.ites.server.services.Ites.InstitutionalHomeProvisioner institutionalHome;
+    @Autowired br.com.ites.server.services.Ites.RootProjectProvisioner rootProvisioner;
 
     @Test
     void requesterDemandIsPrivateAndAdminDecisionIsAudited() throws Exception {
@@ -69,49 +71,55 @@ class ItesFlowTests {
     }
 
     @Test
-    void institutionalPageRequiresGrantsAndPublishesSavedDocument() throws Exception {
-        String editor = register();
+    void rootProjectSeparatesDraftAndPublicationAndRequiresAdministrator() throws Exception {
+        String requester = register();
         String admin = register();
-        UUID adminId=userId(admin);
-        UUID roleId=jdbc.queryForObject("SELECT id FROM app_roles WHERE code='ADMINISTRATOR'",UUID.class);
-        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)",adminId,roleId);
-        String document=json.writeValueAsString(Map.of("version",1,"name","Início","activePageId","page-1","pages",java.util.List.of(Map.of("id","page-1","name","Início","slug","inicio","blocks",java.util.List.of(Map.of("id","block-1","definitionId","hero-classic","props",Map.of("title","Portal ITES")))))));
-        mvc.perform(post("/ites/pages/inicio/draft").header("Authorization",editor).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("revision",0,"document",json.readTree(document)))))
-                .andExpect(status().isForbidden());
-        String response=mvc.perform(post("/ites/pages/inicio/draft").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("revision",0,"document",json.readTree(document)))))
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        JsonNode saved=json.readTree(response);
-        mvc.perform(post("/ites/pages/inicio/draft").header("Authorization",editor).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("revision",0,"document",json.readTree(document)))))
-                .andExpect(status().isForbidden());
-        JsonNode reopened=json.readTree(mvc.perform(get("/ites/pages/inicio/draft").header("Authorization",admin))
+        UUID adminId = userId(admin);
+        UUID roleId = jdbc.queryForObject("SELECT id FROM app_roles WHERE code='ADMINISTRATOR'", UUID.class);
+        jdbc.update("INSERT INTO app_user_roles(user_id,role_id) VALUES(?,?)", adminId, roleId);
+        institutionalHome.run(null);
+        rootProvisioner.run(null);
+        rootProvisioner.run(null);
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM projects WHERE site_role='ROOT'", Integer.class));
+
+        JsonNode root = json.readTree(mvc.perform(get("/ites/site/root").header("Authorization", admin))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
-        JsonNode restoredDocument=json.readTree(reopened.get("document").asText());
-        assertEquals("Portal ITES",restoredDocument.at("/pages/0/blocks/0/props/title").asText());
-        mvc.perform(post("/ites/pages/inicio/draft").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("revision",0,"document",json.readTree(document)))))
-                .andExpect(status().isConflict());
-        mvc.perform(post("/ites/pages/inicio/publish").header("Authorization",editor).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("versionId",saved.get("versionId").asText()))))
-                .andExpect(status().isForbidden());
-        mvc.perform(post("/ites/pages/inicio/publish").header("Authorization",admin).contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsString(Map.of("versionId",saved.get("versionId").asText()))))
-                .andExpect(status().isOk());
-        mvc.perform(post("/ites/pages/inicio/draft/restore-published").header("Authorization",editor))
-                .andExpect(status().isForbidden());
-        mvc.perform(post("/ites/pages/inicio/draft/restore-published").header("Authorization",admin))
-                .andExpect(status().isOk());
-        JsonNode restored = json.readTree(mvc.perform(get("/ites/pages/inicio/draft").header("Authorization",admin))
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
-        assertEquals("Portal ITES",json.readTree(restored.get("document").asText()).at("/pages/0/blocks/0/props/title").asText());
-        JsonNode published=json.readTree(mvc.perform(get("/ites/pages/inicio")).andExpect(status().isOk())
+        assertTrue(root.get("canPublishDirectly").asBoolean());
+        String projectId = root.get("projectId").asText();
+        String organizationId = jdbc.queryForObject("SELECT organization_id::text FROM projects WHERE id=?", String.class,
+                UUID.fromString(projectId));
+        mvc.perform(get("/ites/site/root").header("Authorization", requester)).andExpect(status().isForbidden());
+        mvc.perform(get("/ites/pages/inicio/draft").header("Authorization", admin)).andExpect(status().isNotFound());
+
+        JsonNode project = json.readTree(mvc.perform(get("/projects/" + projectId).header("Authorization", admin)
+                .header("X-Organization-Id", organizationId)).andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString());
-        JsonNode publishedDocument=json.readTree(published.get("document").asText());
-        assertEquals("Portal ITES",publishedDocument.at("/pages/0/blocks/0/props/title").asText());
-        mvc.perform(delete("/ites/pages/inicio/published").header("Authorization",admin)).andExpect(status().isOk());
-        mvc.perform(get("/ites/pages/inicio")).andExpect(status().isNotFound());
+        String original = project.at("/document/pages/0/blocks/0/props/title").asText();
+        var document = (tools.jackson.databind.node.ObjectNode) project.get("document").deepCopy();
+        ((tools.jackson.databind.node.ObjectNode) document.at("/pages/0/blocks/0/props")).put("title", original + " teste");
+        String change = json.writeValueAsString(Map.of("revision", project.get("revision").asLong(), "document", document));
+        mvc.perform(patch("/projects/" + projectId).header("Authorization", requester)
+                .header("X-Organization-Id", organizationId).contentType(MediaType.APPLICATION_JSON).content(change))
+                .andExpect(status().isForbidden());
+        mvc.perform(patch("/projects/" + projectId).header("Authorization", admin)
+                .header("X-Organization-Id", organizationId).contentType(MediaType.APPLICATION_JSON).content(change))
+                .andExpect(status().isOk());
+        JsonNode publishedBefore = json.readTree(mvc.perform(get("/ites/pages/inicio"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertEquals(original, json.readTree(publishedBefore.get("document").asText())
+                .at("/pages/0/blocks/0/props/title").asText());
+        mvc.perform(post("/projects/" + projectId + "/publication").header("Authorization", requester)
+                .header("X-Organization-Id", organizationId).contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isForbidden());
+        mvc.perform(post("/projects/" + projectId + "/publication").header("Authorization", admin)
+                .header("X-Organization-Id", organizationId).contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isOk());
+        JsonNode publishedAfter = json.readTree(mvc.perform(get("/ites/pages/inicio"))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertEquals(original + " teste", json.readTree(publishedAfter.get("document").asText())
+                .at("/pages/0/blocks/0/props/title").asText());
+        mvc.perform(delete("/projects/" + projectId).header("Authorization", admin)
+                .header("X-Organization-Id", organizationId)).andExpect(status().isConflict());
     }
 
     @Test

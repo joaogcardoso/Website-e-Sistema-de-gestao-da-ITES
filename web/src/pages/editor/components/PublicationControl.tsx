@@ -25,10 +25,15 @@ export function PublicationControl({ token, projectId, projectRevision, persiste
   const [mode, setMode] = useState<"closed" | "details" | "confirm">("closed")
   const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState("")
+  const [directPublication, setDirectPublication] = useState(false)
 
   useEffect(() => {
     if (!token || !projectId) return
     let active = true
+    void fetch("/api/ites/site/root", { headers: { Authorization: `Bearer ${token}` } })
+      .then(response => response.ok ? response.json() as Promise<{ projectId: string; canPublishDirectly: boolean }> : null)
+      .then(root => { if (active) setDirectPublication(root?.projectId === projectId && root.canPublishDirectly) })
+      .catch(() => { if (active) setDirectPublication(false) })
     void getPublication(token, projectId)
       .then((result) => { if (active) setPublication(result) })
       .catch(() => { if (active) setPublication(null) })
@@ -78,10 +83,11 @@ export function PublicationControl({ token, projectId, projectRevision, persiste
     setPublishing(true)
     setError("")
     try {
-      if (!currentReview || currentReview.state !== "APPROVED") throw new Error("Solicite e aguarde a aprovação de outra pessoa.")
-      const result = await publishProject(token, projectId, currentReview.id)
+      if (!directPublication && (!currentReview || currentReview.state !== "APPROVED")) throw new Error("Solicite e aguarde a aprovação de outra pessoa.")
+      const result = await publishProject(token, projectId, directPublication ? null : currentReview!.id)
       setPublication(result)
-      setReviews((items) => items.map((item) => item.id === currentReview.id ? { ...item, consumedAt: new Date().toISOString() } : item))
+      if (currentReview && !directPublication)
+        setReviews((items) => items.map((item) => item.id === currentReview.id ? { ...item, consumedAt: new Date().toISOString() } : item))
       setMode("details")
       onNotice("Projeto publicado com sucesso.")
     } catch {
@@ -120,15 +126,14 @@ export function PublicationControl({ token, projectId, projectRevision, persiste
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
           <div className="flex flex-wrap justify-end gap-2"><Button variant="ghost" disabled={publishing} onClick={() => setMode(publication ? "details" : "closed")}>Cancelar</Button>
             {currentReview?.state === "PENDING" && currentReview.canDecide ? <><Button variant="outline" disabled={publishing} onClick={() => void decideReview(false)}>Rejeitar revisão</Button><Button disabled={publishing} onClick={() => void decideReview(true)}>Aprovar revisão</Button></> : null}
-            {(!currentReview || currentReview.state === "REJECTED" || currentReview.consumedAt) && <Button disabled={!saved || !currentRevisionId || publishing} onClick={() => void createReviewRequest()}>{publishing ? "Solicitando…" : "Solicitar revisão"}</Button>}
-            {currentReview?.state === "APPROVED" && <Button disabled={!saved || publishing} onClick={() => void publish()}>{publishing ? "Publicando…" : "Publicar versão aprovada"}</Button>}</div>
+            {directPublication ? <Button disabled={!saved || publishing} onClick={() => void publish()}>{publishing ? "Publicando…" : "Publicar projeto raiz"}</Button> : <>{(!currentReview || currentReview.state === "REJECTED" || currentReview.consumedAt) && <Button disabled={!saved || !currentRevisionId || publishing} onClick={() => void createReviewRequest()}>{publishing ? "Solicitando…" : "Solicitar revisão"}</Button>}{currentReview?.state === "APPROVED" && <Button disabled={!saved || publishing} onClick={() => void publish()}>{publishing ? "Publicando…" : "Publicar versão aprovada"}</Button>}</>}</div>
         </> : publication ? <>
           <div><h2 className="text-lg font-semibold">{publication.projectName}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{publication.active ? "Publicado" : "Publicação pausada"} · Versão {publication.currentVersion}</p></div>
           <p className="text-sm">Publicado em {current ? new Date(current.publishedAt).toLocaleString("pt-BR") : "—"}</p>
           <div className="flex flex-col gap-2 text-sm">
             <Link to={webPaths.publications} className="text-primary underline" onClick={() => setMode("closed")}>Acompanhar na central de publicações</Link>
-            <a href={publicUrl(publication.publicKey)} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary underline">Abrir site publicado <ExternalLink aria-hidden="true" className="size-4" /></a>
+            <a href={directPublication ? "/" : publicUrl(publication.publicKey)} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary underline">Abrir site publicado <ExternalLink aria-hidden="true" className="size-4" /></a>
           </div>
           <Button disabled={!saved || !changed} onClick={() => setMode("confirm")}>Publicar nova versão</Button>
           {!changed && <p className="text-xs text-muted-foreground">Faça e salve uma alteração para gerar outra versão.</p>}

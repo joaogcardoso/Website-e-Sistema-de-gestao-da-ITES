@@ -4,7 +4,7 @@
 
 Execução em contêiner descartável `postgres:16-alpine`, banco novo `ites_coursework`, sem volume persistente nem porta de rede publicada. Os scripts foram montados somente para leitura e executados com `psql -v ON_ERROR_STOP=1` por meio de `database/coursework/run_all.sql`.
 
-Sequência efetiva: `01_schema.sql`, `04_routines.sql`, `02_seed.sql`, `03_queries.sql`, `06_validation.sql`, `05_security.sql` e `07_security_tests.sql`. Todos os passos terminaram com código zero; os blocos de teste confirmaram as negações esperadas. A transcrição integral, com resultados das consultas e mensagens do psql, está em [coursework-validation-postgresql16.txt](coursework-validation-postgresql16.txt).
+Sequência efetiva: `01_schema.sql`, `04_routines.sql`, `02_seed.sql`, `03_queries.sql`, `06_validation.sql`, `05_security.sql` e `07_security_tests.sql`. Todos os passos terminaram com código zero; os blocos de teste confirmaram as negações esperadas. A transcrição integral, com resultados das consultas e mensagens do psql, está em [coursework-validation-postgresql16.txt](coursework-validation-postgresql16.txt). A evidência específica do APD1 — estrutura de cada tabela, dados inseridos e cada consulta seguida do seu resultado — está em [apd1-estrutura-dados-consultas-postgresql16.txt](apd1-estrutura-dados-consultas-postgresql16.txt), gerada por `database/coursework/09_apd1_evidencias.sql` em um banco limpo após o schema, as rotinas e a carga.
 
 ## Resultados observados
 

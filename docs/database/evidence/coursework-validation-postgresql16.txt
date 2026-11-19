@@ -51,70 +51,45 @@ INSERT 0 20
 DO
 DO
 Etapa 4: consultas de negócio
-     code      |          created_at
----------------+-------------------------------
- ITES-00000002 | 2026-11-19 08:41:10.758964-03
- ITES-00000009 | 2026-11-19 08:41:10.758964-03
- ITES-00000014 | 2026-11-19 08:41:10.758964-03
- ITES-00000023 | 2026-11-19 08:41:10.758964-03
- ITES-00000029 | 2026-11-19 08:41:10.758964-03
+     code      |       service        | urgency |          created_at
+---------------+----------------------+---------+-------------------------------
+ ITES-00000002 | comunicação          | MEDIUM  | 2026-11-19 10:04:24.289459-03
+ ITES-00000009 | formação             | MEDIUM  | 2026-11-19 10:04:24.289459-03
+ ITES-00000014 | comercialização      | MEDIUM  | 2026-11-19 10:04:24.289459-03
+ ITES-00000023 | apoio administrativo | MEDIUM  | 2026-11-19 10:04:24.289459-03
+ ITES-00000029 | parceria             | MEDIUM  | 2026-11-19 10:04:24.289459-03
 (5 rows)
 
-     code      |       service
----------------+----------------------
- ITES-00000004 | comercialização
- ITES-00000005 | apoio administrativo
- ITES-00000010 | formação
- ITES-00000011 | comunicação
- ITES-00000016 | apoio administrativo
- ITES-00000017 | parceria
- ITES-00000021 | comunicação
- ITES-00000024 | parceria
- ITES-00000027 | comercialização
- ITES-00000030 | formação
-(10 rows)
+     code      |       service        |         status
+---------------+----------------------+-------------------------
+ ITES-00000004 | comercialização      | Aceita para atendimento
+ ITES-00000011 | comunicação          | Aceita para atendimento
+ ITES-00000016 | apoio administrativo | Aceita para atendimento
+ ITES-00000024 | parceria             | Aceita para atendimento
+ ITES-00000030 | formação             | Aceita para atendimento
+(5 rows)
 
-                name                 | economic_sector
--------------------------------------+-----------------
- Cooperativa Sementes de Itaipu      | artesanato
- Cooperativa de Reciclagem Horizonte | artesanato
- Rede de Alimentação Comunitária     | artesanato
- Rede de Produção Local              | artesanato
+                name                 | economic_sector |       contact_email
+-------------------------------------+-----------------+---------------------------
+ Cooperativa Sementes de Itaipu      | artesanato      | contato05@example.invalid
+ Cooperativa de Reciclagem Horizonte | artesanato      | contato10@example.invalid
+ Rede de Alimentação Comunitária     | artesanato      | contato15@example.invalid
+ Rede de Produção Local              | artesanato      | contato20@example.invalid
 (4 rows)
 
-     code      |         status
----------------+-------------------------
- ITES-00000001 | Em atendimento
- ITES-00000002 | Pendente
- ITES-00000003 | Concluída
- ITES-00000004 | Aceita para atendimento
- ITES-00000005 | Recusada
- ITES-00000006 | Em atendimento
- ITES-00000007 | Cancelada
- ITES-00000008 | Concluída
- ITES-00000009 | Pendente
- ITES-00000010 | Recusada
- ITES-00000011 | Aceita para atendimento
- ITES-00000012 | Cancelada
- ITES-00000013 | Em atendimento
- ITES-00000014 | Pendente
- ITES-00000015 | Concluída
- ITES-00000016 | Aceita para atendimento
- ITES-00000017 | Recusada
- ITES-00000018 | Em atendimento
- ITES-00000019 | Cancelada
- ITES-00000020 | Concluída
- ITES-00000021 | Recusada
- ITES-00000022 | Cancelada
- ITES-00000023 | Pendente
- ITES-00000024 | Aceita para atendimento
- ITES-00000025 | Em atendimento
- ITES-00000026 | Concluída
- ITES-00000027 | Recusada
- ITES-00000028 | Cancelada
- ITES-00000029 | Pendente
- ITES-00000030 | Aceita para atendimento
-(30 rows)
+     code      | capacity |      capacity_other       |       service
+---------------+----------+---------------------------+----------------------
+ ITES-00000001 | GROUP    |                           | comunicação
+ ITES-00000007 | OTHER    | Representante comunitário | parceria
+ ITES-00000008 | OTHER    | Representante comunitário | parceria
+ ITES-00000014 | PARTNER  |                           | comercialização
+ ITES-00000015 | OTHER    | Representante comunitário | apoio administrativo
+ ITES-00000016 | OTHER    | Representante comunitário | apoio administrativo
+ ITES-00000022 | OTHER    | Representante comunitário | comercialização
+ ITES-00000024 | FORUM    |                           | parceria
+ ITES-00000026 | OTHER    | Representante comunitário | comunicação
+ ITES-00000030 | OTHER    | Representante comunitário | formação
+(10 rows)
 
          slug         |             title
 ----------------------+--------------------------------
@@ -140,71 +115,61 @@ Etapa 4: consultas de negócio
  tecnologia-social    | Tecnologia social
 (20 rows)
 
-                name                 |         status          | total
+             organizacao             |        situacao         | total
 -------------------------------------+-------------------------+-------
  Associação Artes da Região          | Aceita para atendimento |     1
  Associação Ecos da Serra            | Pendente                |     1
  Associação Feira Popular            | Pendente                |     1
  Associação Maré Viva                | Em atendimento          |     1
- Associação Maré Viva                | Recusada                |     1
  Coletivo Cultura em Rede            | Aceita para atendimento |     1
- Coletivo Cultura em Rede            | Cancelada               |     1
- Coletivo Memória e Território       | Cancelada               |     1
- Coletivo Mulheres da Pesca          | Recusada                |     1
  Coletivo Raízes do Morro            | Pendente                |     1
  Cooperativa Sementes de Itaipu      | Pendente                |     1
- Cooperativa Sementes de Itaipu      | Recusada                |     1
- Cooperativa de Reciclagem Horizonte | Cancelada               |     1
  Cooperativa de Reciclagem Horizonte | Concluída               |     1
- Cooperativa de Serviços do Leste    | Recusada                |     1
  Grupo Cerâmica da Costa             | Concluída               |     1
  Grupo Mãos da Baía                  | Aceita para atendimento |     1
  Grupo Mãos da Baía                  | Concluída               |     1
  Grupo Sabores de Niterói            | Em atendimento          |     1
- Grupo Tecendo Histórias             | Cancelada               |     1
  Rede de Agricultura Urbana          | Em atendimento          |     1
- Rede de Agricultura Urbana          | Recusada                |     1
  Rede de Alimentação Comunitária     | Em atendimento          |     1
- Rede de Costura Solidária           | Cancelada               |     1
  Rede de Costura Solidária           | Concluída               |     1
  Rede de Produção Local              | Aceita para atendimento |     1
-(26 rows)
+(16 rows)
 
-           name            | decisions
----------------------------+-----------
- Pessoa de Demonstração 26 |        10
+      responsavel      | decisoes | recusas
+-----------------------+----------+---------
+ Helena Coutinho Prado |       10 |       5
 (1 row)
 
- economic_sector |       service        | total
------------------+----------------------+-------
- artesanato      | formação             |     6
- cultura         | comercialização      |     5
- alimentação     | apoio administrativo |     5
- serviços        | parceria             |     5
- agricultura     | comunicação          |     5
+    setor    |       servico        | total
+-------------+----------------------+-------
+ artesanato  | formação             |     6
+ agricultura | comunicação          |     5
+ alimentação | apoio administrativo |     5
+ cultura     | comercialização      |     5
+ serviços    | parceria             |     5
 (5 rows)
 
             name
 ----------------------------
- Rede de Produção Local
- Grupo Mãos da Baía
  Associação Artes da Região
  Coletivo Cultura em Rede
+ Grupo Mãos da Baía
+ Rede de Produção Local
 (4 rows)
 
-           name
---------------------------
- Pessoa de Demonstração 1
- Pessoa de Demonstração 2
- Pessoa de Demonstração 3
- Pessoa de Demonstração 4
- Pessoa de Demonstração 5
+          name          | demandas
+------------------------+----------
+ Ana Paula Ferreira     |        2
+ Carlos Eduardo Martins |        2
+ Fernanda Alves Costa   |        2
+ Juliana Rocha Lima     |        2
+ Marcos Vinícius Souza  |        2
 (5 rows)
 
-           name
----------------------------
- Pessoa de Demonstração 5
- Pessoa de Demonstração 20
+          name
+------------------------
+ Felipe Rezende Azevedo
+ Fernanda Alves Costa
 (2 rows)
 
 Etapa 5: validação de dados e automações

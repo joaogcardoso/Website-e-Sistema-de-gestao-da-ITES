@@ -1,10 +1,19 @@
 -- Popula o banco acadêmico com dados fictícios e determinísticos.
 -- As senhas são sentinelas não utilizáveis para autenticação.
+-- Os e-mails usam o domínio reservado example.invalid (dados fictícios);
+-- os usuários 26 a 30 compõem a equipe interna da ITES.
 INSERT INTO users(name, email, password_hash, whatsapp)
-SELECT 'Pessoa de Demonstração ' || n,
+SELECT (ARRAY[
+  'Ana Paula Ferreira', 'Marcos Vinícius Souza', 'Juliana Rocha Lima', 'Carlos Eduardo Martins', 'Fernanda Alves Costa',
+  'Rafael Nogueira Dias', 'Patrícia Mendes Ribeiro', 'Lucas Henrique Barbosa', 'Camila Duarte Pinto', 'Thiago Cardoso Freitas',
+  'Mariana Gomes Teixeira', 'Eduardo Lopes Moreira', 'Beatriz Carvalho Santos', 'Gustavo Araújo Pereira', 'Larissa Monteiro Vieira',
+  'Diego Fernandes Castro', 'Aline Batista Correia', 'Rodrigo Pires Cavalcanti', 'Vanessa Lacerda Moura', 'Felipe Rezende Azevedo',
+  'Renata Fonseca Brandão', 'André Luiz Sampaio', 'Débora Antunes Farias', 'Leonardo Machado Reis', 'Simone Tavares Braga',
+  'Helena Coutinho Prado', 'Ricardo Viana Lemos', 'Cláudia Barros Siqueira', 'Paulo Roberto Amaral', 'Luana Medeiros Quintela'
+])[n],
        'pessoa' || lpad(n::text, 2, '0') || '@example.invalid',
        '{DEMO_ONLY_NON_LOGINABLE}',
-       '000000' || lpad(n::text, 4, '0')
+       '(21) 9' || (8100 + n * 37)::text || '-' || lpad((1000 + n * 263 % 9000)::text, 4, '0')
 FROM generate_series(1, 30) AS n;
 
 -- Catálogo de 20 papéis. Os quatro primeiros são os perfis do módulo M3 do
@@ -137,10 +146,41 @@ SELECT u.id,
        CASE (n % 4) WHEN 0 THEN 'OTHER' WHEN 1 THEN 'GROUP' WHEN 2 THEN 'FORUM' ELSE 'PARTNER' END,
        CASE WHEN n % 4 = 0 THEN 'Representante comunitário' ELSE NULL END,
        (ARRAY['formação','comunicação','comercialização','apoio administrativo','parceria'])[(n % 5) + 1],
-       'Solicitação demonstrativa de apoio institucional número ' || n,
+       (ARRAY[
+         'Criação de identidade visual e perfil nas redes sociais do coletivo.',
+         'Apoio para participar de feiras e eventos de comercialização em Niterói.',
+         'Orientação para formalização do grupo como associação ou cooperativa.',
+         'Proposta de parceria para atividades de extensão com estudantes do IFRJ.',
+         'Oficina de gestão de empreendimentos solidários para os integrantes do grupo.',
+         'Apoio para produzir fotos e textos de divulgação dos produtos artesanais.',
+         'Organização de pontos de venda coletiva para os produtos agroecológicos.',
+         'Apoio na elaboração do estatuto e do regimento interno do empreendimento.',
+         'Busca de parceria com a prefeitura para uso de espaço da feira municipal.',
+         'Formação em precificação justa dos produtos vendidos na feira do bairro.',
+         'Planejamento de comunicação para divulgar a feira de economia solidária.',
+         'Estruturação de venda on-line com entrega por cestas semanais.',
+         'Organização da documentação para emissão de nota fiscal como MEI.',
+         'Articulação com o fórum regional de economia solidária para ações conjuntas.',
+         'Curso introdutório de cooperativismo e autogestão para novos associados.',
+         'Elaboração de catálogo digital dos produtos para envio por WhatsApp.',
+         'Apoio na negociação com restaurantes locais para fornecimento de hortaliças.',
+         'Apoio na prestação de contas de um pequeno projeto financiado por edital.',
+         'Parceria para projeto de reciclagem com escolas da rede pública.',
+         'Capacitação em controle financeiro básico e fluxo de caixa do coletivo.',
+         'Produção de vídeo curto apresentando a história e o trabalho do grupo.',
+         'Definição de estratégia de venda para a nova linha de produtos de cerâmica.',
+         'Orientação sobre controle de estoque e registro de vendas do grupo.',
+         'Apoio técnico para submissão de projeto a edital de fomento.',
+         'Oficina sobre boas práticas de manipulação de alimentos para a cozinha comunitária.',
+         'Orientação para manter um calendário de publicações nas redes sociais.',
+         'Inserção dos produtos do grupo em compras institucionais e mercados públicos.',
+         'Apoio para inscrição do empreendimento no cadastro de economia solidária.',
+         'Parceria com universidade para pesquisa sobre o impacto do grupo no território.',
+         'Formação de jovens do grupo em uso de ferramentas digitais de trabalho.'
+       ])[n],
        (ARRAY['LOW','MEDIUM','HIGH'])[(n % 3) + 1],
        (ARRAY['Pendente','Aceita para atendimento','Em atendimento','Concluída','Recusada','Cancelada'])[((n - 1) % 6) + 1],
-       CASE WHEN (n - 1) % 6 = 3 THEN 'Atividade concluída e registrada para demonstração' ELSE NULL END
+       CASE WHEN (n - 1) % 6 = 3 THEN 'Atendimento concluído: ações realizadas e resultados registrados com o grupo.' ELSE NULL END
 FROM generate_series(1, 30) AS n
 JOIN users u ON u.email = 'pessoa' || lpad((((n - 1) % 25) + 1)::text, 2, '0') || '@example.invalid'
 LEFT JOIN organizations o ON o.id = ((n - 1) % 20) + 1;
@@ -155,7 +195,13 @@ SELECT d.id,
          ELSE 'Pendente'
        END,
        d.status,
-       'Decisão fictícia registrada para demonstrar o histórico da solicitação ' || d.code
+       CASE d.status
+         WHEN 'Aceita para atendimento' THEN 'Demanda alinhada às linhas de atuação da ITES; aceita para atendimento.'
+         WHEN 'Em atendimento' THEN 'Equipe definida e plano de atendimento iniciado com o grupo.'
+         WHEN 'Concluída' THEN 'Ações previstas realizadas e resultados registrados.'
+         WHEN 'Recusada' THEN 'Pedido fora do escopo atual da incubadora; solicitante orientado a procurar a rede parceira.'
+         ELSE 'Cancelada a pedido do solicitante antes do início do atendimento.'
+       END
 FROM demands d
 CROSS JOIN users actor
 WHERE actor.email = 'pessoa26@example.invalid'
@@ -196,7 +242,7 @@ SELECT p.id,
            'blocks', jsonb_build_array(jsonb_build_object(
              'id', 'bloco-' || p.id,
              'definitionId', 'hero-classic',
-             'props', jsonb_build_object('title', p.title, 'description', 'Conteúdo institucional demonstrativo da ITES.')
+             'props', jsonb_build_object('title', p.title, 'description', CASE p.slug WHEN 'inicio' THEN 'Página inicial do portal da ITES, com destaques e acesso à solicitação de apoio.' WHEN 'quem-somos' THEN 'História, missão e equipe da incubadora no IFRJ Campus Niterói.' WHEN 'como-atuamos' THEN 'Metodologia de incubação baseada em autogestão e educação popular.' WHEN 'projetos' THEN 'Projetos de extensão e pesquisa apoiados pela incubadora.' WHEN 'empreendimentos' THEN 'Empreendimentos solidários incubados e acompanhados pela ITES.' WHEN 'noticias' THEN 'Notícias sobre as ações da incubadora e dos grupos apoiados.' WHEN 'agenda' THEN 'Calendário de oficinas, feiras e eventos de economia solidária.' WHEN 'publicacoes' THEN 'Artigos, relatórios e cartilhas produzidos pela equipe.' WHEN 'biblioteca' THEN 'Materiais de apoio sobre cooperativismo e economia solidária.' WHEN 'ferramentas' THEN 'Aplicativos e ferramentas digitais disponibilizados aos grupos.' WHEN 'contato' THEN 'Canais de contato e redes sociais da ITES.' WHEN 'submeter-demanda' THEN 'Como cadastrar-se e enviar uma solicitação de apoio à ITES.' WHEN 'formacao' THEN 'Cursos e oficinas de formação em economia solidária.' WHEN 'comercializacao' THEN 'Apoio à comercialização coletiva e às feiras solidárias.' WHEN 'comunicacao' THEN 'Ações de comunicação comunitária com os empreendimentos.' WHEN 'parcerias' THEN 'Instituições parceiras e como estabelecer uma parceria.' WHEN 'feira-solidaria' THEN 'Informações sobre a feira de economia solidária de Niterói.' WHEN 'memoria-territorial' THEN 'Registros de memória e identidade dos territórios atendidos.' WHEN 'tecnologia-social' THEN 'Tecnologias sociais desenvolvidas com as comunidades.' WHEN 'perguntas-frequentes' THEN 'Respostas às dúvidas mais comuns sobre a incubadora.' END)
            ))
          ))
        ),

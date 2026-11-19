@@ -11,10 +11,10 @@ Sequência efetiva: `01_schema.sql`, `04_routines.sql`, `02_seed.sql`, `03_queri
 | Tabela | Linhas após os testes |
 |---|---:|
 | `users` | 30 |
-| `roles` | 4 |
-| `permissions` | 13 |
+| `roles` | 20 |
+| `permissions` | 20 |
 | `user_roles` | 45 |
-| `role_permissions` | 22 |
+| `role_permissions` | 61 |
 | `organizations` | 20 |
 | `demands` | 31 |
 | `demand_events` | 29 |
@@ -23,7 +23,7 @@ Sequência efetiva: `01_schema.sql`, `04_routines.sql`, `02_seed.sql`, `03_queri
 | `page_events` | 22 |
 | `grant_audit` | 47 |
 
-O script verificou 49 constraints validadas. As 5 consultas simples, 3 consultas JOIN e 3 subconsultas executaram e retornaram os resultados na transcrição. O catálogo de papéis e permissões ficou em 4 e 13 linhas, respectivamente, preservando valores de negócio significativos; a exceção ao limite acadêmico de 20 por tabela está descrita na documentação técnica e aguarda aceite do orientador.
+O script verificou 49 constraints validadas. As 5 consultas simples, 3 consultas JOIN e 3 subconsultas executaram e retornaram os resultados na transcrição. Todas as 12 tabelas têm pelo menos 20 linhas; o catálogo de papéis e o de permissões têm 20 linhas cada, com valores de negócio descritos na documentação técnica.
 
 As funções foram exercitadas com situação e solicitante existentes/inexistentes. Procedures e triggers foram verificados em condições positivas e negativas: transições válidas, conclusão com nota, ausência de justificativa, transição terminal inválida, auditoria de publicação/retirada, versão de página inválida, histórico imutável e concessão/revogação de papel.
 

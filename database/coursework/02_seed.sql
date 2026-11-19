@@ -7,11 +7,30 @@ SELECT 'Pessoa de Demonstração ' || n,
        '000000' || lpad(n::text, 4, '0')
 FROM generate_series(1, 30) AS n;
 
+-- Catálogo de 20 papéis. Os quatro primeiros são os perfis do módulo M3 do
+-- documento da ITES; os demais detalham responsabilidades do portal, da
+-- triagem, do planejamento (M7), dos relatórios (M8) e da auditoria.
 INSERT INTO roles(code, name) VALUES
   ('REQUESTER', 'Solicitante'),
   ('ADMINISTRATOR', 'Administrador'),
   ('DEMAND_MANAGER', 'Gestor de demandas'),
-  ('COLLABORATOR', 'Colaborador');
+  ('COLLABORATOR', 'Colaborador'),
+  ('TRIAGE_ANALYST', 'Analista de triagem'),
+  ('ORGANIZATION_REPRESENTATIVE', 'Representante de organização'),
+  ('COORDINATOR', 'Coordenação da ITES'),
+  ('PLAN_MANAGER', 'Gestor de planos de atendimento'),
+  ('ACTIVITY_RESPONSIBLE', 'Responsável por atividades'),
+  ('REPORT_VIEWER', 'Leitor de relatórios'),
+  ('REPORT_EXPORTER', 'Exportador de relatórios'),
+  ('AUDITOR', 'Auditor'),
+  ('USER_MANAGER', 'Gestor de contas de usuários'),
+  ('CONTENT_EDITOR', 'Editor de conteúdo institucional'),
+  ('CONTENT_PUBLISHER', 'Publicador de conteúdo institucional'),
+  ('NEWS_EDITOR', 'Editor de notícias e agenda'),
+  ('PUBLICATIONS_EDITOR', 'Editor de publicações'),
+  ('PROJECTS_EDITOR', 'Editor de projetos e empreendimentos incubados'),
+  ('PARTNERSHIP_MANAGER', 'Gestor de parcerias'),
+  ('SUPPORT', 'Suporte técnico');
 
 INSERT INTO permissions(code, description) VALUES
   ('profile.read_own', 'Consultar o próprio perfil'),
@@ -26,7 +45,14 @@ INSERT INTO permissions(code, description) VALUES
   ('organizations.read', 'Consultar organizações'),
   ('portal.content.manage', 'Administrar conteúdo institucional'),
   ('builder.pages.edit', 'Editar páginas institucionais'),
-  ('builder.pages.publish', 'Publicar páginas institucionais');
+  ('builder.pages.publish', 'Publicar páginas institucionais'),
+  ('demands.create', 'Registrar novas demandas'),
+  ('demands.cancel', 'Cancelar demandas'),
+  ('organizations.manage', 'Cadastrar e atualizar organizações'),
+  ('plans.manage', 'Criar e acompanhar planos de atendimento'),
+  ('reports.read', 'Consultar relatórios e indicadores'),
+  ('reports.export', 'Exportar relatórios'),
+  ('audit.read', 'Consultar trilhas de auditoria');
 
 INSERT INTO role_permissions(role_id, permission_id)
 SELECT r.id, p.id
@@ -50,6 +76,47 @@ INSERT INTO role_permissions(role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r JOIN permissions p ON p.code IN ('profile.read_own','profile.manage_own','demands.read_own')
 WHERE r.code = 'REQUESTER'
+ON CONFLICT DO NOTHING;
+
+-- Permissões dos papéis complementares.
+INSERT INTO role_permissions(role_id, permission_id)
+SELECT r.id, p.id
+FROM (VALUES
+  ('REQUESTER', 'demands.create'),
+  ('DEMAND_MANAGER', 'demands.cancel'),
+  ('DEMAND_MANAGER', 'plans.manage'),
+  ('TRIAGE_ANALYST', 'demands.read'),
+  ('TRIAGE_ANALYST', 'demands.review'),
+  ('TRIAGE_ANALYST', 'organizations.read'),
+  ('ORGANIZATION_REPRESENTATIVE', 'demands.create'),
+  ('ORGANIZATION_REPRESENTATIVE', 'demands.read_own'),
+  ('ORGANIZATION_REPRESENTATIVE', 'organizations.manage'),
+  ('COORDINATOR', 'demands.read'),
+  ('COORDINATOR', 'demands.decide'),
+  ('COORDINATOR', 'reports.read'),
+  ('COORDINATOR', 'roles.manage'),
+  ('PLAN_MANAGER', 'plans.manage'),
+  ('PLAN_MANAGER', 'demands.read'),
+  ('ACTIVITY_RESPONSIBLE', 'plans.manage'),
+  ('REPORT_VIEWER', 'reports.read'),
+  ('REPORT_EXPORTER', 'reports.read'),
+  ('REPORT_EXPORTER', 'reports.export'),
+  ('AUDITOR', 'audit.read'),
+  ('AUDITOR', 'reports.read'),
+  ('USER_MANAGER', 'users.read'),
+  ('USER_MANAGER', 'users.manage'),
+  ('CONTENT_EDITOR', 'builder.pages.edit'),
+  ('CONTENT_EDITOR', 'portal.content.manage'),
+  ('CONTENT_PUBLISHER', 'builder.pages.publish'),
+  ('NEWS_EDITOR', 'builder.pages.edit'),
+  ('PUBLICATIONS_EDITOR', 'builder.pages.edit'),
+  ('PROJECTS_EDITOR', 'builder.pages.edit'),
+  ('PARTNERSHIP_MANAGER', 'organizations.manage'),
+  ('PARTNERSHIP_MANAGER', 'organizations.read'),
+  ('SUPPORT', 'users.read')
+) AS m(role_code, permission_code)
+JOIN roles r ON r.code = m.role_code
+JOIN permissions p ON p.code = m.permission_code
 ON CONFLICT DO NOTHING;
 
 INSERT INTO organizations(name, economic_sector, contact_email)

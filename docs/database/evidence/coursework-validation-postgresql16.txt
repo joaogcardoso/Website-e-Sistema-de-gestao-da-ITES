@@ -36,12 +36,13 @@ CREATE PROCEDURE
 CREATE PROCEDURE
 Etapa 3: carga de dados fictícios
 INSERT 0 30
-INSERT 0 4
-INSERT 0 13
-INSERT 0 13
+INSERT 0 20
+INSERT 0 20
+INSERT 0 20
 INSERT 0 4
 INSERT 0 2
 INSERT 0 3
+INSERT 0 32
 INSERT 0 20
 INSERT 0 30
 INSERT 0 25
@@ -52,11 +53,11 @@ DO
 Etapa 4: consultas de negócio
      code      |          created_at
 ---------------+-------------------------------
- ITES-00000002 | 2026-11-18 16:34:56.401557+00
- ITES-00000009 | 2026-11-18 16:34:56.401557+00
- ITES-00000014 | 2026-11-18 16:34:56.401557+00
- ITES-00000023 | 2026-11-18 16:34:56.401557+00
- ITES-00000029 | 2026-11-18 16:34:56.401557+00
+ ITES-00000002 | 2026-11-19 08:41:10.758964-03
+ ITES-00000009 | 2026-11-19 08:41:10.758964-03
+ ITES-00000014 | 2026-11-19 08:41:10.758964-03
+ ITES-00000023 | 2026-11-19 08:41:10.758964-03
+ ITES-00000029 | 2026-11-19 08:41:10.758964-03
 (5 rows)
 
      code      |       service
@@ -217,16 +218,16 @@ DO
  page_events      |   22
  page_versions    |   21
  pages            |   20
- permissions      |   13
- role_permissions |   22
- roles            |    4
+ permissions      |   20
+ role_permissions |   61
+ roles            |   20
  user_roles       |   45
  users            |   30
 (12 rows)
 
-          verification           | roles | permissions
----------------------------------+-------+-------------
- roles_and_permissions_exception |     4 |          13
+              verificacao               | roles | permissions
+----------------------------------------+-------+-------------
+ catalogo_papeis_e_permissoes_minimo_20 |    20 |          20
 (1 row)
 
          verification         | validated_constraints
@@ -339,9 +340,9 @@ RESET
  page_events      |   22
  page_versions    |   21
  pages            |   20
- permissions      |   13
- role_permissions |   22
- roles            |    4
+ permissions      |   20
+ role_permissions |   61
+ roles            |   20
  user_roles       |   45
  users            |   30
 (12 rows)

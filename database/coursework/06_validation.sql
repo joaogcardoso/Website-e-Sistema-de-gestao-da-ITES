@@ -4,7 +4,7 @@ DECLARE
   table_name text;
   row_total bigint;
   table_names text[] := ARRAY[
-    'users','user_roles','role_permissions','organizations','demands','demand_events',
+    'users','roles','permissions','user_roles','role_permissions','organizations','demands','demand_events',
     'pages','page_versions','page_events','grant_audit'
   ];
 BEGIN
@@ -15,12 +15,6 @@ BEGIN
     END IF;
   END LOOP;
 
-  IF (SELECT count(*) FROM roles) <> 4 THEN
-    RAISE EXCEPTION 'o catálogo deve conter os quatro papéis de negócio definidos';
-  END IF;
-  IF (SELECT count(*) FROM permissions) <> 13 THEN
-    RAISE EXCEPTION 'o catálogo deve conter as treze permissões de negócio definidas';
-  END IF;
   IF demand_count('Pendente') < 1 OR published_page_count() <> 20 OR
      requester_demand_count((SELECT id FROM users WHERE email = 'pessoa01@example.invalid')) < 1 OR
      requester_demand_count(999999) <> 0 OR demand_count('SITUACAO_INEXISTENTE') <> 0 THEN
@@ -162,7 +156,7 @@ UNION ALL SELECT 'page_events', count(*) FROM page_events
 UNION ALL SELECT 'grant_audit', count(*) FROM grant_audit
 ORDER BY table_name;
 
-SELECT 'roles_and_permissions_exception' AS verification,
+SELECT 'catalogo_papeis_e_permissoes_minimo_20' AS verificacao,
        (SELECT count(*) FROM roles) AS roles,
        (SELECT count(*) FROM permissions) AS permissions;
 

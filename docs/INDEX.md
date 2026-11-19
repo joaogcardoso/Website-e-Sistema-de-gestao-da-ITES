@@ -1,6 +1,6 @@
 # Índice da documentação — ITES
 
-**Situação:** a proposta da base de dados foi validada pelo responsável do projeto. O modelo acadêmico, as consultas, rotinas, privilégios e contas foram executados em PostgreSQL 16 com evidências; os quatro papéis e as treze permissões são uma exceção semântica documentada ao mínimo de 20. Esses artefatos ainda não foram reconciliados com o schema integrado. O PDF original de requisitos e o modelo institucional não foram localizados; a especificação reproduzida no pedido é a fonte utilizada.
+**Situação:** o modelo acadêmico, as consultas, rotinas, privilégios e contas foram executados em PostgreSQL 16 com evidências, e todas as 12 tabelas têm pelo menos 20 registros. Esses artefatos ainda não foram reconciliados com o schema integrado da aplicação. Os requisitos têm como fonte o [documento de referência da ITES](requirements/proposta-portal-e-sistema-de-gestao-ites.pdf) (*Proposta de Desenvolvimento do Portal Web e Sistema de Gestão da ITES*).
 
 - [Auditoria do repositório](architecture/audit.md)
 - [Especificação de requisitos](requirements/specification.md)

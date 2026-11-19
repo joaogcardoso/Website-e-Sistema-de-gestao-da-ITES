@@ -2,7 +2,7 @@
 
 ## Contexto
 
-A ITES, no IFRJ Campus Niterói, apoia grupos de economia solidária com assessoria, formação, eventos e parcerias. O PDF original de requisitos não foi localizado no ambiente; esta especificação usa como fonte os requisitos reproduzidos no pedido do projeto.
+A ITES, no IFRJ Campus Niterói, apoia grupos de economia solidária com assessoria, formação, eventos e parcerias. Esta especificação tem como fonte o [documento de referência da ITES](proposta-portal-e-sistema-de-gestao-ites.pdf) (*Proposta de Desenvolvimento do Portal Web e Sistema de Gestão da ITES*).
 
 ## Atores
 
@@ -43,7 +43,7 @@ Toda decisão registra responsável, data e justificativa. A conclusão exige um
 | P1 | Sete seções públicas e publicação | páginas institucionais e portal | somente versões publicadas aparecem publicamente | Implementado para estrutura de páginas; conteúdo de notícias/publicações ainda é estático |
 | B1 | Editar, pré-visualizar, salvar, publicar e recarregar páginas | editor integrado e `/ites/pages` | versão persistida publicada e renderizada; operação protegida | Implementado para catálogo restrito; testes integrados cobrem gravação/publicação |
 | G1 | Atribuição e revogação de papéis | tabelas de autorização e `/ites/roles`, `/ites/users` | autorização aplicada no backend | Implementado e testado |
-| D1 | Modelo de dados e 20 registros por tabela | migrações Flyway e `database/coursework/` | contagens e chaves estrangeiras conferidas | Validado no schema acadêmico PostgreSQL 16 para tabelas com dados de negócio; 4 papéis e 13 permissões são exceção semântica. Aplicação usa schema independente |
+| D1 | Modelo de dados e 20 registros por tabela | migrações Flyway e `database/coursework/` | contagens e chaves estrangeiras conferidas | Validado no schema acadêmico PostgreSQL 16: as 12 tabelas têm pelo menos 20 registros. Aplicação usa schema independente |
 | D2 | 5 consultas simples, 3 com JOIN e 3 subconsultas | `database/coursework/03_queries.sql` | resultados registrados | 11 consultas executadas com saída real no schema acadêmico; falta reconciliar com as tabelas operacionais |
 | D3 | 3 procedures, 3 functions e 3 triggers | `database/coursework/04_routines.sql` | testes positivos e negativos | 5 procedures, 3 functions e 3 triggers testados no modelo acadêmico; gatilho operacional de transição também foi testado |
 | D4 | Papéis e privilégios do banco | `database/coursework/05_security.sql`, `07_security_tests.sql` e `08_provision_users.sql` | operações não permitidas são negadas | Grupos e quatro contas LOGIN testados em banco descartável; runtime do produto ainda usa conta proprietária |

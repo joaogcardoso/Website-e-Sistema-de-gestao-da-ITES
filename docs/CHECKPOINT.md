@@ -21,8 +21,8 @@ A última execução completa documentada validou build e testes do frontend, su
 ## Pendências
 
 - Executar a pipeline no GitHub e configurar a proteção da branch com o job agregado obrigatório.
-- Harmonizar os artefatos acadêmicos de banco com o esquema operacional e registrar eventual aceite das exceções semânticas.
+- Harmonizar os artefatos acadêmicos de banco com o esquema operacional.
 - Separar credenciais de migração e runtime antes da produção.
 - Validar acessibilidade, navegação ponta a ponta e persistência em recriação no ambiente de implantação.
 - Configurar e-mail, domínio, TLS, backups e recuperação no ambiente Dokploy.
-- O PDF original de requisitos e o modelo institucional não estavam disponíveis no repositório.
+- Adaptar a documentação técnica ao modelo de documento do professor, quando for disponibilizado.

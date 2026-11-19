@@ -4,13 +4,15 @@
 
 A ITES, incubadora associada ao IFRJ Campus Niterói, recebe solicitações de grupos e organizações de economia solidária, acompanha decisões e publica informação institucional. A base relacional preserva pessoas, organizações, demandas, papéis, páginas publicadas e trilhas de auditoria.
 
-A proposta do banco foi validada pelo responsável do projeto nesta conversa. O modelo acadêmico desta pasta é executável em PostgreSQL e independente do schema de produção aplicado pelo Flyway em `server/src/main/resources/db/migration/`. Ele não é uma migração concorrente nem é usado pela aplicação. A proposta e o modelo acadêmico precisam ser reconciliados com as 35 tabelas do produto antes de se declarar um único modelo físico final.
+O modelo acadêmico desta pasta é executável em PostgreSQL e independente do schema de produção aplicado pelo Flyway em `server/src/main/resources/db/migration/`. Ele não é uma migração concorrente nem é usado pela aplicação. A proposta e o modelo acadêmico precisam ser reconciliados com as 35 tabelas do produto antes de se declarar um único modelo físico final.
 
-O SGBD é PostgreSQL, compatível com a infraestrutura do produto. A validação documentada aqui foi executada em PostgreSQL 16. O PDF original de requisitos e o template institucional não foram encontrados; os requisitos reproduzidos no pedido do projeto são a referência utilizada.
+O SGBD é PostgreSQL, compatível com a infraestrutura do produto. A validação documentada aqui foi executada em PostgreSQL 16. Os requisitos têm como fonte o [documento de referência da ITES](../requirements/proposta-portal-e-sistema-de-gestao-ites.pdf) (*Proposta de Desenvolvimento do Portal Web e Sistema de Gestão da ITES*).
 
 ## Modelo lógico
 
-O modelo contém 12 tabelas. `users` e `organizations` se relacionam com demandas e páginas; papéis e permissões formam relações N:N por tabelas de associação; eventos preservam decisões, concessões e publicações. [Abrir o diagrama lógico em SVG](logical-model.svg).
+O modelo contém 12 tabelas. `users` e `organizations` se relacionam com demandas e páginas; papéis e permissões formam relações N:N por tabelas de associação; eventos preservam decisões, concessões e publicações. Imagem exportada: [PNG](logical-model.png) e [SVG](logical-model.svg).
+
+![Modelo lógico](logical-model.png)
 
 Relacionamentos e cardinalidades:
 
@@ -60,7 +62,24 @@ docker rm -f ites-db-academico
 
 O comando `pg_isready` pode imprimir tentativas recusadas até o serviço iniciar. A saída real da execução está em [evidence/coursework-validation-postgresql16.txt](evidence/coursework-validation-postgresql16.txt). O arquivo de carga usa somente identidades `example.invalid` e hashes sentinela não autenticáveis.
 
-As tabelas de negócio e associação contêm ao menos 20 linhas. Os catálogos têm 4 papéis (`REQUESTER`, `ADMINISTRATOR`, `DEMAND_MANAGER`, `COLLABORATOR`) e 13 permissões com significado funcional. Não foram inventados papéis/permissões artificiais para alcançar 20 linhas: essa exceção semântica ao requisito acadêmico de contagem está registrada e requer aceite do orientador.
+Todas as 12 tabelas contêm pelo menos 20 linhas, conforme exigido no APD1.
+
+O catálogo de **20 papéis** parte dos quatro perfis do módulo M3 do documento da ITES e detalha as demais responsabilidades do portal, da triagem, do planejamento, dos relatórios e da auditoria:
+
+| Código | Papel | Código | Papel |
+|---|---|---|---|
+| `REQUESTER` | Solicitante | `REPORT_VIEWER` | Leitor de relatórios |
+| `ADMINISTRATOR` | Administrador | `REPORT_EXPORTER` | Exportador de relatórios |
+| `DEMAND_MANAGER` | Gestor de demandas | `AUDITOR` | Auditor |
+| `COLLABORATOR` | Colaborador | `USER_MANAGER` | Gestor de contas de usuários |
+| `TRIAGE_ANALYST` | Analista de triagem | `CONTENT_EDITOR` | Editor de conteúdo institucional |
+| `ORGANIZATION_REPRESENTATIVE` | Representante de organização | `CONTENT_PUBLISHER` | Publicador de conteúdo institucional |
+| `COORDINATOR` | Coordenação da ITES | `NEWS_EDITOR` | Editor de notícias e agenda |
+| `PLAN_MANAGER` | Gestor de planos de atendimento | `PUBLICATIONS_EDITOR` | Editor de publicações |
+| `ACTIVITY_RESPONSIBLE` | Responsável por atividades | `PROJECTS_EDITOR` | Editor de projetos e empreendimentos incubados |
+| `PARTNERSHIP_MANAGER` | Gestor de parcerias | `SUPPORT` | Suporte técnico |
+
+O catálogo de **20 permissões** cobre perfil (`profile.read_own`, `profile.manage_own`), contas (`users.read`, `users.manage`, `roles.manage`), demandas (`demands.create`, `demands.read_own`, `demands.read`, `demands.review`, `demands.decide`, `demands.cancel`), organizações (`organizations.read`, `organizations.manage`), planejamento (`plans.manage`), relatórios (`reports.read`, `reports.export`), auditoria (`audit.read`) e portal (`portal.content.manage`, `builder.pages.edit`, `builder.pages.publish`). O administrador recebe todas as permissões; cada um dos demais papéis recebe apenas as permissões da sua função (61 associações em `role_permissions`).
 
 ## Consultas SQL — ADP1
 
@@ -139,11 +158,10 @@ Aplicação, permissões de negócio e papéis do PostgreSQL são camadas difere
 
 ## Evidências, limites e próximos passos
 
-A validação limpa em `postgres:16-alpine` executou criação, carga, as 11 consultas, funções, procedimentos, gatilhos, grants, testes positivos/negativos e contagens. As evidências estão na [transcrição de execução](evidence/coursework-validation-postgresql16.txt) e na [validação das contas LOGIN](evidence/database-users-validation-postgresql16.txt). As contagens finais após smoke de segurança foram: users 30; roles 4; permissions 13; user_roles 45; role_permissions 22; organizations 20; demands 31; demand_events 29; pages 20; page_versions 21; page_events 22; grant_audit 47. O conjunto possui 49 constraints validadas.
+A validação limpa em `postgres:16-alpine` executou criação, carga, as 11 consultas, funções, procedimentos, gatilhos, grants, testes positivos/negativos e contagens. As evidências estão na [transcrição de execução](evidence/coursework-validation-postgresql16.txt) e na [validação das contas LOGIN](evidence/database-users-validation-postgresql16.txt). As contagens finais após smoke de segurança foram: users 30; roles 20; permissions 20; user_roles 45; role_permissions 61; organizations 20; demands 31; demand_events 29; pages 20; page_versions 21; page_events 22; grant_audit 47. O conjunto possui 49 constraints validadas.
 
 Pendências documentadas:
 
-- O número de papéis e permissões é menor que 20 por razões semânticas; falta aprovação acadêmica dessa exceção.
 - `database/coursework/` ainda é independente das 35 tabelas físicas da aplicação e não deve ser aplicado no banco operacional.
 - As contas LOGIN foram exercitadas somente em banco descartável, com senhas temporárias que não foram preservadas; isso não valida a gestão de segredos de produção.
 - O modelo lógico nesta pasta representa o schema acadêmico; falta diagrama abrangente e sincronizado do schema real do produto.

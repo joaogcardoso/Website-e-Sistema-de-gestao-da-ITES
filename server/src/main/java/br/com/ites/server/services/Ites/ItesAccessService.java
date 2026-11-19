@@ -25,6 +25,19 @@ public class ItesAccessService {
         return Boolean.TRUE.equals(allowed);
     }
 
+    /** Resolve a autoridade global do administrador diretamente do banco, sem depender do JWT. */
+    public boolean isSystemAdministrator(UUID userId) {
+        Boolean allowed = jdbc.queryForObject("""
+                SELECT EXISTS(
+                  SELECT 1 FROM app_user_roles ur
+                  JOIN app_roles r ON r.id = ur.role_id
+                  JOIN users u ON u.id = ur.user_id
+                  WHERE ur.user_id = ? AND r.code = 'ADMINISTRATOR' AND u.active
+                )
+                """, Boolean.class, userId);
+        return Boolean.TRUE.equals(allowed);
+    }
+
     public void require(UUID userId, String permission) {
         if (!hasPermission(userId, permission)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permissão insuficiente");

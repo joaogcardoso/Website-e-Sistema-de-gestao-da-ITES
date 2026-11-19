@@ -303,6 +303,8 @@ public class ProjectService {
         activeOwner(ownerId);
         UUID organizationId = organizationId(ownerId, selectedOrganizationId);
         requireProject(ownerId, organizationId, projectId, PermissionAction.PROJECT_DELETE);
+        if (projects.isRoot(projectId))
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "O projeto raiz não pode ser excluído");
         int changed = writes.delete(organizationId, projectId);
         if (changed == 0) throw notFound();
         auditEvents.append(organizationId, ownerId, "PROJECT_DELETED", "PROJECT", projectId);

@@ -34,12 +34,24 @@ public class InstitutionalPageController {
 
     @GetMapping
     public List<Map<String,Object>> list() {
-        return jdbc.queryForList("SELECT id,slug,title FROM institutional_pages WHERE slug<>'painel-demandas' ORDER BY title");
+        return jdbc.queryForList("SELECT id,slug,title FROM institutional_pages WHERE slug NOT IN ('painel-demandas','inicio') ORDER BY title");
     }
 
     @GetMapping("/{slug}")
     public Map<String,Object> published(@PathVariable String slug) {
         ensureInstitutionalPage(slug);
+        if ("inicio".equals(slug)) {
+            var root = jdbc.queryForList("""
+                    SELECT p.id,'inicio' AS slug,p.name AS title,v.id AS version_id,
+                           v.version_number AS revision,v.document::text AS document
+                    FROM projects p JOIN publications pub ON pub.project_id=p.id AND pub.active
+                    JOIN publication_versions v ON v.publication_id=pub.id
+                        AND v.version_number=pub.current_version
+                    WHERE p.site_role='ROOT'
+                    """);
+            if (root.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Página não publicada");
+            return root.getFirst();
+        }
         List<Map<String,Object>> rows = jdbc.queryForList("""
                 SELECT p.id,p.slug,p.title,v.id AS version_id,v.revision,v.document::text AS document
                 FROM institutional_pages p JOIN institutional_page_versions v ON v.id=p.published_version_id
@@ -51,6 +63,7 @@ public class InstitutionalPageController {
 
     @GetMapping("/{slug}/draft")
     public Map<String,Object> draft(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug) {
+        rejectRootEditor(slug);
         ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
         access.require(actor, "builder.access");
@@ -70,6 +83,7 @@ public class InstitutionalPageController {
     @Transactional
     public Map<String,Object> save(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug,
                                    @RequestBody DraftRequest request) {
+        rejectRootEditor(slug);
         ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
         access.require(actor, "builder.access");
@@ -93,6 +107,7 @@ public class InstitutionalPageController {
     @Transactional
     public void publish(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug,
                         @RequestBody PublishRequest request) {
+        rejectRootEditor(slug);
         ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
         access.require(actor, "builder.access");
@@ -112,6 +127,7 @@ public class InstitutionalPageController {
     @DeleteMapping("/{slug}/published")
     @Transactional
     public void unpublish(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug) {
+        rejectRootEditor(slug);
         ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
         access.require(actor, "builder.access");
@@ -129,6 +145,7 @@ public class InstitutionalPageController {
     @PostMapping("/{slug}/draft/restore-published")
     @Transactional
     public Map<String,Object> restorePublished(@AuthenticationPrincipal Jwt jwt, @PathVariable String slug) {
+        rejectRootEditor(slug);
         ensureInstitutionalPage(slug);
         UUID actor = UUID.fromString(jwt.getSubject());
         access.require(actor, "builder.access");
@@ -176,6 +193,11 @@ public class InstitutionalPageController {
     }
 
     private void invalid() { throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Documento inválido"); }
+
+    private void rejectRootEditor(String slug) {
+        if ("inicio".equals(slug))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Página gerenciada no projeto raiz");
+    }
 
     private void ensureInstitutionalPage(String slug) {
         if ("painel-demandas".equals(slug)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Página não encontrada");

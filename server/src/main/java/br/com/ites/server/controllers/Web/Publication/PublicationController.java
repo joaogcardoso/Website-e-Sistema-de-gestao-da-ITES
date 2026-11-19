@@ -64,7 +64,7 @@ public class PublicationController {
 
     @PostMapping("/projects/{projectId}/publication")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Publica a revisão aprovada", description = "Exige PUBLICATION_MANAGE e um reviewRequestId aprovado por outra pessoa para a revisão atual.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true))
+    @Operation(summary = "Publica a revisão do projeto", description = "Exige PUBLICATION_MANAGE. O projeto raiz pode ser publicado diretamente pelo administrador do sistema; outros projetos exigem reviewRequestId aprovado por outra pessoa.")
     public Publication publish(@AuthenticationPrincipal Jwt jwt,
             @RequestHeader(name = "X-Organization-Id", required = false) UUID organizationId,
             @PathVariable UUID projectId, @jakarta.validation.Valid @RequestBody(required = false) PublishRequest request) {
@@ -221,7 +221,7 @@ public class PublicationController {
     }
 
     public record StatusRequest(@jakarta.validation.constraints.NotNull Boolean active) {}
-    public record PublishRequest(@jakarta.validation.constraints.NotNull @Schema(requiredMode = Schema.RequiredMode.REQUIRED) UUID reviewRequestId) {}
+    public record PublishRequest(UUID reviewRequestId) {}
     public record ReviewRequestBody(@jakarta.validation.constraints.NotNull UUID projectRevisionId,
                                     @jakarta.validation.constraints.NotNull PublicationService.ReviewOperation operation,
                                     Integer targetVersion) {}

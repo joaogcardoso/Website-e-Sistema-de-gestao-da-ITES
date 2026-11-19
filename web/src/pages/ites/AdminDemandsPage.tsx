@@ -41,7 +41,7 @@ export default function AdminDemandsPage() {
     if (!response.ok) { setMessage("Decisão recusada. Confira permissão, situação e justificativa."); return }
     setReason(""); setCompletion(""); setSelected(null); setMessage("Decisão registrada."); await refreshDemands()
   }
-  return <main className="ites-page"><header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav><Link to="/demandas">Minhas demandas</Link><Link to="/administracao/indicadores">Indicadores e respostas</Link><Link to="/administracao/editor">Editor</Link></nav></header><h1>Gestão de demandas</h1>
+  return <main className="ites-page"><header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav><Link to="/demandas">Minhas demandas</Link><Link to="/administracao/indicadores">Indicadores e respostas</Link><Link to="/projects">Editor</Link></nav></header><h1>Gestão de demandas</h1>
     <label>Filtrar por situação <select value={status} onChange={event => setStatus(event.target.value)}>{statuses.map(value => <option key={value} value={value}>{value || "Todas"}</option>)}</select></label>
     {message && <p role="status">{message}</p>}
     {demands.map(demand => <article className="ites-card" key={demand.id}><h2>{demand.code}</h2><p>{demand.description}</p><p>Solicitante: {demand.first_name} {demand.last_name}</p><p>Organização: {demand.organization_name || "Não informada"}</p><p>Urgência: {demand.urgency} · Situação: {demand.status}</p>{demand.review_notes && <p>Classificação: {demand.review_notes}</p>}<button onClick={() => setSelected(demand.id)}>Analisar</button>

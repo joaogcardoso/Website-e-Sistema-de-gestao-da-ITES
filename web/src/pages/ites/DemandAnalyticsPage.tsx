@@ -125,7 +125,7 @@ export default function DemandAnalyticsPage() {
   }
 
   return <main className="ites-page">
-    <header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav><Link to="/administracao/demandas">Demandas</Link><Link to="/publications">Respostas de formulários</Link><Link to="/administracao/editor">Páginas institucionais</Link></nav></header>
+    <header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav><Link to="/administracao/demandas">Demandas</Link><Link to="/publications">Respostas de formulários</Link><Link to="/projects">Páginas institucionais</Link></nav></header>
     <div className="ites-toolbar"><div><p className="ites-eyebrow">Acompanhamento institucional</p><h1>{dashboard.title}</h1></div><div className="ites-toolbar">{permissions.includes("dashboards.manage") && <button onClick={() => setEditingDashboard(value => !value)}>{editingDashboard ? "Fechar configuração" : "Configurar painel"}</button>}{permissions.includes("reports.export") && permissions.includes("demands.read") && <button onClick={() => void exportCsv()}>Exportar CSV</button>}{permissions.includes("reports.generate") && <button onClick={() => window.print()}>Imprimir / salvar em PDF</button>}</div></div>
     <p>Indicadores calculados a partir das demandas registradas. As respostas de formulários de projetos permanecem disponíveis em suas páginas de publicação, respeitando o acesso da organização.</p>
     <section className="ites-card ites-form" aria-label="Filtros do relatório">

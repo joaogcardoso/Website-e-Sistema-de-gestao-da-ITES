@@ -81,7 +81,7 @@ O catálogo de **20 papéis** parte dos quatro perfis do módulo M3 do documento
 
 O catálogo de **20 permissões** cobre perfil (`profile.read_own`, `profile.manage_own`), contas (`users.read`, `users.manage`, `roles.manage`), demandas (`demands.create`, `demands.read_own`, `demands.read`, `demands.review`, `demands.decide`, `demands.cancel`), organizações (`organizations.read`, `organizations.manage`), planejamento (`plans.manage`), relatórios (`reports.read`, `reports.export`), auditoria (`audit.read`) e portal (`portal.content.manage`, `builder.pages.edit`, `builder.pages.publish`). O administrador recebe todas as permissões; cada um dos demais papéis recebe apenas as permissões da sua função (61 associações em `role_permissions`).
 
-## Consultas SQL — ADP1
+## Consultas SQL — APD1
 
 As consultas estão em `database/coursework/03_queries.sql`. Cada comando tem uso operacional:
 
@@ -107,7 +107,7 @@ As consultas estão em `database/coursework/03_queries.sql`. Cada comando tem us
 
 As três categorias de consultas são executadas pelo `run_all.sql`; seus resultados constam na evidência PostgreSQL 16.
 
-## Rotinas e automações — ADP2
+## Rotinas e automações — APD2
 
 As definições estão em `database/coursework/04_routines.sql`.
 
@@ -143,7 +143,7 @@ Os procedimentos de escrita usam `SECURITY DEFINER` com `search_path` fixo. Em P
 
 Além dos objetos acadêmicos, a migration operacional `V24__administrator_permission_sync.sql` instala `ites_sync_administrator_permission` e o gatilho `ites_sync_administrator_permission` em `app_permissions`. A migration associa os grants atuais ao papel `ADMINISTRATOR`; cada permissão inserida depois é associada ao papel automaticamente, sem incluir os demais papéis. V25 registra as permissões de organizações, indicadores, dashboards e relatórios; o gatilho aplica esses novos grants na mesma transação.
 
-## Administração, permissões e integridade — ADP3
+## Administração, permissões e integridade — APD3
 
 O script `database/coursework/05_security.sql` cria papéis de grupo sem login:
 

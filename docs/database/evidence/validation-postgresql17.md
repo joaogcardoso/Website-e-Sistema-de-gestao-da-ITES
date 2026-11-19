@@ -1,9 +1,0 @@
-# Validação exploratória da proposta SQL — PostgreSQL 17
-
-Ambiente: contêiner temporário `postgres:17-alpine`, sem volume ou porta publicada. Comandos executados, em ordem, com `psql -v ON_ERROR_STOP=1`: `01_schema.sql`, `04_routines.sql`, `02_seed.sql`, `03_queries.sql`, `05_security.sql`. Todos terminaram sem erro. A saída integral das consultas está em `queries-postgresql17.txt`. O projeto prevê PostgreSQL 16; esta execução não substitui a validação na versão de implantação.
-
-Contagens antes dos testes de mutação: `users=25`; `roles`, `permissions`, `user_roles`, `role_permissions`, `organizations`, `demands`, `demand_events`, `pages`, `page_versions`, `page_events` e `grant_audit` = 20 cada. Funções: `demand_count('Pendente')=3`, `requester_demand_count(1)=1`, `published_page_count()=20`.
-
-Procedimentos executados: `transition_demand(6,25,'Aceita para atendimento','Análise concluída')` alterou a situação; `publish_page(1,1,25)` executou; `assign_role(1,1,25)` executou. Testes negativos: transição direta para `Concluída` foi recusada pelo gatilho; alteração de `demand_events` foi recusada; `ites_reporting` conseguiu contar demandas, mas recebeu `permission denied for table demands` ao tentar atualizar; `ites_runtime` recebeu `permission denied for schema public` ao tentar criar tabela; FK de solicitante inexistente foi aplicada.
-
-Lacunas identificadas nessa execução exploratória: o teste de publicação repetiu a versão já publicada e não acionou o gatilho; faltam casos positivos de troca de versão, conclusão válida, recusa/cancelamento, usuário de login provisionado e teste explícito de escrita autorizada pelo papel runtime. O `UPDATE` geral desse papel permite contornar procedimentos e exige correção. A proposta foi aprovada posteriormente, mas estes scripts não foram integrados ao schema operacional do aplicativo.

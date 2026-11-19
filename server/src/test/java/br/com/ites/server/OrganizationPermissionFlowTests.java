@@ -76,6 +76,22 @@ class OrganizationPermissionFlowTests {
                 Boolean.class, administratorId, organizationId));
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM organization_permission_grants "
                 + "WHERE beneficiary_user_id=? AND organization_id=?", Integer.class, administratorId, organizationId));
+        UUID administratorProject = project(administrator, "Projeto criado pela administração", organizationId);
+        mvc.perform(get("/projects/" + administratorProject)
+                        .header("Authorization", bearer(administrator)).header("X-Organization-Id", organizationId))
+                .andExpect(status().isOk());
+        mvc.perform(get("/projects/" + administratorProject)
+                        .header("Authorization", bearer(regularUser)).header("X-Organization-Id", organizationId))
+                .andExpect(status().isForbidden());
+        String secondOwner = register();
+        UUID secondOrganizationId = defaultOrganization(userId(secondOwner));
+        UUID secondProject = project(secondOwner, "Projeto em outra organização", secondOrganizationId);
+        mvc.perform(get("/projects/" + secondProject)
+                        .header("Authorization", bearer(administrator)).header("X-Organization-Id", secondOrganizationId))
+                .andExpect(status().isOk());
+        assertFalse(authorization.allowsResource(administratorId, organizationId,
+                br.com.ites.server.models.Organization.PermissionAction.PROJECT_READ,
+                br.com.ites.server.models.Organization.GrantScopeType.PROJECT, secondProject));
         assertTrue(authorization.allowsResource(administratorId, organizationId,
                 br.com.ites.server.models.Organization.PermissionAction.ORGANIZATION_AUDIT_READ,
                 br.com.ites.server.models.Organization.GrantScopeType.ORGANIZATION, organizationId));

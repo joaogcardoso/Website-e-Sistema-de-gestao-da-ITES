@@ -83,7 +83,7 @@ export default function InstitutionalEditorPage() {
     <header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav><Link to="/administracao/demandas">Demandas</Link><Link to="/administracao/indicadores">Indicadores</Link></nav></header>
     <p className="ites-eyebrow">Conteúdo institucional</p><h1>Editor de páginas</h1>
     <p>As alterações ficam em rascunho até serem publicadas. A página pública sempre usa a última versão publicada.</p>
-    <label>Página institucional<select value={slug} onChange={event => setSlug(event.target.value)}>{pages.map(page => <option key={page.slug} value={page.slug}>{page.title}</option>)}</select></label>
+    <label>Página institucional<select value={slug} onChange={event => setSlug(event.target.value)}>{pages.map(page => <option key={page.slug} value={page.slug}>{page.slug === "inicio" ? "Página inicial do ITES" : page.title}</option>)}</select></label>
     <div className="ites-toolbar"><label>Bloco<select aria-label="Bloco para adicionar" value={selectedDefinition} onChange={event => setSelectedDefinition(event.target.value)}>{editableBlocks.map(definition => <option key={definition.id} value={definition.id}>{definition.name}</option>)}</select></label><button onClick={addBlock}>Adicionar seção</button><button onClick={() => setPreview(value => !value)}>{preview ? "Voltar à edição" : "Prévia"}</button><button onClick={() => void save()}>Salvar rascunho</button><button onClick={() => void publish()}>Publicar</button><button onClick={() => void restorePublished()}>Restaurar publicada</button></div>
     {message && <p role="status">{message}</p>}
     {preview ? activePage && <PageContent page={activePage} /> : <div className="ites-editor-layout">

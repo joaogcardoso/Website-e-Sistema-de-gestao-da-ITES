@@ -5,6 +5,7 @@ import br.com.ites.server.models.Organization.OrganizationFeature;
 import br.com.ites.server.models.Organization.PermissionAction;
 import br.com.ites.server.models.Organization.PermissionGrant;
 import br.com.ites.server.repositories.Organization.PermissionGrantRepository;
+import br.com.ites.server.services.Ites.ItesAccessService;
 import br.com.ites.server.utils.pagination.PageRequest;
 import br.com.ites.server.utils.pagination.PageResponse;
 import java.time.OffsetDateTime;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-/** Avalia permissões explícitas sempre em conjunto com o vínculo ativo à organização. */
+/** Resolve autoridade administrativa global e grants explícitos dentro do escopo organizacional. */
 @Service
 public class OrganizationAuthorizationService {
     private static final List<PermissionAction> OWNER_ACTIONS = List.of(
@@ -28,12 +29,15 @@ public class OrganizationAuthorizationService {
     private final PermissionGrantRepository grants;
     private final OrganizationFeatureService features;
     private final OrganizationAuditEventService auditEvents;
+    private final ItesAccessService access;
 
     public OrganizationAuthorizationService(PermissionGrantRepository grants,
-            OrganizationFeatureService features, OrganizationAuditEventService auditEvents) {
+            OrganizationFeatureService features, OrganizationAuditEventService auditEvents,
+            ItesAccessService access) {
         this.grants = grants;
         this.features = features;
         this.auditEvents = auditEvents;
+        this.access = access;
     }
 
     public void requireOrganization(UUID userId, UUID organizationId, PermissionAction action) {
@@ -42,12 +46,20 @@ public class OrganizationAuthorizationService {
 
     /** Verifica somente o vínculo ativo quando o domínio possui autoria própria e não usa grants. */
     public void requireActiveMembership(UUID userId, UUID organizationId) {
+        if (isAdministrator(userId)) {
+            requireOrganizationExists(organizationId);
+            return;
+        }
         if (!grants.isMember(userId, organizationId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
     /** Mantém o vínculo ativo bloqueado contra revogação até o commit da mutação. */
     public void requireActiveMembershipForMutation(UUID userId, UUID organizationId) {
+        if (isAdministrator(userId)) {
+            requireOrganizationExists(organizationId);
+            return;
+        }
         if (!grants.lockActiveMembership(userId, organizationId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
@@ -59,6 +71,7 @@ public class OrganizationAuthorizationService {
 
     public boolean allowsResource(UUID userId, UUID organizationId, PermissionAction action,
             GrantScopeType scopeType, UUID resourceId) {
+        if (isAdministrator(userId)) return resourceExists(scopeType, resourceId, organizationId);
         if (!grants.isMember(userId, organizationId)) return false;
         try {
             for (OrganizationFeature feature : featuresFor(action))
@@ -71,6 +84,7 @@ public class OrganizationAuthorizationService {
     }
 
     public boolean allowsAnyProject(UUID userId, UUID organizationId, PermissionAction action) {
+        if (isAdministrator(userId)) return grants.organizationExists(organizationId);
         if (!grants.isMember(userId, organizationId)) return false;
         try {
             for (OrganizationFeature feature : featuresFor(action))
@@ -88,6 +102,11 @@ public class OrganizationAuthorizationService {
 
     private void require(UUID userId, UUID organizationId, PermissionAction action,
             GrantScopeType scopeType, UUID scopeId) {
+        if (isAdministrator(userId)) {
+            if (!resourceExists(scopeType, scopeId, organizationId))
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return;
+        }
         if (!grants.isMember(userId, organizationId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
@@ -95,6 +114,20 @@ public class OrganizationAuthorizationService {
             features.requireEnabled(organizationId, feature);
         if (!grants.allows(userId, organizationId, action, scopeType, scopeId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    private boolean isAdministrator(UUID userId) {
+        return access.isSystemAdministrator(userId);
+    }
+
+    private boolean resourceExists(GrantScopeType scopeType, UUID scopeId, UUID organizationId) {
+        if (scopeType == GrantScopeType.ORGANIZATION)
+            return organizationId.equals(scopeId) && grants.organizationExists(organizationId);
+        return grants.resourceExists(scopeType, scopeId, organizationId);
+    }
+
+    private void requireOrganizationExists(UUID organizationId) {
+        if (!grants.organizationExists(organizationId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     private static List<OrganizationFeature> featuresFor(PermissionAction action) {

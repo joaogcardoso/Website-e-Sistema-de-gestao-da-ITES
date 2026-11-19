@@ -8,12 +8,14 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Provisiona o administrador inicial a partir das variáveis de ambiente configuradas. */
 @Component
+@Order(0)
 public class InitialAdministratorProvisioner implements ApplicationRunner {
     private final String email;
     private final String password;

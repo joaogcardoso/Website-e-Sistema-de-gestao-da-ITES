@@ -61,6 +61,95 @@ class OrganizationPermissionFlowTests {
     private final Map<UUID, String> publicationReviewers = new HashMap<>();
 
     @Test
+    void systemAdministratorCanReviewAndAuditAcrossOrganizationsWithoutScopedGrants() throws Exception {
+        String owner = register();
+        String administrator = register();
+        String regularUser = register();
+        UUID ownerId = userId(owner);
+        UUID administratorId = userId(administrator);
+        UUID organizationId = defaultOrganization(ownerId);
+        UUID projectId = project(owner, "Projeto para revisão administrativa", organizationId);
+        jdbc.update("INSERT INTO app_user_roles(user_id, role_id) SELECT ?, id FROM app_roles WHERE code='ADMINISTRATOR'",
+                administratorId);
+
+        assertFalse(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM organization_memberships WHERE user_id=? AND organization_id=?)",
+                Boolean.class, administratorId, organizationId));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM organization_permission_grants "
+                + "WHERE beneficiary_user_id=? AND organization_id=?", Integer.class, administratorId, organizationId));
+        UUID administratorProject = project(administrator, "Projeto criado pela administração", organizationId);
+        mvc.perform(get("/projects/" + administratorProject)
+                        .header("Authorization", bearer(administrator)).header("X-Organization-Id", organizationId))
+                .andExpect(status().isOk());
+        mvc.perform(get("/projects/" + administratorProject)
+                        .header("Authorization", bearer(regularUser)).header("X-Organization-Id", organizationId))
+                .andExpect(status().isForbidden());
+        String secondOwner = register();
+        UUID secondOrganizationId = defaultOrganization(userId(secondOwner));
+        UUID secondProject = project(secondOwner, "Projeto em outra organização", secondOrganizationId);
+        mvc.perform(get("/projects/" + secondProject)
+                        .header("Authorization", bearer(administrator)).header("X-Organization-Id", secondOrganizationId))
+                .andExpect(status().isOk());
+        assertFalse(authorization.allowsResource(administratorId, organizationId,
+                br.com.ites.server.models.Organization.PermissionAction.PROJECT_READ,
+                br.com.ites.server.models.Organization.GrantScopeType.PROJECT, secondProject));
+        assertTrue(authorization.allowsResource(administratorId, organizationId,
+                br.com.ites.server.models.Organization.PermissionAction.ORGANIZATION_AUDIT_READ,
+                br.com.ites.server.models.Organization.GrantScopeType.ORGANIZATION, organizationId));
+        assertFalse(authorization.allowsResource(userId(regularUser), organizationId,
+                br.com.ites.server.models.Organization.PermissionAction.ORGANIZATION_AUDIT_READ,
+                br.com.ites.server.models.Organization.GrantScopeType.ORGANIZATION, organizationId));
+
+        JsonNode organizations = json.readTree(mvc.perform(get("/organizations")
+                        .header("Authorization", bearer(administrator)))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertTrue(java.util.stream.StreamSupport.stream(organizations.spliterator(), false)
+                .anyMatch(item -> item.path("id").asText().equals(organizationId.toString())));
+        mvc.perform(get("/organizations/" + organizationId + "/features")
+                        .header("Authorization", bearer(administrator)))
+                .andExpect(status().isOk());
+        mvc.perform(get("/organizations/" + organizationId + "/audit-events")
+                        .header("Authorization", bearer(administrator)))
+                .andExpect(status().isOk());
+        mvc.perform(get("/organizations/" + organizationId + "/audit-events")
+                        .header("Authorization", bearer(regularUser)))
+                .andExpect(status().isForbidden());
+
+        UUID revisionId = jdbc.queryForObject("""
+                SELECT r.id FROM project_revisions r JOIN projects p ON p.id=r.project_id
+                WHERE p.id=? AND r.revision_kind='DRAFT' AND r.revision_number=p.revision
+                """, UUID.class, projectId);
+        JsonNode request = json.readTree(mvc.perform(post("/projects/" + projectId + "/publication/review-requests")
+                        .header("Authorization", bearer(owner)).header("X-Organization-Id", organizationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsString(Map.of("projectRevisionId", revisionId, "operation", "PUBLISH"))))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
+        JsonNode inbox = json.readTree(mvc.perform(get("/publication/review-requests")
+                        .header("Authorization", bearer(administrator)).header("X-Organization-Id", organizationId))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString());
+        assertEquals(1, inbox.size());
+        assertEquals(request.path("id").asText(), inbox.get(0).path("id").asText());
+        assertTrue(inbox.get(0).path("canDecide").asBoolean());
+        mvc.perform(post("/projects/" + projectId + "/publication/review-requests/"
+                        + request.path("id").asText() + "/decision")
+                        .header("Authorization", bearer(administrator)).header("X-Organization-Id", organizationId)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"approved\":true}"))
+                .andExpect(status().isOk());
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM publication_review_requests "
+                + "WHERE id=? AND state='APPROVED' AND approver_user_id=?", Integer.class,
+                UUID.fromString(request.path("id").asText()), administratorId));
+        mvc.perform(get("/publication/review-requests").header("Authorization", bearer(regularUser))
+                        .header("X-Organization-Id", organizationId))
+                .andExpect(status().isForbidden());
+
+        jdbc.update("INSERT INTO app_permissions(code, description) VALUES ('admin.regression.new-grant', 'Permissão de regressão')");
+        assertTrue(jdbc.queryForObject("""
+                SELECT EXISTS(SELECT 1 FROM app_role_permissions rp JOIN app_user_roles ur ON ur.role_id=rp.role_id
+                WHERE ur.user_id=? AND rp.permission_code='admin.regression.new-grant')
+                """, Boolean.class, administratorId));
+        jdbc.update("DELETE FROM app_permissions WHERE code='admin.regression.new-grant'");
+    }
+
+    @Test
     void auditReadRequiresExplicitGrantIsTenantScopedAndAppendOnly() throws Exception {
         String firstOwner = register();
         String secondOwner = register();

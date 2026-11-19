@@ -122,6 +122,8 @@ Os procedimentos de escrita usam `SECURITY DEFINER` com `search_path` fixo. Em P
 | `event_immutable` | `demand_events`, antes de UPDATE/DELETE | Impede adulterar o histórico de decisão. |
 | `page_publish_audit` | `pages`, após alterar versão publicada | Exige ator transacional e registra publicação ou retirada. |
 
+Além dos objetos acadêmicos, a migration operacional `V24__administrator_permission_sync.sql` instala `ites_sync_administrator_permission` e o gatilho `ites_sync_administrator_permission` em `app_permissions`. A migration associa os grants atuais ao papel `ADMINISTRATOR`; cada permissão inserida depois é associada ao papel automaticamente, sem incluir os demais papéis. V25 registra as permissões de organizações, indicadores, dashboards e relatórios; o gatilho aplica esses novos grants na mesma transação.
+
 ## Administração, permissões e integridade — ADP3
 
 O script `database/coursework/05_security.sql` cria papéis de grupo sem login:

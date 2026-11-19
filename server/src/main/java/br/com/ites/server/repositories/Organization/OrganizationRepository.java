@@ -49,5 +49,13 @@ public class OrganizationRepository {
                 rs.getBoolean("is_default")), userId);
     }
 
+    public List<Membership> findAllForAdministrator() {
+        return jdbc.query("""
+                SELECT o.id, o.name, 'ADMINISTRATOR' AS role, false AS is_default
+                FROM organizations o ORDER BY o.name, o.id
+                """, (rs, row) -> new Membership(rs.getObject("id", UUID.class), rs.getString("name"),
+                rs.getString("role"), rs.getBoolean("is_default")));
+    }
+
     public record Membership(UUID id, String name, String role, boolean isDefault) {}
 }

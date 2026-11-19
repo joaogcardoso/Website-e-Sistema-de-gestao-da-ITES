@@ -172,8 +172,9 @@ public class PublicationController {
             @RequestHeader(name = "X-Organization-Id", required = false) UUID organizationId,
             @PathVariable UUID projectId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return forms.list(owner(jwt), organizationId, projectId, page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+        return forms.list(owner(jwt), organizationId, projectId, page, size, search);
     }
 
     @GetMapping(value = "/projects/{projectId}/publication/submissions/export", produces = "text/csv")
@@ -181,11 +182,12 @@ public class PublicationController {
     public ResponseEntity<String> exportSubmissions(
             @AuthenticationPrincipal Jwt jwt,
             @RequestHeader(name = "X-Organization-Id", required = false) UUID organizationId,
-            @PathVariable UUID projectId) {
+            @PathVariable UUID projectId,
+            @RequestParam(required = false) String search) {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=publication-submissions.csv")
                 .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
-                .body(forms.exportCsv(owner(jwt), organizationId, projectId));
+                .body(forms.exportCsv(owner(jwt), organizationId, projectId, search));
     }
 
     @GetMapping("/projects/{projectId}/publication/activity")

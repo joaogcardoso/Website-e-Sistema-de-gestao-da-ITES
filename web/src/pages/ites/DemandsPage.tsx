@@ -47,7 +47,7 @@ export default function DemandsPage() {
     setMessage(`Demanda registrada: ${demand.code}`)
   }
 
-  return <main className="ites-page"><header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav>{permissions.includes("demands.read") && <Link to="/administracao/demandas">Gestão</Link>}{permissions.includes("roles.manage") && <Link to="/administracao/permissoes">Permissões</Link>}{permissions.includes("builder.access") && <Link to="/administracao/editor">Editor</Link>}<button onClick={() => void logout()}>Sair</button></nav></header>
+  return <main className="ites-page"><header className="ites-header"><Link to="/">ITES · IFRJ Niterói</Link><nav>{permissions.includes("demands.read") && <Link to="/administracao/demandas">Gestão</Link>}{permissions.includes("analytics.view") && <Link to="/administracao/indicadores">Indicadores</Link>}{permissions.includes("roles.manage") && <Link to="/administracao/permissoes">Permissões</Link>}{permissions.includes("builder.access") && <Link to="/administracao/editor">Editor</Link>}<button onClick={() => void logout()}>Sair</button></nav></header>
     <h1>Minhas demandas</h1><p>Registre sua solicitação e acompanhe a análise da ITES.</p>
     <section className="ites-card"><h2>Organização</h2><p>Cadastre uma organização quando representar um grupo ou instituição.</p><div className="ites-form"><label>Nome<input value={organizationName} onChange={event => setOrganizationName(event.target.value)} /></label><label>Setor econômico<input value={economicSector} onChange={event => setEconomicSector(event.target.value)} /></label><button type="button" onClick={() => void createOrganization()}>Cadastrar organização</button></div></section>
     <form className="ites-form" onSubmit={event => void submit(event)}>

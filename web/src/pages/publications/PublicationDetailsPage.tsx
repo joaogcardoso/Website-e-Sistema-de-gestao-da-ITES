@@ -57,6 +57,7 @@ export default function PublicationDetailsPage() {
   const [hasMoreEvents, setHasMoreEvents] = useState(false)
   const [error, setError] = useState("")
   const [submissionError, setSubmissionError] = useState("")
+  const [submissionSearch, setSubmissionSearch] = useState("")
   const [activityError, setActivityError] = useState("")
   const [busy, setBusy] = useState(false)
   const [exportBusy, setExportBusy] = useState(false)
@@ -81,14 +82,22 @@ export default function PublicationDetailsPage() {
     getPublicationAnalytics(accessToken, projectId)
       .then((activity) => { if (active) { setAnalytics(activity); setEvents(activity.recent.items); setHasMoreEvents(activity.recent.hasNext); setActivityError("") } })
       .catch((cause) => { if (active) setActivityError(errorMessage(cause, "Não foi possível carregar as métricas e atividades.")) })
-    getFormSubmissions(accessToken, projectId)
-      .then((responses) => { if (active) { setSubmissions(responses.items); setHasMoreSubmissions(responses.hasNext); setSubmissionError("") } })
-      .catch((cause) => { if (active) setSubmissionError(errorMessage(cause, "Não foi possível carregar as respostas.")) })
     listPublicationReviewRequests(accessToken, projectId)
       .then((requests) => { if (active) { setReviews(requests); setReviewRequestsLoaded(true) } })
       .catch(() => { if (active) { setReviews([]); setReviewRequestsLoaded(true) } })
     return () => { active = false }
   }, [accessToken, projectId])
+
+  useEffect(() => {
+    if (!accessToken || !projectId) return
+    let active = true
+    const timer = window.setTimeout(() => {
+      getFormSubmissions(accessToken, projectId, 0, 10, submissionSearch)
+        .then((responses) => { if (active) { setSubmissions(responses.items); setHasMoreSubmissions(responses.hasNext); setSubmissionError("") } })
+        .catch((cause) => { if (active) setSubmissionError(errorMessage(cause, "Não foi possível carregar as respostas.")) })
+    }, 250)
+    return () => { active = false; window.clearTimeout(timer) }
+  }, [accessToken, projectId, submissionSearch])
 
   async function change(action: () => Promise<Publication>) {
     setBusy(true)
@@ -154,7 +163,7 @@ export default function PublicationDetailsPage() {
   async function moreSubmissions() {
     if (!accessToken) return
     setBusy(true)
-    try { const next = await getFormSubmissions(accessToken, projectId, Math.floor(submissions.length / 10)); setSubmissions((current) => [...current, ...next.items]); setHasMoreSubmissions(next.hasNext) }
+    try { const next = await getFormSubmissions(accessToken, projectId, Math.floor(submissions.length / 10), 10, submissionSearch); setSubmissions((current) => [...current, ...next.items]); setHasMoreSubmissions(next.hasNext) }
     catch (cause) { setSubmissionError(errorMessage(cause, "Não foi possível carregar mais respostas.")) }
     finally { setBusy(false) }
   }
@@ -170,7 +179,7 @@ export default function PublicationDetailsPage() {
     setExportBusy(true)
     setSubmissionError("")
     try {
-      const blob = await exportFormSubmissions(accessToken, projectId)
+      const blob = await exportFormSubmissions(accessToken, projectId, submissionSearch)
       const url = URL.createObjectURL(blob)
       const anchor = document.createElement("a")
       anchor.href = url
@@ -208,7 +217,7 @@ export default function PublicationDetailsPage() {
         <div className="grid gap-4 sm:grid-cols-3">{[["Visualizações", publication.views], ["Cliques", publication.clicks], ["Envios", publication.interactions]].map(([label, value]) => <Card key={label}><CardHeader><CardTitle className="text-sm">{label}</CardTitle></CardHeader><CardContent className="text-2xl font-semibold tabular-nums">{value}</CardContent></Card>)}</div>
         <section className="rounded-lg border bg-card p-5"><h2 className="text-lg font-semibold">Atividade dos últimos 30 dias</h2>{activityError && <p role="alert" className="mt-3 text-sm text-destructive">{activityError}</p>}{analytics && <ChartContainer config={chartConfig} className="mt-4 h-64 w-full aspect-auto"><AreaChart data={chartDays(analytics.daily)}><CartesianGrid vertical={false} /><XAxis dataKey="label" tickLine={false} axisLine={false} minTickGap={24} /><YAxis allowDecimals={false} tickLine={false} axisLine={false} /><ChartTooltip content={<ChartTooltipContent />} /><Area dataKey="views" type="monotone" stroke="var(--color-views)" fill="var(--color-views)" fillOpacity={0.12} /><Area dataKey="clicks" type="monotone" stroke="var(--color-clicks)" fill="var(--color-clicks)" fillOpacity={0.08} /><Area dataKey="interactions" type="monotone" stroke="var(--color-interactions)" fill="var(--color-interactions)" fillOpacity={0.08} /></AreaChart></ChartContainer>}</section>
         <div className="grid items-start gap-6 lg:grid-cols-2">
-          <section className="rounded-lg border bg-card p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Respostas dos formulários</h2><p className="text-sm text-muted-foreground">Leitura e exportação são permissões independentes.</p></div><Button variant="outline" disabled={exportBusy} onClick={() => void exportSubmissions()}>{exportBusy ? "Exportando…" : "Exportar CSV"}</Button></div>{submissionError ? <p role="alert" className="mt-3 text-sm text-destructive">{submissionError}</p> : submissions.length === 0 ? <p className="mt-4 text-sm">Nenhuma resposta recebida.</p> : <InfiniteScroll dataLength={submissions.length} next={() => void moreSubmissions()} hasMore={hasMoreSubmissions} height={384} loader={<p className="py-3 text-center text-xs text-muted-foreground">Carregando respostas…</p>}>{<ol className="flex flex-col gap-3 pr-3">{submissions.map((submission) => <li key={submission.id} className="rounded-md border p-4"><div className="flex flex-wrap justify-between gap-2"><strong>{submission.formName}</strong><time dateTime={submission.occurredAt} className="text-sm text-muted-foreground">{new Date(submission.occurredAt).toLocaleString("pt-BR")}</time></div><dl className="mt-3 flex flex-col gap-1 text-sm">{Object.entries(submission.fields).map(([key, value]) => { const display = responseLabel(submission, key, value); return <div key={key} className="break-words"><dt className="inline font-medium">{display.label}: </dt><dd className="inline whitespace-pre-wrap">{display.value}</dd></div> })}</dl></li>)}</ol>}</InfiniteScroll>}</section>
+          <section className="rounded-lg border bg-card p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Respostas dos formulários</h2><p className="text-sm text-muted-foreground">A busca considera o nome do formulário, as perguntas e os valores enviados.</p></div><Button variant="outline" disabled={exportBusy} onClick={() => void exportSubmissions()}>{exportBusy ? "Exportando…" : "Exportar CSV"}</Button></div><label className="mt-4 grid gap-1 text-sm font-medium">Buscar respostas<input className="rounded-md border bg-background px-3 py-2 font-normal" value={submissionSearch} onChange={(event) => setSubmissionSearch(event.target.value)} placeholder="Pergunta, resposta ou nome do formulário" /></label>{submissionError ? <p role="alert" className="mt-3 text-sm text-destructive">{submissionError}</p> : submissions.length === 0 ? <p className="mt-4 text-sm">{submissionSearch ? "Nenhuma resposta corresponde à busca." : "Nenhuma resposta recebida."}</p> : <InfiniteScroll dataLength={submissions.length} next={() => void moreSubmissions()} hasMore={hasMoreSubmissions} height={384} loader={<p className="py-3 text-center text-xs text-muted-foreground">Carregando respostas…</p>}>{<ol className="flex flex-col gap-3 pr-3">{submissions.map((submission) => <li key={submission.id} className="rounded-md border p-4"><div className="flex flex-wrap justify-between gap-2"><strong>{submission.formName}</strong><time dateTime={submission.occurredAt} className="text-sm text-muted-foreground">{new Date(submission.occurredAt).toLocaleString("pt-BR")}</time></div><dl className="mt-3 flex flex-col gap-1 text-sm">{Object.entries(submission.fields).map(([key, value]) => { const display = responseLabel(submission, key, value); return <div key={key} className="break-words"><dt className="inline font-medium">{display.label}: </dt><dd className="inline whitespace-pre-wrap">{display.value}</dd></div> })}</dl></li>)}</ol>}</InfiniteScroll>}</section>
           <section className="rounded-lg border bg-card p-5"><h2 className="text-lg font-semibold">Registro de atividades</h2><p className="text-sm text-muted-foreground">Eventos sem conteúdo de respostas.</p>{activityError && <p role="alert" className="mt-3 text-sm text-destructive">{activityError}</p>}{events.length ? <InfiniteScroll dataLength={events.length} next={() => void moreEvents()} hasMore={hasMoreEvents} height={384} loader={<p className="py-3 text-center text-xs text-muted-foreground">Carregando atividades…</p>}><ol className="divide-y pr-3">{events.map((event) => <li key={event.id} className="flex justify-between gap-3 py-3 text-sm"><span>{event.type === "view" ? "Visualização" : event.type === "click" ? "Clique" : "Envio de formulário"} · {event.path || "/"}</span><time dateTime={event.occurredAt} className="shrink-0 text-muted-foreground">{new Date(event.occurredAt).toLocaleString("pt-BR")}</time></li>)}</ol></InfiniteScroll> : <p className="mt-4 text-sm">Nenhuma atividade registrada.</p>}</section>
         </div>
         <section className="rounded-lg border bg-card p-5"><h2 className="text-lg font-semibold">Versões publicadas</h2><ul className="mt-3 divide-y">{publication.versions.map((version) => <li key={version.number} className="flex flex-wrap items-center justify-between gap-3 py-3"><div><p className="font-medium">Publicação v{version.number} · versão do projeto {version.projectRevision}</p><p className="text-sm text-muted-foreground">{new Date(version.publishedAt).toLocaleString("pt-BR")}{version.number === publication.currentVersion ? " · Atual" : ""}</p></div><Button variant="outline" disabled={busy || version.number === publication.currentVersion} onClick={() => { setRestoreError(""); setRestoreVersion(version) }}>Restaurar publicação v{version.number}</Button></li>)}</ul></section>

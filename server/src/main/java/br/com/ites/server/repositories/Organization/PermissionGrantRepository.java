@@ -25,6 +25,11 @@ public class PermissionGrantRepository {
                 Boolean.class, userId, organizationId));
     }
 
+    public boolean organizationExists(UUID organizationId) {
+        return Boolean.TRUE.equals(jdbc.queryForObject(
+                "SELECT EXISTS (SELECT 1 FROM organizations WHERE id = ?)", Boolean.class, organizationId));
+    }
+
     public boolean lockActiveMembership(UUID userId, UUID organizationId) {
         return !jdbc.query("""
                 SELECT user_id FROM organization_memberships
